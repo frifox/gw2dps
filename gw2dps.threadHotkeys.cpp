@@ -1,0 +1,59 @@
+#include "stdafx.h"
+#include "gw2dps.h"
+
+#define HELP 0
+#define TARGET_LOCK 1
+#define DPS_ALLOW_NEGATIVE 2
+
+#define LOG_DPS 3
+#define LOG_KILL_TIMER 4
+#define LOG_KILL_TIMER_TO_FILE 5
+#define LOG_HITS 6
+#define LOG_HITS_TO_FILE 7
+#define LOG_ATTACK_RATE 8
+#define LOG_ATTACK_RATE_TO_FILE 9
+
+#define ATTACKRATE_CHAIN_HITS_MORE 10
+#define ATTACKRATE_CHAIN_HITS_LESS 11
+
+void threadHotKeys()
+{
+	RegisterHotKey(NULL, HELP, MOD_ALT | MOD_NOREPEAT, VK_OEM_2); // help
+	RegisterHotKey(NULL, TARGET_LOCK, MOD_ALT | MOD_NOREPEAT, 0x4C); // targetLock
+	RegisterHotKey(NULL, DPS_ALLOW_NEGATIVE, MOD_ALT | MOD_NOREPEAT, 0x4E); // dpsAllowNegative
+
+	RegisterHotKey(NULL, LOG_DPS, MOD_ALT | MOD_NOREPEAT, 0x44); // logDps
+	RegisterHotKey(NULL, LOG_KILL_TIMER, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD7); // logKillTimer
+	RegisterHotKey(NULL, LOG_KILL_TIMER_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD4); // logKillTimerToFile
+	RegisterHotKey(NULL, LOG_HITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD8); // logHits
+	RegisterHotKey(NULL, LOG_HITS_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD5); // logHitsToFile
+	RegisterHotKey(NULL, LOG_ATTACK_RATE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD9); // logAttackRate
+	RegisterHotKey(NULL, LOG_ATTACK_RATE_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD6); // logAttackRateToFile
+
+	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_MORE, MOD_ALT, VK_PRIOR); // AttackRateChainHits +
+	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_LESS, MOD_ALT, VK_NEXT); // AttackRateChainHits -
+
+	MSG msg;
+	while (GetMessage(&msg, 0, 0, 0))
+	{
+		PeekMessage(&msg, 0, 0, 0, 0x0001);
+		switch (msg.message)
+		{
+		case WM_HOTKEY:
+			if (msg.wParam == HELP) help = !help;
+			if (msg.wParam == TARGET_LOCK) targetLock = !targetLock;
+			if (msg.wParam == DPS_ALLOW_NEGATIVE) dpsAllowNegative = !dpsAllowNegative;
+			
+			if (msg.wParam == LOG_DPS) logDps = !logDps;
+			if (msg.wParam == LOG_KILL_TIMER) logKillTimer = !logKillTimer;
+			if (msg.wParam == LOG_KILL_TIMER_TO_FILE) logKillTimerToFile = !logKillTimerToFile;
+			if (msg.wParam == LOG_HITS) logHits = !logHits;
+			if (msg.wParam == LOG_HITS_TO_FILE) logHitsToFile = !logHitsToFile;
+			if (msg.wParam == LOG_ATTACK_RATE) logAttackRate = !logAttackRate;
+			if (msg.wParam == LOG_ATTACK_RATE_TO_FILE) logAttackRateToFile = !logAttackRateToFile;
+
+			if (msg.wParam == ATTACKRATE_CHAIN_HITS_MORE) if (AttackRateChainHits < 50) AttackRateChainHits += 1;
+			if (msg.wParam == ATTACKRATE_CHAIN_HITS_LESS) if (AttackRateChainHits > 1) AttackRateChainHits -= 1;
+		}
+	}
+}
