@@ -1,8 +1,7 @@
 GW2DPS
 ======
 
-Rewrite from scratch with accuracy, performance, and stability in mind.
-Still a work in progress, should be done in a week or two.
+Rewrite from scratch with accuracy, performance, and stability in mind. Still a work in progress, should be done in a week or two. In the meantime expect a hit few bugs here and there.
 
 Hotkeys
 =======
