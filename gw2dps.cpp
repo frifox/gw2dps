@@ -3,10 +3,13 @@
 
 // Switches //
 bool help = false;
+bool targetSelected = true;
 bool targetLock = false;
 bool dpsAllowNegative = false; // for threadDps/threadKillTimer only
-bool logDps = false;
+bool logDps = true;
+bool logDpsDetails = false;
 bool logKillTimer = false;
+bool logKillTimerDetails = false;
 bool logKillTimerToFile = false;
 bool logHits = false;
 bool logHitsToFile = false;
@@ -30,21 +33,69 @@ string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
 
 void ESP()
 {
+	// Element Anchors
+	Anchor aTopRight, aRight, aTopLeft, aCenter;
+
+	aTopLeft.x = round((GetWindowWidth() / 2 - 316 - 179) / 2 + 316);
+	aTopLeft.y = 8;
+
+	 aTopRight.x = round((GetWindowWidth() / 2 - 294 - 179)/2 + GetWindowWidth() / 2 + 179);
+	aTopRight.y = 8;
+
+	aRight.x = GetWindowWidth() - 10;
+	aRight.y = 8;
+
+	aCenter.x = round(GetWindowWidth() * float(0.5));
+	aCenter.y = round(GetWindowHeight() * float(0.25));
+
+	
 	if (help){
 		stringstream ss;
-		ss << format("[%i] targetLock (L)") % targetLock;
-		ss << format("\n[%i] dpsAllowNegative (N)") % dpsAllowNegative;
-		ss << format("\n[%i] logDps (D)") % logDps;
-		ss << format("\n[%i] logKillTimer (Num7)") % logKillTimer;
-		ss << format("\n[%i] logKillTimnerToFile (Num4)") % logKillTimerToFile;
-		ss << format("\n[%i] logHits (Num8)") % logHits;
-		ss << format("\n[%i] logHitsToFile (Num5)") % logHitsToFile;
-		ss << format("\n[%i] logAttackRate (Num9)") % logAttackRate;
-		ss << format("\n[%i] logAttackRateToFile (Num6)") % logAttackRateToFile;
-		ss << format("\n[%i] AttackRateChainHits (PgUp/PgDown)") % AttackRateChainHits;
+		ss << format("[%i] targetSelected/Locked (Alt S)\n") % targetSelected;
+		ss << format("[%i] targetLock (Alt L)\n") % targetLock;
+		ss << format("[%i] dpsAllowNegative (Alt N)\n") % dpsAllowNegative;
+		ss << format("\n");
+		ss << format("[%i] logDps (Alt D)\n") % logDps;
+		ss << format("[%i] logDpsDetails (Alt Shift D)\n") % logDpsDetails;
+		ss << format("\n");
+		ss << format("[%i] logKillTimer (Alt Num7)\n") % logKillTimer;
+		ss << format("[%i] logKillTimerDetails (Alt Num1)\n") % logKillTimerDetails;
+		ss << format("[%i] logKillTimerToFile (Alt Num4)\n") % logKillTimerToFile;
+		ss << format("\n");
+		ss << format("[%i] logHits (Alt Num8)\n") % logHits;
+		ss << format("[%i] logHitsToFile (Alt Num5)\n") % logHitsToFile;
+		ss << format("\n");
+		ss << format("[%i] logAttackRate (Alt Num9)\n") % logAttackRate;
+		ss << format("[%i] logAttackRateToFile (Alt Num6)\n") % logAttackRateToFile;
+		ss << format("[%i] AttackRateChainHits (Alt PgUp/PgDown)\n") % AttackRateChainHits;
 
-		float x = 1200; float y = 200;
+		StrInfo strInfo;
+		strInfo = StringInfo(ss.str());
+		float x = round(aCenter.x - strInfo.x / 2);
+		float y = round(aCenter.y - strInfo.y / 2);
+
+		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
 		font.Draw(x, y, fontColor, ss.str());
+	}
+
+	// Font Draw Debug
+	if (0) {
+		stringstream ss;
+		ss << format("Selected: 18,140 / 18,140 [100%s]") % "%%";
+		ss << format("Locked: 18,140 / 18,140 [100%s]") % "%%";
+
+		StrInfo strInfo;
+		strInfo = StringInfo(ss.str());
+		float x = 0;
+		float y = float(strInfo.lineCount * lineHeight + 1);
+		padX = 0;
+		padY = 0;
+
+		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, 0xffffffff);
+		font.Draw(x, y, 0xff000000, ss.str());
+
+		return;
 	}
 
 	// Targets & Agents //
@@ -213,102 +264,268 @@ void ESP()
 		// Allies list
 	}
 
-	// ESP Elements // 
-	if (selected.valid)
-	{
-		stringstream ss;
-		ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
-		font.Draw(15, 40, fontColor, ss.str());
-	}
 	
-	if (targetLock && locked.valid)
+	// TopLeft Element //
 	{
 		stringstream ss;
-		ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
-		font.Draw(15, 40 + 14, fontColor, ss.str());
+		StrInfo strInfo;
+
+		if (targetSelected)
+		{
+			if (selected.valid)
+			{
+				ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+
+				strInfo = StringInfo(ss.str());
+				float x = round(aTopLeft.x - strInfo.x / 2);
+				float y = round(aTopLeft.y);
+
+				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+				font.Draw(x, y, fontColor, ss.str());
+
+				// Prepare for Next Element
+				ss.str("");
+				aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+			}
+
+			if (targetLock && locked.valid)
+			{
+				ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
+
+				strInfo = StringInfo(ss.str());
+				float x = round(aTopLeft.x - strInfo.x / 2);
+				float y = round(aTopLeft.y);
+
+				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+				font.Draw(x, y, fontColor, ss.str());
+			}
+
+			// Prepare for Next Element
+			ss.str("");
+			aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+		}
 	}
-	
-	if (logDps && !bufferDps.empty())
+
+	// TopRight Elements //
 	{
-		double average[6] {}; // for 1s & 5s
-		size_t samples = 0;
+		if (logDps)
+		{
+			// separate ss vars
+			stringstream ss;
+			StrInfo strInfo;
 
-		// DP1s
-		samples = 4; // 1s/250ms=4
-		if (samples > bufferDps.size())
-			samples = bufferDps.size();
-		average[1] = 0;
-		for (size_t i = 0; i < samples; i++)
-			average[1] += bufferDps[i];
-		average[1] = average[1] / samples * (1000 / dpsPollingRate);
+			float aAdjustX = 120; // adjust anchor -120
 
-		// DP5s
-		samples = 20; // 5s/250ms=20
-		if (samples > bufferDps.size())
-			samples = bufferDps.size();
-		average[5] = 0;
-		for (size_t i = 0; i < samples; i++)
-			average[5] += bufferDps[i];
-		average[5] = average[5] / samples * (1000 / dpsPollingRate);
+			if (!bufferDps.empty())
+			{
+				double average[6] {}; // for 1s & 5s
+				size_t samples = 0;
 
-		// Draw
-		stringstream ss;
-		ss << format("DP1s: %0.0f\n") % average[1];
-		ss << format("DP5s: %0.0f\n") % average[5];
-		for (size_t i = 0; i < bufferDps.size(); i++)
-			ss << format("\nDP250ms: %i") % bufferDps[i];
+				// DP1s
+				samples = 4; // 1s/250ms=4
+				if (samples > bufferDps.size())
+					samples = bufferDps.size();
+				average[1] = 0;
+				for (size_t i = 0; i < samples; i++)
+					average[1] += bufferDps[i];
+				average[1] = average[1] / samples * (1000 / dpsPollingRate);
+
+				// DP5s
+				samples = 20; // 5s/250ms=20
+				if (samples > bufferDps.size())
+					samples = bufferDps.size();
+				average[5] = 0;
+				for (size_t i = 0; i < samples; i++)
+					average[5] += bufferDps[i];
+				average[5] = average[5] / samples * (1000 / dpsPollingRate);
+
+				// Prepare String
+				ss << format("DP1s: %0.0f\n") % average[1];
+				ss << format("DP5s: %0.0f\n") % average[5];
+				if (logDpsDetails)
+				{
+					for (size_t i = 0; i < bufferDps.size(); i++)
+						ss << format("\nDP250ms: %i") % bufferDps[i];
+				}
+			}
+			else
+			{
+				ss << format("DP1s: ...\n");
+				ss << format("DP5s: ...");
+			}
+
+			strInfo = StringInfo(ss.str());
+			if (logDpsDetails && !bufferDps.empty() && strInfo.x < aAdjustX)
+				strInfo.x = aAdjustX; // box min-width with history stream
+			float x = round(aTopRight.x - aAdjustX / 2); // perma anchor offset
+			float y = round(aTopRight.y);
+
+			// Draw
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+
+			// Prepare for Next Element
+			//ss.str("");
+			//aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+			aTopRight.x -= aAdjustX / 2 + padX + 2;
+		}
+
+		if (logKillTimer)
+		{
+			// separate ss vars
+			stringstream ss;
+			StrInfo strInfo;
+
+			// Prepare String
+			if (bufferKillTimer.time > 0)
+			{
+				ss << format("Timer: %s\n") % SecondsToString(bufferKillTimer.time);
+				if (logKillTimerDetails)
+					ss << format("DPS: %0.2f") % bufferKillTimer.dps;
+			}
+			else
+			{
+				ss << format("Timer: 0.0s");
+			}
+
+			strInfo = StringInfo(ss.str());
+			float x = 0;
+			float y = round(aTopRight.y);
+			if (logDps)
+				x = round(aTopRight.x - strInfo.x - padX); // perma anchor offset with logDps
+			else
+				x = round(aTopRight.x - strInfo.x / 2); // center otherwise
+			
+
+			// Draw
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+
+			// Prepare for Next Element
+			//ss.str("");
+			aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+			//aTopRight.x -= 0;
+		}
 		
-		font.Draw(15, 100, fontColor, ss.str());
 	}
 
-	if (logHits && !bufferHits.empty())
+	// Right Elements //
 	{
-		//double min = *min_element(bufferHits.begin(), bufferHits.end());
-		//double max = *max_element(bufferHits.begin(), bufferHits.end());
-		double average = 0;
-		for (size_t i = 0; i < bufferHits.size(); i++)
-			average += bufferHits[i];
-		average = average / bufferHits.size();
+		if (logAttackRate)
+		{
+			stringstream ss;
+			StrInfo strInfo;
 
-		// Draw
-		stringstream ss;
-		ss << format("Counter: %i\n") % threadHitsCounter;
-		ss << format("Average: %0.3f\n") % average;
-		for (size_t i = 0; i < bufferHits.size(); i++)
-			ss << format("\n%i") % bufferHits[i];
-		
-		font.Draw(15, 100, fontColor, ss.str());
-	}
+			if (logAttackRateToFile)
+				ss << format("« Recording »\n");
+			else
+				ss << format("« Monitoring »\n");
+			ss << format("« Attack Rate »\n");
+			ss << format("\n");
+			ss << format("Threshold: %i hits\n") % AttackRateChainHits;
 
-	if (logAttackRate && !bufferAttackRate.empty())
-	{
-		double min = *min_element(bufferAttackRate.begin(), bufferAttackRate.end());
-		double max = *max_element(bufferAttackRate.begin(), bufferAttackRate.end());
-		double average = 0;
-		for (size_t i = 0; i < bufferAttackRate.size(); i++)
-			average += bufferAttackRate[i];
-		average = average / bufferAttackRate.size();
+			if (!bufferAttackRate.empty())
+			{
+				double min = *min_element(bufferAttackRate.begin(), bufferAttackRate.end());
+				double max = *max_element(bufferAttackRate.begin(), bufferAttackRate.end());
+				double average = 0;
+				for (size_t i = 0; i < bufferAttackRate.size(); i++)
+					average += bufferAttackRate[i];
+				average = average / bufferAttackRate.size();
 
-		// Draw
-		stringstream ss;
-		ss << format("Minimum: %0.3fs\n") % min;
-		ss << format("Average: %0.3fs\n") % average;
-		ss << format("Maximum: %0.3fs\n") % max;
-		
-		for (size_t i = 0; i < bufferAttackRate.size(); i++)
-			ss << format("\n%02i: %0.3fs") % (bufferAttackRate.size() - i) % bufferAttackRate[i];
+				ss << format("Min: %0.3fs\n") % min;
+				ss << format("Avg: %0.3fs\n") % average;
+				ss << format("Max: %0.3fs\n") % max;
 
-		font.Draw(15, 100, fontColor, ss.str());
-	}
+				ss << format("\n");
+				ss << format("History");
+				for (size_t i = 0; i < bufferAttackRate.size(); i++)
+					ss << format("\n• %0.3fs") % bufferAttackRate[i];
+			}
+			else
+			{
+				ss << format("Minimum: ...\n");
+				ss << format("Average: ...\n");
+				ss << format("Maximum: ...\n");
+			}
 
-	if (logKillTimer)
-	{
-		// Draw
-		stringstream ss;
-		ss << format("Timer: %s\n") % secondsToString(bufferKillTimer.time);
-		ss << format("DPS: %0.2f") % bufferKillTimer.dps;
+			strInfo = StringInfo(ss.str());
 
-		font.Draw(15, 100, fontColor, ss.str());
+			float aAdjustX = 120; // adjust anchor -120
+			if (strInfo.x < aAdjustX)
+				strInfo.x = aAdjustX; // perma box min-width
+			float x = round(aRight.x - strInfo.x);
+			float y = round(aRight.y);
+
+			// Draw
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+
+			// Prepare for Next Element
+			//ss.str("");
+			//aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+			aRight.x = x - padX * 2 - 5;
+		}
+
+		if (logHits)
+		{
+			stringstream ss;
+			StrInfo strInfo;
+
+			if (logHitsToFile)
+				ss << format("« Recording »\n");
+			else
+				ss << format("« Monitoring »\n");
+
+			ss << format("« Damage Hits »\n");
+			ss << format("\n");
+			ss << format("Counter: %i\n") % threadHitsCounter;
+			
+			if (!bufferHits.empty())
+			{
+				//double min = *min_element(bufferHits.begin(), bufferHits.end());
+				//double max = *max_element(bufferHits.begin(), bufferHits.end());
+				double average = 0;
+				for (size_t i = 0; i < bufferHits.size(); i++)
+					average += bufferHits[i];
+				average = average / bufferHits.size();
+
+				ss << format("Avg: %0.1f\n") % average;
+				
+				ss << format("\n");
+				ss << format("History");
+				for (size_t i = 0; i < bufferHits.size(); i++)
+					ss << format("\n• %i") % bufferHits[i];
+			}
+			else
+			{
+				ss << format("Counter: ...\n");
+				ss << format("Average: ...");
+			}
+
+			strInfo = StringInfo(ss.str());
+			
+			float aAdjustX = 120; // adjust anchor -120
+			if (strInfo.x < aAdjustX)
+				strInfo.x = aAdjustX; // perma box min-width
+			float x = round(aRight.x - strInfo.x);
+			float y = round(aRight.y);
+
+			// Draw
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+
+			// Prepare for Next Element
+			//ss.str("");
+			//aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+			aRight.x = x - padX * 2 - 5;
+		}	
 	}
 }
 
@@ -326,7 +543,7 @@ public:
 		NewThread(threadHits);
 		NewThread(threadAttackRate);
 		
-		if (!font.Init(14, "Verdana"))
+		if (!font.Init(lineHeight, "Verdana"))
 		{
 			DbgOut("Could not create Font");
 			return false;

@@ -59,6 +59,7 @@ void threadKillTimer()
 					else if (dpsAllowNegative)
 					{
 						bufferKillTimer.dmg += dmg;
+						DbgOut("One\n");
 					}
 					else
 					{
@@ -75,7 +76,8 @@ void threadKillTimer()
 				double dps; // total damage per second
 				dps = (double(bufferKillTimer.dmg) + dfUs) / double(bufferKillTimer.samplesKnown + bufferKillTimer.samplesUnknown);
 				dps = dps * (1000 / pollingRate);
-				bufferKillTimer.dps = dps;
+
+				bufferKillTimer.dps = dpKs*4;
 
 				pHealth = cHealth;
 			}
