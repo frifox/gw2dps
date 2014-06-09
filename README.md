@@ -5,7 +5,8 @@ Rewrite from scratch with accuracy, performance, and stability in mind. Still a 
 
 Hotkeys
 =======
-[Alt /] Reference
+```
+[Alt /] Reference Screen
 
 [Alt D] DPS Meter
 [Alt Shift D] DPS Meter History
@@ -18,3 +19,4 @@ Hotkeys
 [Alt NumPad6] Record Attack Rates to file (gw2exe's folder)
 
 [Alt NumPad1] Kill Timer shows accumulated Average DPS
+```
