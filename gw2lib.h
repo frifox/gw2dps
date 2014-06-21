@@ -1,3 +1,11 @@
+/*
+GW2LIB
+static library
+by rafi
+Feel free to release compiled DLLs but please provide source and link to this thread
+http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709
+*/
+
 #ifndef GW2LIB_H
 #define GW2LIB_H
 

@@ -34,7 +34,7 @@ string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
 void ESP()
 {
 	// Element Anchors
-	Anchor aTopRight, aRight, aTopLeft, aCenter;
+	Anchor aTopRight, aRight, aTopLeft, aCenter, aBottom;
 
 	aTopLeft.x = round((GetWindowWidth() / 2 - 316 - 179) / 2 + 316);
 	aTopLeft.y = 8;
@@ -47,6 +47,9 @@ void ESP()
 
 	aCenter.x = round(GetWindowWidth() * float(0.5));
 	aCenter.y = round(GetWindowHeight() * float(0.25));
+
+	aBottom.x = round(GetWindowWidth() * float(0.5));
+	aBottom.y = round(GetWindowHeight() - 85);
 
 	
 	if (help){
@@ -99,9 +102,25 @@ void ESP()
 	}
 
 	// Targets & Agents //
+	Character me = GetOwnCharacter();
+	if (me.IsValid()){
+		self.cHealth = int(me.GetCurrentHealth());
+		self.mHealth = int(me.GetMaxHealth());
+		if (self.mHealth > 0)
+			self.pHealth = int(100.f * float(self.cHealth) / float(self.mHealth));
+		else
+			self.pHealth = 0;
+
+		self.lvl = me.GetScaledLevel();
+		self.lvlActual = me.GetLevel();
+		self.alive = me.IsAlive();
+	}
 	Agent agLocked = GetLockedSelection();
 	if (agLocked.IsValid())
 	{
+		if (agLocked.GetAgentId() != selected.id)
+			selected = {};
+
 		int agType = agLocked.GetType();
 		if (agType == GW2::AGENT_CATEGORY_CHAR) // char
 		{
@@ -113,7 +132,7 @@ void ESP()
 			selected.cHealth = int(chLocked.GetCurrentHealth());
 			selected.mHealth = int(chLocked.GetMaxHealth());
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100 * selected.cHealth / selected.mHealth);
+				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
 			else
 				selected.pHealth = 0;
 			selected.lvl = chLocked.GetScaledLevel();
@@ -134,7 +153,7 @@ void ESP()
 				selected.mHealth = int(*(float*)(shift + 0xC));
 			}
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100 * selected.cHealth / selected.mHealth);
+				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
 			else
 				selected.pHealth = 0;
 			//selected.lvl = chLocked.GetScaledLevel();
@@ -156,13 +175,17 @@ void ESP()
 				selected.mHealth = int(*(float*)(shift + 0xC));
 			}
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100 * selected.cHealth / selected.mHealth);
+				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
 			else
 				selected.pHealth = 0;
+
 			//selected.lvl = chLocked.GetScaledLevel();
 			//selected.lvlActual = chLocked.GetLevel();
 		}
 		else
+			selected = {};
+
+		if (selected.mHealth == 0)
 			selected = {};
 	}
 	else
@@ -202,7 +225,7 @@ void ESP()
 				locked.cHealth = int(ch.GetCurrentHealth());
 				locked.mHealth = int(ch.GetMaxHealth());
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100 * locked.cHealth / locked.mHealth);
+					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
 				else
 					locked.pHealth = 0;
 				locked.lvl = ch.GetScaledLevel();
@@ -223,7 +246,7 @@ void ESP()
 					locked.mHealth = int(*(float*)(shift + 0xC));
 				}
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100 * locked.cHealth / locked.mHealth);
+					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
 				else
 					locked.pHealth = 0;
 				//locked.lvl = ch.GetScaledLevel();
@@ -245,7 +268,7 @@ void ESP()
 					locked.mHealth = int(*(float*)(shift + 0xC));
 				}
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100 * locked.cHealth / locked.mHealth);
+					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
 				else
 					locked.pHealth = 0;
 				//locked.lvl = ch.GetScaledLevel();
@@ -264,7 +287,25 @@ void ESP()
 		// Allies list
 	}
 
-	
+	// Bottom Element //
+	{
+		stringstream ss;
+		StrInfo strInfo;
+
+		if (self.alive)
+		{
+			ss << format("%i") % self.pHealth;
+
+			strInfo = StringInfo(ss.str());
+			float x = round(aBottom.x - strInfo.x / 2);
+			float y = round(aBottom.y - lineHeight);
+
+			//DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			//DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+		}
+	}
+
 	// TopLeft Element //
 	{
 		stringstream ss;
@@ -274,6 +315,8 @@ void ESP()
 		{
 			if (selected.valid)
 			{
+				Character chLocked = agLocked.GetCharacter();
+
 				ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
 
 				strInfo = StringInfo(ss.str());

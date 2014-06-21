@@ -34,7 +34,7 @@ string strProf[] = { "Error", "Guardian", "Warrior", "Engineer", "Ranger", "Thie
 // THREADS //
 int targetLockID;
 struct Target {
-	Target() : valid(false), alive(true), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0) {}
+	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0) {}
 
 	bool valid;
 	bool alive;
@@ -48,6 +48,7 @@ struct Target {
 };
 Target selected;
 Target locked;
+Target self;
 struct Killtimer {
 	Killtimer() : dmg(0), dps(0), time(0), samplesKnown(0), samplesUnknown(0) {}
 
@@ -153,6 +154,7 @@ StrInfo StringInfo(string str)
 			// refine the width
 			size_t i;
 			i = count(line.begin(), line.end(), ':'); w -= i * 2;
+			i = count(line.begin(), line.end(), ','); w -= i * 1;
 			i = count(line.begin(), line.end(), ' '); w -= i * 2;
 			i = count(line.begin(), line.end(), '['); w -= i * 1;
 			i = count(line.begin(), line.end(), ']'); w -= i * 1;
