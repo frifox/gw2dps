@@ -1,3 +1,9 @@
+GW2DPS
+=======
+
+DPS meter for GW2. Binaries are in the bin folder.
+
+
 Hotkeys
 =======
 ```
