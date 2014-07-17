@@ -16,6 +16,8 @@ bool logHitsToFile = false;
 bool logAttackRate = false;
 bool logAttackRateToFile = false;
 
+bool alliesList = false;
+
 // Settings //
 int AttackRateChainHits = 1;
 int AttackRateChainTime = 0; // not used atm
@@ -23,6 +25,7 @@ double dpsPollingRate = 250; // ms
 string logDpsFile = "gw2dpsLog-Dps.txt";
 string logHitsFile = "gw2dpsLog-Hits.txt";
 string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
+int wvwBonus = 0;
 
 // Threads //
 #include "gw2dps.threadHotkeys.cpp"
@@ -34,12 +37,15 @@ string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
 void ESP()
 {
 	// Element Anchors
-	Anchor aTopRight, aRight, aTopLeft, aCenter, aBottom;
+	Anchor aLeft, aTopRight, aRight, aTopLeft, aCenter, aBottom;
+
+	aLeft.x = 100;
+	aLeft.y = 75;
 
 	aTopLeft.x = round((GetWindowWidth() / 2 - 316 - 179) / 2 + 316);
 	aTopLeft.y = 8;
 
-	 aTopRight.x = round((GetWindowWidth() / 2 - 294 - 179)/2 + GetWindowWidth() / 2 + 179);
+	aTopRight.x = round((GetWindowWidth() / 2 - 294 - 179)/2 + GetWindowWidth() / 2 + 179);
 	aTopRight.y = 8;
 
 	aRight.x = GetWindowWidth() - 10;
@@ -49,28 +55,31 @@ void ESP()
 	aCenter.y = round(GetWindowHeight() * float(0.25));
 
 	aBottom.x = round(GetWindowWidth() * float(0.5));
-	aBottom.y = round(GetWindowHeight() - 85);
+	aBottom.y = round(GetWindowHeight() - float(85));
 
 	
 	if (help){
 		stringstream ss;
-		ss << format("[%i] targetSelected/Locked (Alt S)\n") % targetSelected;
-		ss << format("[%i] targetLock (Alt L)\n") % targetLock;
-		ss << format("[%i] dpsAllowNegative (Alt N)\n") % dpsAllowNegative;
+		ss << format("[%i] Selected/Locked Target Info (Alt S)\n") % targetSelected;
+		ss << format("[%i] Lock On Target (Alt L)\n") % targetLock;
+		ss << format("[%i] Allow Negative DPS (Alt N)\n") % dpsAllowNegative;
 		ss << format("\n");
-		ss << format("[%i] logDps (Alt D)\n") % logDps;
-		ss << format("[%i] logDpsDetails (Alt Shift D)\n") % logDpsDetails;
+		ss << format("[%i] DPS Meter (Alt D)\n") % logDps;
+		ss << format("[%i] DPS Meter History (Alt Shift D)\n") % logDpsDetails;
 		ss << format("\n");
-		ss << format("[%i] logKillTimer (Alt Num7)\n") % logKillTimer;
-		ss << format("[%i] logKillTimerDetails (Alt Num1)\n") % logKillTimerDetails;
-		ss << format("[%i] logKillTimerToFile (Alt Num4)\n") % logKillTimerToFile;
+		ss << format("[%i] Kill Timer (Alt Num7)\n") % logKillTimer;
+		ss << format("[%i] Kill Timer Details (Alt Num1)\n") % logKillTimerDetails;
+		//ss << format("[%i] Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;
 		ss << format("\n");
-		ss << format("[%i] logHits (Alt Num8)\n") % logHits;
-		ss << format("[%i] logHitsToFile (Alt Num5)\n") % logHitsToFile;
+		ss << format("[%i] Monitor Hits (Alt Num8)\n") % logHits;
+		ss << format("[%i] Record Damage Hits to File (Alt Num5)\n") % logHitsToFile;
 		ss << format("\n");
-		ss << format("[%i] logAttackRate (Alt Num9)\n") % logAttackRate;
-		ss << format("[%i] logAttackRateToFile (Alt Num6)\n") % logAttackRateToFile;
-		ss << format("[%i] AttackRateChainHits (Alt PgUp/PgDown)\n") % AttackRateChainHits;
+		ss << format("[%i] Monitor Attack Rate (Alt Num9)\n") % logAttackRate;
+		ss << format("[%i] Record Attack Rate to File (Alt Num6)\n") % logAttackRateToFile;
+		ss << format("[%i] Adjust Attack Rate Threshold (Alt PgUp/PgDown)\n") % AttackRateChainHits;
+		ss << format("\n");
+		ss << format("[%i] Nearby Ally Players List (Alt C)\n") % alliesList;
+		ss << format("[%i] Adjust WvW HP Bonus (Alt Home/End)\n") % wvwBonus;
 
 		StrInfo strInfo;
 		strInfo = StringInfo(ss.str());
@@ -208,6 +217,8 @@ void ESP()
 			targetLockID = selected.id;
 	}
 
+	// compile agents data
+	Allies allies;
 	Agent ag;
 	while (ag.BeNext())
 	{
@@ -285,6 +296,73 @@ void ESP()
 		}
 
 		// Allies list
+		if (alliesList) {
+			Character ch = ag.GetCharacter();
+			
+			// collect only valid allies (and yourself)
+			bool chValid = true;
+
+			if (!ch.IsValid())
+				chValid = false;
+
+			//if (ch.IsControlled())
+				//chValid = false;
+
+			if (!ch.IsPlayer() || ch.GetAttitude() != GW2::ATTITUDE_FRIENDLY)
+				chValid = false;
+
+			// gather char data
+			if (chValid){
+				Ally ally;
+				ally.id = ag.GetAgentId();
+				
+				ally.profession = ch.GetProfession();
+				ally.mHealth = int(round(ch.GetMaxHealth() / (100 + wvwBonus) * 100));
+				//ally.cHealth = int(ch.GetCurrentHealth());
+				//if (ally.mHealth > 0)
+				//ally.pHealth = int(100.f * float(ally.cHealth) / float(ally.mHealth));
+				//else
+				//ally.pHealth = 0;
+				ally.lvl = ch.GetScaledLevel();
+				ally.lvlActual = ch.GetLevel();
+				ally.name = ch.GetName();
+
+				baseHpReturn base = baseHp(ally.lvl, ally.profession);
+				ally.vitality = int(round((ally.mHealth - base.health) / 10));
+				ally.traits = (916.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
+				ally.traits = round(ally.traits * 100) / 100; // round to 0.00
+
+				switch (ally.profession)
+				{
+				case GW2::PROFESSION_WARRIOR:
+					allies.war.push_back(ally);
+					break;
+				case GW2::PROFESSION_NECROMANCER:
+					allies.necro.push_back(ally);
+					break;
+
+				case GW2::PROFESSION_ENGINEER:
+					allies.engi.push_back(ally);
+					break;
+				case GW2::PROFESSION_RANGER:
+					allies.ranger.push_back(ally);
+					break;
+				case GW2::PROFESSION_MESMER:
+					allies.mes.push_back(ally);
+					break;
+
+				case GW2::PROFESSION_GUARDIAN:
+					allies.guard.push_back(ally);
+					break;
+				case GW2::PROFESSION_THIEF:
+					allies.thief.push_back(ally);
+					break;
+				case GW2::PROFESSION_ELEMENTALIST:
+					allies.ele.push_back(ally);
+					break;
+				}
+			}
+		}
 	}
 
 	// Bottom Element //
@@ -303,6 +381,162 @@ void ESP()
 			//DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 			//DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
 			font.Draw(x, y, fontColor, ss.str());
+		}
+	}
+
+	// Left Element //
+	{
+		if (alliesList)
+		{
+			stringstream ss;
+			stringstream sp;
+			stringstream sn;
+			stringstream sh;
+			stringstream sv;
+			stringstream st;
+
+			
+			ss << format("Nearby Ally Players (WvW HP Bonus: %i%s)") % wvwBonus % "%%";
+			sp << format("Class");
+			sn << format("Name");
+			sh << format("Health");
+			sv << format("Vitality");
+			st << format("Traits");
+
+			bool listEmpty = true;
+			if (!allies.war.empty())
+			{
+				for (auto & ally : allies.war) {
+					sp << format("\nWar:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.guard.empty())
+			{
+				for (auto & ally : allies.guard) {
+					sp << format("\nGuard:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+
+			if (!allies.ele.empty())
+			{
+				for (auto & ally : allies.ele) {
+					sp << format("\nEle:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.mes.empty())
+			{
+				for (auto & ally : allies.mes) {
+					sp << format("\nMes:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+
+			if (!allies.thief.empty())
+			{
+				for (auto & ally : allies.thief) {
+					sp << format("\nThief:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.ranger.empty())
+			{
+				for (auto & ally : allies.ranger) {
+					sp << format("\nRanger:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.engi.empty())
+			{
+				for (auto & ally : allies.engi) {
+					sp << format("\nEngi:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.necro.empty())
+			{
+				for (auto & ally : allies.necro) {
+					sp << format("\nNecro:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
+					st << format("\n%+g") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (listEmpty)
+			{
+				sp << format("\n...");
+				sn << format("\n...");
+				sh << format("\n...");
+				sv << format("\n...");
+				st << format("\n...");
+			}
+
+			
+			// CharName max width
+			stringstream sx;
+			sx << "WWWWWWWWWWWWWWWWWWW";
+			StrInfo strInfo;
+			strInfo = StringInfo(sx.str());
+
+			float spOffset = 0;
+			float snOffset = spOffset + 65;
+			float shOffset = snOffset + strInfo.x;
+			float svOffset = shOffset + 85;
+			float stOffset = svOffset + 70;
+			float sxOffset = stOffset + 60;
+
+			float x = round(aLeft.x);
+			float y = round(aLeft.y);
+
+			strInfo = StringInfo(sp.str());
+			int lineCount = int(strInfo.lineCount) + 2;
+
+			// render the list
+			DrawRectFilled(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, borderColor);
+
+			int lineShiftY = 2;
+			for (int i = 3; i < lineCount; i++) {
+				DrawLine(x - padX, y - padY + i * lineHeight + lineShiftY, x + sxOffset + padX, y - padY + i * lineHeight + lineShiftY, borderColor);
+			}
+			font.Draw(x + spOffset, y, fontColor, ss.str()); y += 2 * lineHeight;
+			font.Draw(x + spOffset, y, fontColor, sp.str());
+			font.Draw(x + snOffset, y, fontColor, sn.str());
+			font.Draw(x + shOffset, y, fontColor, sh.str());
+			font.Draw(x + svOffset, y, fontColor, sv.str());
+			font.Draw(x + stOffset, y, fontColor, st.str());
 		}
 	}
 
@@ -425,13 +659,15 @@ void ESP()
 			// Prepare String
 			if (bufferKillTimer.time > 0)
 			{
-				ss << format("Timer: %s\n") % SecondsToString(bufferKillTimer.time);
+				ss << format("Timer: %s") % SecondsToString(bufferKillTimer.time);
 				if (logKillTimerDetails)
-					ss << format("DPS: %0.2f") % bufferKillTimer.dps;
+					ss << format("\nDPS: %0.2f") % bufferKillTimer.dps;
 			}
 			else
 			{
 				ss << format("Timer: 0.0s");
+				if (logKillTimerDetails)
+					ss << format("\nDPS: 0.0");
 			}
 
 			strInfo = StringInfo(ss.str());

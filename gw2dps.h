@@ -8,6 +8,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
+#include <boost/lambda/lambda.hpp>
 
 #include <sstream> // stringstream
 #include <algorithm> // min/max_element()
@@ -49,6 +50,33 @@ struct Target {
 Target selected;
 Target locked;
 Target self;
+struct Ally {
+	Ally() : id(0), profession(0), lvl(0), lvlActual(0), cHealth(0), mHealth(0), pHealth(0), vitality(0), traits(0), name("") {}
+
+	int id;
+	int profession;
+	int lvl;
+	int lvlActual;
+	int cHealth; // current health
+	int mHealth; // max health
+	int pHealth; // current health in percent
+
+	int vitality;
+	float traits;
+	string name;
+};
+struct Allies {
+	vector<Ally> war;
+	vector<Ally> necro;
+
+	vector<Ally> mes;
+	vector<Ally> ranger;
+	vector<Ally> engi;
+
+	vector<Ally> guard;
+	vector<Ally> ele;
+	vector<Ally> thief;
+};
 struct Killtimer {
 	Killtimer() : dmg(0), dps(0), time(0), samplesKnown(0), samplesUnknown(0) {}
 
@@ -183,6 +211,67 @@ StrInfo StringInfo(string str)
 	}
 
 	return strInfo;
+}
+
+struct baseHpReturn {
+	float health;
+	float vitality;
+};
+baseHpReturn baseHp(int lvl, int profession)
+{
+	// base stats
+	float hp = 0;
+	float vit = 16;
+
+	// calc base vit
+	if (lvl >= 0 && lvl <= 9) vit += (lvl - 0) * 4; if (lvl >  9) vit += 10 * 4;
+	if (lvl >= 10 && lvl <= 19) vit += (lvl - 9) * 6; if (lvl > 19) vit += 10 * 6;
+	if (lvl >= 20 && lvl <= 29) vit += (lvl - 19) * 8; if (lvl > 29) vit += 10 * 8;
+	if (lvl >= 30 && lvl <= 39) vit += (lvl - 29) * 10; if (lvl > 39) vit += 10 * 10;
+	if (lvl >= 40 && lvl <= 49) vit += (lvl - 39) * 12; if (lvl > 49) vit += 10 * 12;
+	if (lvl >= 50 && lvl <= 59) vit += (lvl - 49) * 14; if (lvl > 59) vit += 10 * 14;
+	if (lvl >= 60 && lvl <= 69) vit += (lvl - 59) * 16; if (lvl > 69) vit += 10 * 16;
+	if (lvl >= 70 && lvl <= 79) vit += (lvl - 69) * 18; if (lvl > 79) vit += 10 * 18;
+	if (lvl >= 80 && lvl <= 89) vit += (lvl - 79) * 20; if (lvl > 89) vit += 10 * 20;
+
+	// calc base hp
+	switch (profession)
+	{
+	case GW2::PROFESSION_WARRIOR:
+	case GW2::PROFESSION_NECROMANCER:
+		hp = lvl * 28.f;
+		if (lvl > 19) hp += (lvl - 19) * float(42);
+		if (lvl > 39) hp += (lvl - 39) * float(70);
+		if (lvl > 59) hp += (lvl - 59) * float(70);
+		if (lvl > 79) hp += (lvl - 79) * float(70);
+		hp += vit * 10;
+		break;
+	case GW2::PROFESSION_ENGINEER:
+	case GW2::PROFESSION_RANGER:
+	case GW2::PROFESSION_MESMER:
+		hp = lvl * 18.f;
+		if (lvl > 19) hp += (lvl - 19) * float(27);
+		if (lvl > 39) hp += (lvl - 39) * float(45);
+		if (lvl > 59) hp += (lvl - 59) * float(45);
+		if (lvl > 79) hp += (lvl - 79) * float(45);
+		hp += vit * 10;
+		break;
+	case GW2::PROFESSION_GUARDIAN:
+	case GW2::PROFESSION_ELEMENTALIST:
+	case GW2::PROFESSION_THIEF:
+		hp = lvl * 5.f;
+		if (lvl > 19) hp += (lvl - 19) * float(7.5);
+		if (lvl > 39) hp += (lvl - 39) * float(12.5);
+		if (lvl > 59) hp += (lvl - 59) * float(12.5);
+		if (lvl > 79) hp += (lvl - 79) * float(12.5);
+		hp += vit * 10;
+		break;
+	}
+
+	baseHpReturn out;
+	out.health = hp;
+	out.vitality = vit;
+	return out;
 }
 
 #endif

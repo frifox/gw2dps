@@ -7,20 +7,23 @@ DPS meter for GW2. Binaries are in the bin folder. Based on rafi's [gw2lib](http
 Hotkeys
 =======
 ```
-[Alt /] Reference Screen
+Reference Screen (Alt /)
 
-[Alt D] DPS Meter
-[Alt Shift D] DPS Meter History
+DPS Meter (Alt D)
+DPS Meter History (Alt Shift D)
 
-[Alt NumPad7] Kill Timer
-[Alt NumPad1] Kill Timer shows accumulated Average DPS
+Kill Timer (Alt NumPad7)
+Kill Timer Shows Accumulated Average DPS (Alt NumPad1)
 
-[Alt NumPad8] Monitor Hits
-[Alt NumPad5] Record Hits to File (gw2exe's folder)
+Monitor Hits (Alt NumPad8)
+Record Hits to File (gw2exe's folder) (Alt NumPad5)
 
-[Alt NumPad9] Monitor Attack Rates
-[Alt NumPad6] Record Attack Rates to file (gw2exe's folder)
-[Alt PgUp/PgDown] Adjust Attack Rate Threshold
+Monitor Attack Rates (Alt NumPad9)
+Record Attack Rates to File (gw2exe's folder) (Alt NumPad6)
+Adjust Attack Rate Threshold (Alt PgUp/PgDown)
+
+Nearby Ally Players List (Alt C)
+Adjust WvW Health Bonus (Alt Home/End)
 ```
 
 ----------------------------------
