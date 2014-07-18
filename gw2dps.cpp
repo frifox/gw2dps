@@ -330,7 +330,7 @@ void ESP()
 				baseHpReturn base = baseHp(ally.lvl, ally.profession);
 				ally.vitality = int(round((ally.mHealth - base.health) / 10));
 				ally.traits = (916.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
-				ally.traits = round(ally.traits * 100) / 100; // round to 0.00
+				ally.traits = round(ally.traits * 10) / 10; // round to 0.0
 
 				switch (ally.profession)
 				{
@@ -411,7 +411,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -422,7 +422,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -434,7 +434,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -445,7 +445,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -457,7 +457,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -468,7 +468,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -479,7 +479,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -490,7 +490,7 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+g") % ally.traits;
+					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
