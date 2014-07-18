@@ -692,7 +692,10 @@ void ESP()
 
 			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-			font.Draw(x, y, fontColor, ss.str());
+			if (floatCircles)
+				font.Draw(x, y, fontColor - 0x00aa0000, ss.str());
+			else
+				font.Draw(x, y, fontColor, ss.str());
 
 			if (floatCircles)
 			{
