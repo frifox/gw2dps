@@ -10,10 +10,10 @@ Hotkeys
 Reference Screen (Alt /)
 
 DPS Meter (Alt D)
-DPS Meter History (Alt Shift D)
+DPS History (Alt Shift D)
 
 Kill Timer (Alt NumPad7)
-Kill Timer Shows Accumulated Average DPS (Alt NumPad1)
+Kill Timer Total DPS (Alt NumPad1)
 
 Monitor Hits (Alt NumPad8)
 Record Hits to File (gw2exe's folder) (Alt NumPad5)
@@ -24,6 +24,14 @@ Adjust Attack Rate Threshold (Alt PgUp/PgDown)
 
 Nearby Ally Players List (Alt C)
 Adjust WvW Health Bonus (Alt Home/End)
+
+Count Ally NPCs (Alt 1)
+Count Enemy NPCs (Alt 2)
+Count Ally Players (Alt 3)
+Count Enemy Players (Alt 4)
+Adjust Count Radius (Alt NumPad-/NumPad+)
+Show Floaters for the Counted (Alt F)
+Show Distance / Max HP for Floaters (Alt Shift F)
 ```
 
 ----------------------------------

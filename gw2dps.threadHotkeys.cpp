@@ -26,6 +26,17 @@
 #define WVW_BONUS_MORE 16
 #define WVW_BONUS_LESS 17
 
+#define FLOAT_CIRCLES 18
+#define FLOAT_TYPE 19
+#define FLOAT_RADIUS_MORE 20
+#define FLOAT_RADIUS_LESS 21
+
+#define FLOAT_ALLY_NPC 22
+#define FLOAT_ENEMY_NPC 23
+#define FLOAT_ALLY_PLAYER 24
+#define FLOAT_ENEMY_PLAYER 25
+#define FLOAT_SIEGE 26
+
 void threadHotKeys()
 {
 	RegisterHotKey(NULL, HELP, MOD_ALT | MOD_NOREPEAT, VK_OEM_2); // help
@@ -51,6 +62,16 @@ void threadHotKeys()
 	RegisterHotKey(NULL, ALLIES_LIST, MOD_ALT | MOD_NOREPEAT, 0x43); // alliesList
 	RegisterHotKey(NULL, WVW_BONUS_MORE, MOD_ALT, VK_HOME); // wvwBonus +
 	RegisterHotKey(NULL, WVW_BONUS_LESS, MOD_ALT, VK_END); // wvwBonus -
+
+	RegisterHotKey(NULL, FLOAT_CIRCLES, MOD_ALT | MOD_NOREPEAT, 0x46); // floatCircles
+	RegisterHotKey(NULL, FLOAT_TYPE, MOD_ALT | MOD_SHIFT |  MOD_NOREPEAT, 0x46); // floatType
+	RegisterHotKey(NULL, FLOAT_RADIUS_MORE, MOD_ALT, VK_ADD); // floatRadius +
+	RegisterHotKey(NULL, FLOAT_RADIUS_LESS, MOD_ALT, VK_SUBTRACT); // floatRadius -
+	RegisterHotKey(NULL, FLOAT_ALLY_NPC, MOD_ALT, 0x31); // floatAllyNpc
+	RegisterHotKey(NULL, FLOAT_ENEMY_NPC, MOD_ALT, 0x32); // floatEnemyNpc
+	RegisterHotKey(NULL, FLOAT_ALLY_PLAYER, MOD_ALT, 0x33); // floatAllyPlayer
+	RegisterHotKey(NULL, FLOAT_ENEMY_PLAYER, MOD_ALT, 0x34); // floatEnemyPlayer
+	RegisterHotKey(NULL, FLOAT_SIEGE, MOD_ALT, 0x35); // floatSiege
 
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
@@ -80,10 +101,19 @@ void threadHotKeys()
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_MORE) if (AttackRateChainHits < 50) AttackRateChainHits += 1;
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_LESS) if (AttackRateChainHits > 1) AttackRateChainHits -= 1;
 
-
 			if (msg.wParam == ALLIES_LIST) alliesList = !alliesList;
 			if (msg.wParam == WVW_BONUS_MORE) if (wvwBonus < 10) wvwBonus += 1;
 			if (msg.wParam == WVW_BONUS_LESS) if (wvwBonus > 0) wvwBonus -= 1;
+
+			if (msg.wParam == FLOAT_CIRCLES) floatCircles = !floatCircles;
+			if (msg.wParam == FLOAT_TYPE) floatType = !floatType;
+			if (msg.wParam == FLOAT_RADIUS_MORE) if (floatRadius < 10000) floatRadius += 100;
+			if (msg.wParam == FLOAT_RADIUS_LESS) if (floatRadius > 100) floatRadius -= 100;
+			if (msg.wParam == FLOAT_ALLY_NPC) floatAllyNpc = !floatAllyNpc;
+			if (msg.wParam == FLOAT_ENEMY_NPC) floatEnemyNpc = !floatEnemyNpc;
+			if (msg.wParam == FLOAT_ALLY_PLAYER) floatAllyPlayer = !floatAllyPlayer;
+			if (msg.wParam == FLOAT_ENEMY_PLAYER) floatEnemyPlayer = !floatEnemyPlayer;
+			if (msg.wParam == FLOAT_SIEGE) floatSiege = !floatSiege;
 		}
 	}
 }

@@ -1,31 +1,42 @@
 #include "stdafx.h"
 #include "gw2dps.h"
 
-// Switches //
+// Settings //
 bool help = false;
 bool targetSelected = true;
 bool targetLock = false;
 bool dpsAllowNegative = false; // for threadDps/threadKillTimer only
+
+double dpsPollingRate = 250; // ms
 bool logDps = true;
 bool logDpsDetails = false;
+string logDpsFile = "gw2dpsLog-Dps.txt";
+
 bool logKillTimer = false;
 bool logKillTimerDetails = false;
 bool logKillTimerToFile = false;
+
 bool logHits = false;
 bool logHitsToFile = false;
+string logHitsFile = "gw2dpsLog-Hits.txt";
+
 bool logAttackRate = false;
 bool logAttackRateToFile = false;
-
-bool alliesList = false;
-
-// Settings //
 int AttackRateChainHits = 1;
 int AttackRateChainTime = 0; // not used atm
-double dpsPollingRate = 250; // ms
-string logDpsFile = "gw2dpsLog-Dps.txt";
-string logHitsFile = "gw2dpsLog-Hits.txt";
 string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
+
+bool alliesList = false;
 int wvwBonus = 0;
+
+bool floatAllyNpc = false;
+bool floatEnemyNpc = false;
+bool floatAllyPlayer = false;
+bool floatEnemyPlayer = false;
+bool floatSiege = false;
+int floatRadius = 7000;
+bool floatCircles = false;
+bool floatType = true; // false = HP; true = Dist;
 
 // Threads //
 #include "gw2dps.threadHotkeys.cpp"
@@ -37,13 +48,16 @@ int wvwBonus = 0;
 void ESP()
 {
 	// Element Anchors
-	Anchor aLeft, aTopRight, aRight, aTopLeft, aCenter, aBottom;
+	Anchor aLeft, aTopLeft, aTop, aTopRight, aRight, aCenter, aBottom;
 
 	aLeft.x = 100;
 	aLeft.y = 75;
 
 	aTopLeft.x = round((GetWindowWidth() / 2 - 316 - 179) / 2 + 316);
 	aTopLeft.y = 8;
+
+	aTop.x = round(GetWindowWidth() / 2);
+	aTop.y = 1;
 
 	aTopRight.x = round((GetWindowWidth() / 2 - 294 - 179)/2 + GetWindowWidth() / 2 + 179);
 	aTopRight.y = 8;
@@ -80,6 +94,14 @@ void ESP()
 		ss << format("\n");
 		ss << format("[%i] Nearby Ally Players List (Alt C)\n") % alliesList;
 		ss << format("[%i] Adjust WvW HP Bonus (Alt Home/End)\n") % wvwBonus;
+		ss << format("\n");
+		ss << format("[%i] Count Ally NPCs (Alt 1)\n") % floatAllyNpc;
+		ss << format("[%i] Count Enemy NPCs (Alt 2)\n") % floatEnemyNpc;
+		ss << format("[%i] Count Ally Players (Alt 3)\n") % floatAllyPlayer;
+		ss << format("[%i] Count Enemy Players (Alt 4)\n") % floatEnemyPlayer;
+		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
+		ss << format("[%i] Show/Hide Floaters (Alt F)\n") % floatCircles;
+		ss << format("[%i] Floaters show Max HP / Distance (Alt Shift F)\n") % floatType;
 
 		StrInfo strInfo;
 		strInfo = StringInfo(ss.str());
@@ -112,6 +134,8 @@ void ESP()
 
 	// Targets & Agents //
 	Character me = GetOwnCharacter();
+	Vector3 mypos = GetOwnAgent().GetPos();
+
 	if (me.IsValid()){
 		self.cHealth = int(me.GetCurrentHealth());
 		self.mHealth = int(me.GetMaxHealth());
@@ -217,7 +241,8 @@ void ESP()
 			targetLockID = selected.id;
 	}
 
-	// compile agents data
+	// compile all agent data
+	Floaters floaters;
 	Allies allies;
 	Agent ag;
 	while (ag.BeNext())
@@ -292,6 +317,58 @@ void ESP()
 					locked.alive = false;
 				else
 					locked = {};
+			}
+		}
+
+		// Floaters
+		if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
+		{
+			int agType = ag.GetType();
+			
+			// NPC & Player
+			if (agType == GW2::AGENT_TYPE_CHAR)
+			{
+				Character ch = ag.GetCharacter();
+
+				// gather data
+				Vector3 pos = ag.GetPos();
+				int cHealth = int(ch.GetCurrentHealth());
+				int mHealth = int(ch.GetMaxHealth());
+				int attitude = ch.GetAttitude();
+
+				// Filter the dead
+				if (cHealth > 0 && mHealth > 1)
+				{ 
+					// Filter those out of range
+					if (Dist(mypos, pos) <= floatRadius)
+					{
+						Float floater;
+						floater.pos = pos;
+						floater.mHealth = mHealth;
+
+						// player vs npc
+						if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
+						{
+							// allyPlayer
+							if (floatAllyPlayer && attitude == GW2::ATTITUDE_FRIENDLY)
+								floaters.allyPlayer.push_back(floater);
+
+							// enemyPlayer
+							if (floatEnemyPlayer && attitude == GW2::ATTITUDE_HOSTILE)
+								floaters.enemyPlayer.push_back(floater);
+						}
+						
+						if(!ch.IsPlayer()){
+							// allyNpc
+							if (floatAllyNpc && (attitude == GW2::ATTITUDE_FRIENDLY || attitude == GW2::ATTITUDE_NEUTRAL))
+								floaters.allyNpc.push_back(floater);
+
+							// enemyNpc
+							if (floatEnemyNpc && (attitude == GW2::ATTITUDE_HOSTILE || attitude == GW2::ATTITUDE_INDIFFERENT))
+								floaters.enemyNpc.push_back(floater);
+						}
+					}
+				}
 			}
 		}
 
@@ -582,6 +659,137 @@ void ESP()
 			// Prepare for Next Element
 			ss.str("");
 			aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+		}
+	}
+
+	// Top Elements (and floaters) //
+	{
+		if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
+		{
+			stringstream ss;
+			StrInfo strInfo;
+
+			ss << format("R: %i") % floatRadius;
+
+			if (floatAllyNpc)
+				ss << format(" | AllyNPCs: %i") % floaters.allyNpc.size();
+			
+			if (floatEnemyNpc)
+				ss << format(" | FoeNPCs: %i") % floaters.enemyNpc.size();
+
+			if (floatAllyPlayer)
+				ss << format(" | Allies: %i") % floaters.allyPlayer.size();
+
+			if (floatEnemyPlayer)
+				ss << format(" | Foes: %i") % floaters.enemyPlayer.size();
+
+			if (floatSiege)
+				ss << format(" | Siege: %i") % floaters.siege.size();
+
+			strInfo = StringInfo(ss.str());
+			float x = round(aTop.x - strInfo.x / 2);
+			float y = round(aTop.y);
+
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor, ss.str());
+
+			if (floatCircles)
+			{
+				float x, y;
+				if (floatAllyNpc && floaters.allyNpc.size() > 0)
+				{
+					for (auto & floater : floaters.allyNpc) {
+						if (WorldToScreen(floater.pos, &x, &y))
+						{
+							stringstream fs;
+							if (floatType)
+								fs << format("%i") % int(Dist(mypos, floater.pos));
+							else
+								fs << format("%i") % floater.mHealth;
+
+							StrInfo fsInfo = StringInfo(fs.str());
+							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+							DWORD color = 0x4433ff00;
+							DrawCircleProjected(floater.pos, 20.0f, color);
+							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+						}
+					}
+				}
+
+				if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
+				{
+					for (auto & floater : floaters.enemyNpc) {
+						if (WorldToScreen(floater.pos, &x, &y))
+						{
+							stringstream fs;
+							if (floatType)
+								fs << format("%i") % int(Dist(mypos, floater.pos));
+							else
+								fs << format("%i") % floater.mHealth;
+
+							StrInfo fsInfo = StringInfo(fs.str());
+							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+							DWORD color = 0x44ff3300;
+							DrawCircleProjected(floater.pos, 20.0f, color);
+							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+						}
+					}
+				}
+
+				if (floatAllyPlayer && floaters.allyPlayer.size() > 0)
+				{
+					for (auto & floater : floaters.allyPlayer) {
+						if (WorldToScreen(floater.pos, &x, &y))
+						{
+							stringstream fs;
+							if (floatType)
+								fs << format("%i") % int(Dist(mypos, floater.pos));
+							else
+								fs << format("%i") % floater.mHealth;
+
+							StrInfo fsInfo = StringInfo(fs.str());
+							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+							DWORD color = 0x4433ff00;
+							DrawCircleProjected(floater.pos, 20.0f, color);
+							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+						}
+					}
+				}
+
+				if (floatEnemyPlayer && floaters.enemyPlayer.size() > 0)
+				{
+					for (auto & floater : floaters.enemyPlayer) {
+						if (WorldToScreen(floater.pos, &x, &y))
+						{
+							stringstream fs;
+							if (floatType)
+								fs << format("%i") % int(Dist(mypos, floater.pos));
+							else
+								fs << format("%i") % floater.mHealth;
+
+							StrInfo fsInfo = StringInfo(fs.str());
+							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+							DWORD color = 0x44ff3300;
+							DrawCircleProjected(floater.pos, 20.0f, color);
+							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+						}
+					}
+				}
+
+				if (floatSiege && floaters.siege.size() > 0)
+				{
+					for (auto & floater : floaters.siege) {
+						//DWORD color = 0x44ff3300;
+						//DrawCircleProjected(floater.pos, 20.0f, color);
+						//DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+					}
+				}
+			}
 		}
 	}
 

@@ -8,7 +8,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
-#include <boost/lambda/lambda.hpp>
 
 #include <sstream> // stringstream
 #include <algorithm> // min/max_element()
@@ -16,7 +15,7 @@
 #include <locale> // locale
 #include <algorithm> // count()
 
-#include "gw2lib.h"		// GW2Lib library by Rafi
+#include "gw2lib.h"	 // GW2Lib library by Rafi
 
 using namespace GW2LIB;
 using namespace boost;
@@ -77,6 +76,23 @@ struct Allies {
 	vector<Ally> ele;
 	vector<Ally> thief;
 };
+struct Float {
+	Vector3 pos;
+	int mHealth;
+};
+struct Siege {
+	int type;
+	Vector3 pos;
+	int mHealth;
+	int cHealth;
+};
+struct Floaters {
+	vector<Float> allyNpc;
+	vector<Float> enemyNpc;
+	vector<Float> allyPlayer;
+	vector<Float> enemyPlayer;
+	vector<Siege> siege;
+};
 struct Killtimer {
 	Killtimer() : dmg(0), dps(0), time(0), samplesKnown(0), samplesUnknown(0) {}
 
@@ -130,10 +146,16 @@ struct StrInfo {
 
 inline wstring convert(const string& as)
 {
-	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
-	swprintf(buf, L"%S", as.c_str());
-	std::wstring rval = buf;
-	delete[] buf;
+	wstring ws = wstring(as.begin(), as.end());
+	replace_all(ws, "%%", "%");
+	replace_all(ws, "&", "&&");
+	wstring rval = ws;
+
+	//wchar_t* buf = new wchar_t[as.size() * 2 + 2];
+	//swprintf(buf, L"%S", as.c_str());
+	//wstring rval = buf;
+	//delete[] buf;
+
 	return rval;
 }
 HWND hwnd = FindWindowEx(NULL, NULL, L"Guild Wars 2", NULL);
@@ -168,7 +190,8 @@ StrInfo StringInfo(string str)
 		HFONT hFontOld = (HFONT)SelectObject(hdc, hFont);
 		
 		// Sanitize
-		replace_all(str, "%%", "");
+		//replace_all(str, "%%", "");
+		//replace_all(str, "&&", "&");
 		
 		// find longest line
 		LONG width = 0;
@@ -176,7 +199,6 @@ StrInfo StringInfo(string str)
 		for (auto & line : lines) {
 			RECT r = { 0, 0, 0, 0 };
 			DrawText(hdc, convert(line.c_str()).c_str(), -1, &r, DT_CALCRECT);
-			//DrawText(hdc, convert(line.c_str()).c_str(), -1, &r, NULL);
 			LONG w = abs(r.right - r.left);
 
 			// refine the width
@@ -188,9 +210,10 @@ StrInfo StringInfo(string str)
 			i = count(line.begin(), line.end(), ']'); w -= i * 1;
 			i = count(line.begin(), line.end(), 'T'); w -= i * 2;
 			i = count(line.begin(), line.end(), 't'); w -= i * 1;
-			i = count(line.begin(), line.end(), '%'); w -= i * 6;
+			//i = count(line.begin(), line.end(), '%'); w -= i * 6;
 
 			i = count(line.begin(), line.end(), 'm'); w += i * 1;
+			i = count(line.begin(), line.end(), 'o'); w += i * 1;
 
 			if (w > width) {
 				width = w;
@@ -199,6 +222,8 @@ StrInfo StringInfo(string str)
 		}
 
 		if (0) { // Test Draw
+			//DbgOut("%s\n", longLine.c_str());
+
 			RECT r = { 0, 0, 0, 0 };
 			DrawText(hdc, convert(longLine.c_str()).c_str(), -1, &r, DT_CALCRECT);
 			DrawText(hdc, convert(longLine.c_str()).c_str(), -1, &r, NULL);
