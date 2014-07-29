@@ -3,10 +3,12 @@
 
 // Settings //
 bool help = false;
+bool selfHealthPercent = true;
 bool loopLimiter = true;
+
 bool targetSelected = true;
 bool targetLock = false;
-bool dpsAllowNegative = false; // for threadDps/threadKillTimer only
+bool dpsAllowNegative = false;
 
 double dpsPollingRate = 250; // ms
 bool logDps = true;
@@ -79,6 +81,8 @@ void ESP()
 	
 	if (help){
 		stringstream ss;
+		ss << format("[%i] Self Health Percent (Alt P)\n") % selfHealthPercent;
+		ss << format("\n");
 		ss << format("[%i] Selected/Locked Target Info (Alt S)\n") % targetSelected;
 		ss << format("[%i] Lock On Target (Alt L)\n") % targetLock;
 		ss << format("[%i] Allow Negative DPS (Alt N)\n") % dpsAllowNegative;
@@ -454,7 +458,7 @@ void ESP()
 		stringstream ss;
 		StrInfo strInfo;
 
-		if (self.alive)
+		if (selfHealthPercent && self.alive)
 		{
 			ss << format("%i") % self.pHealth;
 
@@ -970,6 +974,13 @@ void ESP()
 				//ss << format("Minimum: ...\n");
 				ss << format("Average: ...\n");
 				//ss << format("Maximum: ...\n");
+
+				if (logAttackRateDetails)
+				{
+					ss << format("\n");
+					ss << format("History\n");
+					ss << format("• ...\n");
+				}
 			}
 			ss << format("\n");
 			ss << format("Threshold: %i hits\n") % AttackRateChainHits;
@@ -1030,6 +1041,13 @@ void ESP()
 			{
 				ss << format("Counter: ...\n");
 				ss << format("Average: ...\n");
+
+				if (logHitsDetails)
+				{
+					ss << format("\n");
+					ss << format("History\n");
+					ss << format("• ...\n");
+				}
 			}
 
 			strInfo = StringInfo(ss.str());
