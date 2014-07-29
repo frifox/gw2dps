@@ -54,5 +54,9 @@ void threadDps() {
 			if (!logDps)
 				Sleep(100); // Thread not needed, sleep
 		}
+
+		// go easy on the cpu
+		if (loopLimiter)
+			Sleep(1);
 	}
 }

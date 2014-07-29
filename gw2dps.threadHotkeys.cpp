@@ -2,44 +2,47 @@
 #include "gw2dps.h"
 
 #define HELP 0
+#define LOOP_LIMITER 1
 
-#define TARGET_SELECTED 1
-#define TARGET_LOCK 2
-#define DPS_ALLOW_NEGATIVE 3
+#define TARGET_SELECTED 10
+#define TARGET_LOCK 11
+#define DPS_ALLOW_NEGATIVE 12
 
-#define LOG_DPS 4
-#define LOG_DPS_DETAILS 5
+#define LOG_DPS 20
+#define LOG_DPS_DETAILS 21
 
-#define LOG_KILL_TIMER 6
-#define LOG_KILL_TIMER_DETAILS 7
-#define LOG_KILL_TIMER_TO_FILE 8
+#define LOG_KILL_TIMER 30
+#define LOG_KILL_TIMER_DETAILS 31
+#define LOG_KILL_TIMER_TO_FILE 32
 
-#define LOG_HITS 9
-#define LOG_HITS_TO_FILE 10
+#define LOG_HITS 40
+#define LOG_HITS_DETAILS 41
+#define LOG_HITS_TO_FILE 42
 
-#define LOG_ATTACK_RATE 11
-#define LOG_ATTACK_RATE_TO_FILE 12
-#define ATTACKRATE_CHAIN_HITS_MORE 13
-#define ATTACKRATE_CHAIN_HITS_LESS 14
+#define LOG_ATTACK_RATE 50
+#define LOG_ATTACK_RATE_DETAILS 51
+#define LOG_ATTACK_RATE_TO_FILE 52
+#define ATTACKRATE_CHAIN_HITS_MORE 53
+#define ATTACKRATE_CHAIN_HITS_LESS 54
 
-#define ALLIES_LIST 15
-#define WVW_BONUS_MORE 16
-#define WVW_BONUS_LESS 17
+#define ALLIES_LIST 60
+#define WVW_BONUS_MORE 61
+#define WVW_BONUS_LESS 62
 
-#define FLOAT_CIRCLES 18
-#define FLOAT_TYPE 19
-#define FLOAT_RADIUS_MORE 20
-#define FLOAT_RADIUS_LESS 21
-
-#define FLOAT_ALLY_NPC 22
-#define FLOAT_ENEMY_NPC 23
-#define FLOAT_ALLY_PLAYER 24
-#define FLOAT_ENEMY_PLAYER 25
-#define FLOAT_SIEGE 26
+#define FLOAT_CIRCLES 70
+#define FLOAT_TYPE 71
+#define FLOAT_RADIUS_MORE 72
+#define FLOAT_RADIUS_LESS 73
+#define FLOAT_ALLY_NPC 74
+#define FLOAT_ENEMY_NPC 75
+#define FLOAT_ALLY_PLAYER 76
+#define FLOAT_ENEMY_PLAYER 77
+#define FLOAT_SIEGE 78
 
 void threadHotKeys()
 {
 	RegisterHotKey(NULL, HELP, MOD_ALT | MOD_NOREPEAT, VK_OEM_2); // help
+	RegisterHotKey(NULL, LOOP_LIMITER, MOD_ALT | MOD_NOREPEAT, 0x54); // loopLimiter
 
 	RegisterHotKey(NULL, TARGET_SELECTED, MOD_ALT | MOD_NOREPEAT, 0x53); // targetSelected
 	RegisterHotKey(NULL, TARGET_LOCK, MOD_ALT | MOD_NOREPEAT, 0x4C); // targetLock
@@ -53,8 +56,10 @@ void threadHotKeys()
 	RegisterHotKey(NULL, LOG_KILL_TIMER_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD4); // logKillTimerToFile
 	
 	RegisterHotKey(NULL, LOG_HITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD8); // logHits
+	RegisterHotKey(NULL, LOG_HITS_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD2); // logHitsDetails
 	RegisterHotKey(NULL, LOG_HITS_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD5); // logHitsToFile
 	RegisterHotKey(NULL, LOG_ATTACK_RATE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD9); // logAttackRate
+	RegisterHotKey(NULL, LOG_ATTACK_RATE_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD3); // logAttackRateDetails
 	RegisterHotKey(NULL, LOG_ATTACK_RATE_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD6); // logAttackRateToFile
 	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_MORE, MOD_ALT, VK_PRIOR); // AttackRateChainHits +
 	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_LESS, MOD_ALT, VK_NEXT); // AttackRateChainHits -
@@ -81,6 +86,7 @@ void threadHotKeys()
 		{
 		case WM_HOTKEY:
 			if (msg.wParam == HELP) help = !help;
+			if (msg.wParam == LOOP_LIMITER) loopLimiter = !loopLimiter;
 
 			if (msg.wParam == TARGET_SELECTED) targetSelected = !targetSelected;
 			if (msg.wParam == TARGET_LOCK) targetLock = !targetLock;
@@ -94,9 +100,11 @@ void threadHotKeys()
 			if (msg.wParam == LOG_KILL_TIMER_TO_FILE) logKillTimerToFile = !logKillTimerToFile;
 			
 			if (msg.wParam == LOG_HITS) logHits = !logHits;
+			if (msg.wParam == LOG_HITS_DETAILS) logHitsDetails = !logHitsDetails;
 			if (msg.wParam == LOG_HITS_TO_FILE) logHitsToFile = !logHitsToFile;
 			
 			if (msg.wParam == LOG_ATTACK_RATE) logAttackRate = !logAttackRate;
+			if (msg.wParam == LOG_ATTACK_RATE_DETAILS) logAttackRateDetails = !logAttackRateDetails;
 			if (msg.wParam == LOG_ATTACK_RATE_TO_FILE) logAttackRateToFile = !logAttackRateToFile;
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_MORE) if (AttackRateChainHits < 50) AttackRateChainHits += 1;
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_LESS) if (AttackRateChainHits > 1) AttackRateChainHits -= 1;

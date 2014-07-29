@@ -33,10 +33,10 @@ void threadKillTimer()
 			double elapsedSample = elapsedTime - ((bufferKillTimer.samplesKnown + bufferKillTimer.samplesUnknown) * pollingRate);
 
 			if (elapsedSample > pollingRate)
-			{
+			{	
 				int cHealth = locked.cHealth;
 				int dmg = pHealth - cHealth;
-				
+
 				if (dmg >= 0)
 				{
 					if (cHealth != 0)
@@ -59,11 +59,11 @@ void threadKillTimer()
 					else if (dpsAllowNegative)
 					{
 						bufferKillTimer.dmg += dmg;
-						DbgOut("One\n");
+						//DbgOut("One\n");
 					}
 					else
 					{
-						bufferKillTimer.dmg = pHealth;
+						bufferKillTimer.dmg += pHealth;
 					}
 				}
 
@@ -78,7 +78,7 @@ void threadKillTimer()
 				dps = dps * (1000 / pollingRate);
 
 				bufferKillTimer.dps = dpKs*4;
-
+				
 				pHealth = cHealth;
 			}
 
@@ -86,8 +86,17 @@ void threadKillTimer()
 		}
 		else
 		{
-			if (pHealth != 0)
+			if (pHealth != 0) {
+				// add the last polling sample to buffer
+				if (bufferKillTimer.time > 0) {
+					bufferKillTimer.dmg += pHealth;
+					bufferKillTimer.dps = bufferKillTimer.dmg / bufferKillTimer.time;
+				}
+
+				// reset
 				pHealth = 0;
+			}
+				
 
 			if (!timer.is_stopped())
 			{
@@ -107,5 +116,9 @@ void threadKillTimer()
 			
 			Sleep(100);
 		}
+
+		// go easy on the cpu
+		if (loopLimiter)
+			Sleep(1);
 	}
 }

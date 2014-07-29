@@ -107,7 +107,6 @@ Killtimer bufferKillTimerHistory;
 boost::circular_buffer<int> bufferDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
-int threadHitsCounter = 0;
 
 // Layout Anchors
 struct Anchor {

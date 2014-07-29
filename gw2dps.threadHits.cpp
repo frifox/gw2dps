@@ -7,6 +7,10 @@ void threadHits() {
 	bool logFileInit = false;
 	bool logFileEmpty = false;
 
+	int dmg = 0;
+	timer::cpu_timer timer;
+	timer.stop();
+
 	while (true)
 	{
 		if (!logHitsToFile && logFileInit)
@@ -32,6 +36,10 @@ void threadHits() {
 						if (logHitsToFile)
 						{
 							ofstream file;
+
+							file.precision(6);
+							file << fixed;
+
 							if (!logFileInit){
 								file.open(logHitsFile);
 								file.close();
@@ -42,15 +50,37 @@ void threadHits() {
 							file.open(logHitsFile, ios::app);
 							if (file.is_open())
 							{
+								// instead of hits, log {time \t damageDealt}
+								bool logDamageOverTime = false;
+
 								if (logFileEmpty)
 								{
-									file << hit; logFileEmpty = false;
+									if (logDamageOverTime) {
+										timer.start();
+										dmg += hit;
+										file << "0.000000" << "\t" << dmg;
+										logFileEmpty = false;
+									}
+									else
+									{
+										file << hit; logFileEmpty = false;
+									}
 								}
 								else
 								{
-									file << endl << hit;
-								}
+									if (logDamageOverTime) {
+										timer::cpu_times elapsed = timer.elapsed();
+										double elapsedTime = elapsed.wall / 1e9;
+										dmg += hit;
 
+										file << endl << elapsedTime << "\t" << dmg;
+									}
+									else
+									{
+										file << endl << hit;
+									}
+									
+								}
 
 								if (file.bad())
 									DbgOut("Failed writing log file (hits)\n");
@@ -73,6 +103,8 @@ void threadHits() {
 				{
 					bufferHits.clear();
 					threadHitsCounter = 0;
+
+					dmg = 0;
 				}
 			}
 		}
@@ -85,6 +117,8 @@ void threadHits() {
 			{
 				bufferHits.clear();
 				threadHitsCounter = 0;
+
+				dmg = 0;
 			}
 
 			if (logFileInit)
@@ -93,5 +127,9 @@ void threadHits() {
 			if (!logHits)
 				Sleep(100); // Thread not needed, sleep
 		}
+
+		// go easy on the cpu
+		if (loopLimiter)
+			Sleep(1);
 	}
 }

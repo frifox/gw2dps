@@ -3,6 +3,7 @@
 
 // Settings //
 bool help = false;
+bool loopLimiter = true;
 bool targetSelected = true;
 bool targetLock = false;
 bool dpsAllowNegative = false; // for threadDps/threadKillTimer only
@@ -17,14 +18,18 @@ bool logKillTimerDetails = false;
 bool logKillTimerToFile = false;
 
 bool logHits = false;
+bool logHitsDetails = false;
 bool logHitsToFile = false;
 string logHitsFile = "gw2dpsLog-Hits.txt";
+int threadHitsCounter = 0;
 
 bool logAttackRate = false;
+bool logAttackRateDetails = false;
 bool logAttackRateToFile = false;
 int AttackRateChainHits = 1;
 int AttackRateChainTime = 0; // not used atm
 string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
+int threadAttackRateCounter = 0;
 
 bool alliesList = false;
 int wvwBonus = 0;
@@ -86,9 +91,11 @@ void ESP()
 		//ss << format("[%i] Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;
 		ss << format("\n");
 		ss << format("[%i] Monitor Hits (Alt Num8)\n") % logHits;
-		ss << format("[%i] Record Damage Hits to File (Alt Num5)\n") % logHitsToFile;
+		ss << format("[%i] Show Hits History (Alt Num2)\n") % logHitsDetails;
+		ss << format("[%i] Record Hits to File (Alt Num5)\n") % logHitsToFile;
 		ss << format("\n");
 		ss << format("[%i] Monitor Attack Rate (Alt Num9)\n") % logAttackRate;
+		ss << format("[%i] Show Attack Rate History (Alt Num3)\n") % logAttackRateDetails;
 		ss << format("[%i] Record Attack Rate to File (Alt Num6)\n") % logAttackRateToFile;
 		ss << format("[%i] Adjust Attack Rate Threshold (Alt PgUp/PgDown)\n") % AttackRateChainHits;
 		ss << format("\n");
@@ -100,7 +107,7 @@ void ESP()
 		ss << format("[%i] Count Ally Players (Alt 3)\n") % floatAllyPlayer;
 		ss << format("[%i] Count Enemy Players (Alt 4)\n") % floatEnemyPlayer;
 		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
-		ss << format("[%i] Show/Hide Floaters (Alt F)\n") % floatCircles;
+		ss << format("[%i] Show/Hide Floaters below counted (Alt F)\n") % floatCircles;
 		ss << format("[%i] Floaters show Max HP / Distance (Alt Shift F)\n") % floatType;
 
 		StrInfo strInfo;
@@ -110,7 +117,7 @@ void ESP()
 
 		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-		font.Draw(x, y, fontColor, ss.str());
+		font.Draw(x, y, fontColor - (!loopLimiter? 0x00aa0000 : 0), ss.str());
 	}
 
 	// Font Draw Debug
@@ -624,11 +631,11 @@ void ESP()
 
 		if (targetSelected)
 		{
-			if (selected.valid)
+			if (targetLock && selected.valid && locked.valid && selected.id == locked.id)
 			{
 				Character chLocked = agLocked.GetCharacter();
 
-				ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+				ss << format("Selected & Locked: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTopLeft.x - strInfo.x / 2);
@@ -642,20 +649,41 @@ void ESP()
 				ss.str("");
 				aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
 			}
-
-			if (targetLock && locked.valid)
+			else
 			{
-				ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
+				if (selected.valid)
+				{
+					Character chLocked = agLocked.GetCharacter();
 
-				strInfo = StringInfo(ss.str());
-				float x = round(aTopLeft.x - strInfo.x / 2);
-				float y = round(aTopLeft.y);
+					ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
 
-				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
-				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-				font.Draw(x, y, fontColor, ss.str());
+					strInfo = StringInfo(ss.str());
+					float x = round(aTopLeft.x - strInfo.x / 2);
+					float y = round(aTopLeft.y);
+
+					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+					font.Draw(x, y, fontColor, ss.str());
+
+					// Prepare for Next Element
+					ss.str("");
+					aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+				}
+
+				if (targetLock && locked.valid)
+				{
+					ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
+
+					strInfo = StringInfo(ss.str());
+					float x = round(aTopLeft.x - strInfo.x / 2);
+					float y = round(aTopLeft.y);
+
+					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
+					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+					font.Draw(x, y, fontColor, ss.str());
+				}
 			}
-
+			
 			// Prepare for Next Element
 			ss.str("");
 			aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
@@ -692,10 +720,7 @@ void ESP()
 
 			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-			if (floatCircles)
-				font.Draw(x, y, fontColor - 0x00aa0000, ss.str());
-			else
-				font.Draw(x, y, fontColor, ss.str());
+			font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
 
 			if (floatCircles)
 			{
@@ -916,32 +941,38 @@ void ESP()
 				ss << format("« Monitoring »\n");
 			ss << format("« Attack Rate »\n");
 			ss << format("\n");
-			ss << format("Threshold: %i hits\n") % AttackRateChainHits;
-
+			
 			if (!bufferAttackRate.empty())
 			{
-				double min = *min_element(bufferAttackRate.begin(), bufferAttackRate.end());
-				double max = *max_element(bufferAttackRate.begin(), bufferAttackRate.end());
+				//double min = *min_element(bufferAttackRate.begin(), bufferAttackRate.end());
+				//double max = *max_element(bufferAttackRate.begin(), bufferAttackRate.end());
 				double average = 0;
 				for (size_t i = 0; i < bufferAttackRate.size(); i++)
 					average += bufferAttackRate[i];
 				average = average / bufferAttackRate.size();
 
-				ss << format("Min: %0.3fs\n") % min;
-				ss << format("Avg: %0.3fs\n") % average;
-				ss << format("Max: %0.3fs\n") % max;
+				ss << format("Counter: %i\n") % threadAttackRateCounter;
+				//ss << format("Min: %0.3fs\n") % min;
+				ss << format("Average: %0.3fs\n") % average;
+				//ss << format("Max: %0.3fs\n") % max;
 
-				ss << format("\n");
-				ss << format("History");
-				for (size_t i = 0; i < bufferAttackRate.size(); i++)
-					ss << format("\n• %0.3fs") % bufferAttackRate[i];
+				if (logAttackRateDetails)
+				{
+					ss << format("\n");
+					ss << format("History\n");
+					for (size_t i = 0; i < bufferAttackRate.size(); i++)
+						ss << format("• %0.3fs\n") % bufferAttackRate[i];
+				}
 			}
 			else
 			{
-				ss << format("Minimum: ...\n");
+				ss << format("Counter: ...\n");
+				//ss << format("Minimum: ...\n");
 				ss << format("Average: ...\n");
-				ss << format("Maximum: ...\n");
+				//ss << format("Maximum: ...\n");
 			}
+			ss << format("\n");
+			ss << format("Threshold: %i hits\n") % AttackRateChainHits;
 
 			strInfo = StringInfo(ss.str());
 
@@ -954,7 +985,7 @@ void ESP()
 			// Draw
 			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-			font.Draw(x, y, fontColor, ss.str());
+			font.Draw(x, y, fontColor - (logAttackRateToFile ? 0x00aa0000 : 0), ss.str());
 
 			// Prepare for Next Element
 			//ss.str("");
@@ -974,7 +1005,6 @@ void ESP()
 
 			ss << format("« Damage Hits »\n");
 			ss << format("\n");
-			ss << format("Counter: %i\n") % threadHitsCounter;
 			
 			if (!bufferHits.empty())
 			{
@@ -985,20 +1015,25 @@ void ESP()
 					average += bufferHits[i];
 				average = average / bufferHits.size();
 
-				ss << format("Avg: %0.1f\n") % average;
+				ss << format("Counter: %i\n") % threadHitsCounter;
+				ss << format("Average: %0.1f\n") % average;
 				
-				ss << format("\n");
-				ss << format("History");
-				for (size_t i = 0; i < bufferHits.size(); i++)
-					ss << format("\n• %i") % bufferHits[i];
+				if (logHitsDetails)
+				{
+					ss << format("\n");
+					ss << format("History\n");
+					for (size_t i = 0; i < bufferHits.size(); i++)
+						ss << format("• %i\n") % bufferHits[i];
+				}
 			}
 			else
 			{
 				ss << format("Counter: ...\n");
-				ss << format("Average: ...");
+				ss << format("Average: ...\n");
 			}
 
 			strInfo = StringInfo(ss.str());
+
 			
 			float aAdjustX = 120; // adjust anchor -120
 			if (strInfo.x < aAdjustX)
@@ -1009,7 +1044,7 @@ void ESP()
 			// Draw
 			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x44000000);
 			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-			font.Draw(x, y, fontColor, ss.str());
+			font.Draw(x, y, fontColor - (logHitsToFile ? 0x00aa0000 : 0), ss.str());
 
 			// Prepare for Next Element
 			//ss.str("");

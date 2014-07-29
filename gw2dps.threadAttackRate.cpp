@@ -48,6 +48,8 @@ void threadAttackRate() {
 					timer.start();
 					hits = 1;
 
+					threadAttackRateCounter++;
+
 					// LOG TO FILE start //
 					if (logAttackRateToFile)
 					{
@@ -93,6 +95,9 @@ void threadAttackRate() {
 			if (!bufferAttackRate.empty())
 				bufferAttackRate.clear();
 
+			if (threadAttackRateCounter>0)
+				threadAttackRateCounter = 0;
+
 			if (locked.valid && locked.id != pAgentId)
 				pAgentId = locked.id;
 
@@ -102,5 +107,9 @@ void threadAttackRate() {
 			if (!logAttackRate)
 				Sleep(100); // Thread not needed, sleep
 		}
+		
+		// go easy on the cpu
+		if (loopLimiter)
+			Sleep(1);
 	}
 }

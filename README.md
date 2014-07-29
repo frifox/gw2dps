@@ -13,13 +13,15 @@ DPS Meter (Alt D)
 DPS History (Alt Shift D)
 
 Kill Timer (Alt NumPad7)
-Kill Timer Total DPS (Alt NumPad1)
+Kill Timer Average DPS (Alt NumPad1)
 
 Monitor Hits (Alt NumPad8)
 Record Hits to File (gw2exe's folder) (Alt NumPad5)
+Show Hits History (Alt NumPad2)
 
 Monitor Attack Rates (Alt NumPad9)
 Record Attack Rates to File (gw2exe's folder) (Alt NumPad6)
+Show Attack Rate History (Alt NumPad3)
 Adjust Attack Rate Threshold (Alt PgUp/PgDown)
 
 Nearby Ally Players List (Alt C)
@@ -29,9 +31,9 @@ Count Ally NPCs (Alt 1)
 Count Enemy NPCs (Alt 2)
 Count Ally Players (Alt 3)
 Count Enemy Players (Alt 4)
-Adjust Count Radius (Alt NumPad-/NumPad+)
 Show Floaters for the Counted (Alt F)
 Show Distance / Max HP for Floaters (Alt Shift F)
+Adjust Count Radius (Alt NumPad-/NumPad+)
 ```
 
 ----------------------------------
