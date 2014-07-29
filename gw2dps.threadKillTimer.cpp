@@ -24,6 +24,7 @@ void threadKillTimer()
 
 			if (timer.is_stopped())
 			{
+				bufferKillTimer = {};
 				timer.start();
 				continue;
 			}
@@ -87,10 +88,40 @@ void threadKillTimer()
 		else
 		{
 			if (pHealth != 0) {
-				// add the last polling sample to buffer
-				if (bufferKillTimer.time > 0) {
-					bufferKillTimer.dmg += pHealth;
-					bufferKillTimer.dps = bufferKillTimer.dmg / bufferKillTimer.time;
+				
+				{ // check if char is dead, if dead then tweak dps for accuracy
+					bool isAlive = false;
+					Agent ag;
+					while (ag.BeNext())
+					{
+						if (pAgentId == ag.GetAgentId())
+						{
+							Character ch = ag.GetCharacter();
+							if (ch.IsValid())
+							{
+								if (ch.IsAlive() && ch.GetCurrentHealth() > 0) {
+									//DbgOut("Char valid; alive");
+									isAlive = true;
+								}
+								else
+								{
+									//DbgOut("Char valid; dead");
+								}
+							}
+							else
+							{
+								//DbgOut("Agent valid; unknown");
+								isAlive = true;
+							}
+						}
+					}
+
+					
+					// add the last polling sample to buffer
+					if (!isAlive && bufferKillTimer.time > 0) {
+						bufferKillTimer.dmg += pHealth;
+						bufferKillTimer.dps = bufferKillTimer.dmg / bufferKillTimer.time;
+					}
 				}
 
 				// reset
