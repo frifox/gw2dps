@@ -182,7 +182,7 @@ void ESP()
 			selected.lvl = chLocked.GetScaledLevel();
 			selected.lvlActual = chLocked.GetLevel();
 		}
-		else if (agType == GW2::AGENT_TYPE_GADGET) // object
+		else if (agType == GW2::AGENT_TYPE_GADGET) // structure
 		{
 			selected.valid = true;
 			selected.id = agLocked.GetAgentId();
@@ -190,7 +190,7 @@ void ESP()
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x164);
+			shift = *(unsigned long*)(shift + 0x168);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -212,7 +212,7 @@ void ESP()
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x178);
+			shift = *(unsigned long*)(shift + 0x17c);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -278,7 +278,7 @@ void ESP()
 				locked.lvl = ch.GetScaledLevel();
 				locked.lvlActual = ch.GetLevel();
 			}
-			else if (agType == GW2::AGENT_TYPE_GADGET) // struct
+			else if (agType == GW2::AGENT_TYPE_GADGET) // structure
 			{
 				locked.valid = true;
 				locked.id = ag.GetAgentId();
@@ -286,7 +286,7 @@ void ESP()
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x164);
+				shift = *(unsigned long*)(shift + 0x168);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
@@ -308,7 +308,7 @@ void ESP()
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
 				shift = *(unsigned long*)(shift + 0x28);
-				shift = *(unsigned long*)(shift + 0x178);
+				shift = *(unsigned long*)(shift + 0x17c);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
