@@ -9,12 +9,14 @@ http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709
 #ifndef GW2LIB_H
 #define GW2LIB_H
 
+#pragma comment(lib, "gw2lib.lib")
+
+
 #include <Windows.h>
 #include <string>
 #include <vector>
 #include <utility>
-
-#pragma comment(lib, "gw2lib.lib")
+#include <cstdint>
 
 struct PrimitiveDiffuseMesh;
 namespace GameData {
@@ -262,6 +264,137 @@ namespace GW2LIB
 		PrimitiveDiffuse(const PrimitiveDiffuse &p) { }
 		PrimitiveDiffuse &operator= (const PrimitiveDiffuse &p) { }
 		PrimitiveDiffuseMesh *m_ptr;
+	};
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// # advanced
+	//////////////////////////////////////////////////////////////////////////
+
+	void SetMems(const struct Mems& mems);
+
+	struct Mems
+	{
+		// CContext
+		// CharClient::CContext* m_charContext;
+		uintptr_t contextChar = 0x38;
+
+		// AgentView::CContext
+		// ANet::Array<Agent::CAvAgent*> m_agentArray;
+		uintptr_t avctxAgentArray = 0x30;
+
+		// AgentView::CAvAgent
+		// Agent::CAgentBase* GetAgent();
+		uintptr_t avagVtGetAgent = 0x30;
+
+		// Agent::CAgentBase
+		// AgentCategory GetCategory();
+		uintptr_t agentVtGetCategory = 0x10;
+		// int GetAgentId();
+		uintptr_t agentVtGetId = 0x5c;
+		// AgentType GetType();
+		uintptr_t agentVtGetType = 0x9c;
+		// void GetPos(D3DXVECTOR3* pPos);
+		uintptr_t agentVtGetPos = 0xb4;
+		// Agent::CAgentTransform* m_transform;
+		uintptr_t agentTransform = 0x1c;
+
+		// Agent::CAgentTransform
+		// float x;
+		uintptr_t agtransX = 0x20;
+		// float y;
+		uintptr_t agtransY = 0x24;
+		// float z;
+		uintptr_t agtransZ = 0x28;
+		// float rx;
+		uintptr_t agtransRX = 0x100;
+		// float ry;
+		uintptr_t agtransRY = 0x104;
+
+		// CharClient::CContext
+		// ANet::Array<CharClient::CCharacter*> m_charArray;
+		uintptr_t charctxCharArray = 0x24;
+		// ANet::Array<CharClient::CPlayer*> m_playerArray;
+		uintptr_t charctxPlayerArray = 0x34;
+		// CharClient::CCharacter* m_controlledCharacter;
+		uintptr_t charctxControlled = 0x44;
+
+		// CharClient::CCharacter
+		// Agent::CAgentBase* GetAgent();
+		uintptr_t charVtGetAgent = 0x90;
+		// int GetAgentId();
+		uintptr_t charVtGetAgentId = 0x94;
+		// CharClient::CPlayer* GetPlayer();
+		uintptr_t charVtGetPlayer = 0xd0;
+		// bool IsAlive();
+		uintptr_t charVtAlive = 0x10c;
+		// bool IsControlled();
+		uintptr_t charVtControlled = 0x110;
+		// bool IsDowned();
+		uintptr_t charVtDowned = 0x11c;
+		// bool IsInWater();
+		uintptr_t charVtInWater = 0x13c;
+		// bool IsMonster();
+		uintptr_t charVtMonster = 0x14c;
+		// bool IsMonsterPlayerClone();
+		uintptr_t charVtClone = 0x15c;
+		// bool IsPlayer();
+		uintptr_t charVtPlayer = 0x178;
+		// Attitude m_attitudeTowardsControlled;
+		uintptr_t charAttitude = 0x58;
+		// CharClient::CCoreStats* m_coreStats;
+		uintptr_t charCoreStats = 0x148;
+		// CharClient::CEndurance* m_endurance;
+		uintptr_t charEndurance = 0x168;
+		// CharClient::CHealth* m_health;
+		uintptr_t charHealth = 0x16c;
+		// CharClient::CInventory* m_inventory;
+		uintptr_t charInventory = 0x170;
+
+		// CharClient::CPlayer
+		// char* m_name
+		uintptr_t playerName = 0x30;
+
+		// CharClient::CCoreStats
+		// int m_level;
+		uintptr_t statsLevel = 0x184;
+		// int m_scaledLevel;
+		uintptr_t statsScaledLevel = 0x1ac;
+		// Profession m_profession;
+		uintptr_t statsProfession = 0x1ec;
+
+		// CharClient::CEndurance
+		// int m_currentValue;
+		uintptr_t endCurrent = 0x8;
+		// int m_maxValue;
+		uintptr_t endMax = 0xc;
+
+		// CharClient::CHealth
+		// int m_currentValue;
+		uintptr_t healthCurrent = 0x8;
+		// int m_maxValue;
+		uintptr_t healthMax = 0xc;
+
+		// CharClient::CInventory
+		// int m_supply
+		uintptr_t invSupply = 0x1d8;
+
+		// AgentSelection::CContext
+		// Agent::CAgentBase* m_autoSelection;
+		uintptr_t asctxAuto = 0x24;
+		// Agent::CAgentBase* m_hoverSelection;
+		uintptr_t asctxHover = 0x70;
+		// Agent::CAgentBase* m_lockedSelection;
+		uintptr_t asctxLocked = 0xe0;
+		// D3DXVECTOR3 m_screenToWorld;
+		uintptr_t asctxStoW = 0x140;
+
+		// WorldView::CContext
+		// void GetMetrics(int one, D3DXVECTOR3* camPos, D3DXVECTOR3* lookAt, float* fov);
+		uintptr_t wvctxVtGetMetrics = 0x30;
+		// int m_camStatus;
+		uintptr_t wvctxStatus = 0x40;
+
 	};
 }
 

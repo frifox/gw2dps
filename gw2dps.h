@@ -1,7 +1,7 @@
 #ifndef GW2DPS_H
 #define GW2DPS_H
 
-// Boost v1.55 library
+// Boost v1.56 library
 #include <boost/circular_buffer.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/math/special_functions/round.hpp>
@@ -29,7 +29,6 @@ int padY = 2;
 static const DWORD fontColor = 0xffffffff;
 static const DWORD backColor = 0xff000000;
 static const DWORD borderColor = 0xff444444;
-string strProf[] = { "Error", "Guardian", "Warrior", "Engineer", "Ranger", "Thief", "Elementalist", "Mesmer", "Necromancer", "None" };
 
 // THREADS //
 int targetLockID;
