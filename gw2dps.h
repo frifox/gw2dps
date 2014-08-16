@@ -104,7 +104,6 @@ struct Killtimer {
 	int samplesUnknown;
 };
 Killtimer bufferKillTimer;
-Killtimer bufferKillTimerHistory;
 struct Displacement {
 	Displacement() : id(0), start(Vector3(0, 0, 0)), dist(0) {}
 

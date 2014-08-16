@@ -33,6 +33,11 @@ Count Enemy Players (Alt 4)
 Show Floaters for the Counted (Alt F)
 Show Distance / Max HP for Floaters (Alt Shift F)
 Adjust Count Radius (Alt NumPad-/NumPad+)
+
+Speedometer (Alt 9)
+Speedometer lock on Self/Enemy (Alt Shift 9)
+Distance Measurement (Alt 0)
+Distance lock on Self/Enemy (Alt Shift 0)
 ```
 
 ----------------------------------

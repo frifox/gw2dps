@@ -126,8 +126,8 @@ void ESP()
 		ss << format("\n");
 		ss << format("[%i] Speedometer (Alt 9)\n") % logSpeedometer;
 		ss << format("[%i] Speedometer for Self/Enemy (Alt Shift 9)\n") % logSpeedometerEnemy;
-		ss << format("[%i] Displacement (Alt 0)\n") % logDisplacement;
-		ss << format("[%i] Displacement for Self/Enemy (Alt Shift 9)\n") % logDisplacementEnemy;
+		ss << format("[%i] Measure Distance (Alt 0)\n") % logDisplacement;
+		ss << format("[%i] Distance for Self/Enemy (Alt Shift 0)\n") % logDisplacementEnemy;
 
 		StrInfo strInfo;
 		strInfo = StringInfo(ss.str());
@@ -949,7 +949,7 @@ void ESP()
 			stringstream ss;
 			StrInfo strInfo;
 
-			ss << format("Displacement: %i") % bufferDisplacement.dist;
+			ss << format("Distance: %i") % bufferDisplacement.dist;
 
 			strInfo = StringInfo(ss.str());
 			float x = round(aTop.x - strInfo.x / 2);
