@@ -60,11 +60,13 @@ void threadKillTimer()
 					else if (dpsAllowNegative)
 					{
 						bufferKillTimer.dmg += dmg;
-						//DbgOut("One\n");
+						bufferKillTimer.samplesKnown += 1;
 					}
 					else
 					{
-						bufferKillTimer.dmg += pHealth;
+						//bufferKillTimer.dmg += pHealth;
+						bufferKillTimer.dmg += 0;
+						bufferKillTimer.samplesKnown += 1;
 					}
 				}
 

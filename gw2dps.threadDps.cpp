@@ -4,7 +4,7 @@
 void threadDps() {
 	int pAgentId = 0;
 	int pHealth = 0;
-	double pollingRate = dpsPollingRate; // 250 ms
+	double pollingRate = 250; // ms
 
 	timer::cpu_timer timer;
 	while (true)

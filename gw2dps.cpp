@@ -10,7 +10,6 @@ bool targetSelected = true;
 bool targetLock = false;
 bool dpsAllowNegative = false;
 
-double dpsPollingRate = 250; // ms
 bool logDps = true;
 bool logDpsDetails = false;
 string logDpsFile = "gw2dpsLog-Dps.txt";
@@ -45,12 +44,23 @@ int floatRadius = 7000;
 bool floatCircles = false;
 bool floatType = true; // false = HP; true = Dist;
 
+bool logSpeedometer = false;
+bool logSpeedometerEnemy = false;
+int logDisplacementValue = 0;
+bool logDisplacement = false;
+bool logDisplacementEnemy = false;
+Vector3 logDisplacementStart = Vector3(0, 0, 0);
+
 // Threads //
 #include "gw2dps.threadHotkeys.cpp"
 #include "gw2dps.threadDps.cpp"
 #include "gw2dps.threadKillTimer.cpp"
 #include "gw2dps.threadHits.cpp"
 #include "gw2dps.threadAttackRate.cpp"
+#include "gw2dps.threadSpeedometer.cpp"
+
+// Self
+Character me;
 
 void ESP()
 {
@@ -73,7 +83,7 @@ void ESP()
 	aRight.y = 8;
 
 	aCenter.x = round(GetWindowWidth() * float(0.5));
-	aCenter.y = round(GetWindowHeight() * float(0.25));
+	aCenter.y = round(GetWindowHeight() * float(0.5));
 
 	aBottom.x = round(GetWindowWidth() * float(0.5));
 	aBottom.y = round(GetWindowHeight() - float(85));
@@ -113,6 +123,11 @@ void ESP()
 		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
 		ss << format("[%i] Show/Hide Floaters below counted (Alt F)\n") % floatCircles;
 		ss << format("[%i] Floaters show Max HP / Distance (Alt Shift F)\n") % floatType;
+		ss << format("\n");
+		ss << format("[%i] Speedometer (Alt 9)\n") % logSpeedometer;
+		ss << format("[%i] Speedometer for Self/Enemy (Alt Shift 9)\n") % logSpeedometerEnemy;
+		ss << format("[%i] Displacement (Alt 0)\n") % logDisplacement;
+		ss << format("[%i] Displacement for Self/Enemy (Alt Shift 9)\n") % logDisplacementEnemy;
 
 		StrInfo strInfo;
 		strInfo = StringInfo(ss.str());
@@ -144,10 +159,11 @@ void ESP()
 	}
 
 	// Targets & Agents //
-	Character me = GetOwnCharacter();
-	Vector3 mypos = GetOwnAgent().GetPos();
-
+	me = GetOwnCharacter();
 	if (me.IsValid()){
+		self.id = GetOwnAgent().GetAgentId();
+		self.pos = GetOwnAgent().GetPos();
+
 		self.cHealth = int(me.GetCurrentHealth());
 		self.mHealth = int(me.GetMaxHealth());
 		if (self.mHealth > 0)
@@ -172,6 +188,8 @@ void ESP()
 			selected.id = agLocked.GetAgentId();
 			selected.type = agType;
 
+			selected.pos = agLocked.GetPos();
+
 			Character chLocked = agLocked.GetCharacter();
 			selected.cHealth = int(chLocked.GetCurrentHealth());
 			selected.mHealth = int(chLocked.GetMaxHealth());
@@ -187,6 +205,8 @@ void ESP()
 			selected.valid = true;
 			selected.id = agLocked.GetAgentId();
 			selected.type = agType;
+
+			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
@@ -208,6 +228,8 @@ void ESP()
 			selected.valid = true;
 			selected.id = agLocked.GetAgentId();
 			selected.type = agType;
+
+			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
@@ -268,6 +290,8 @@ void ESP()
 				locked.id = ag.GetAgentId();
 				locked.type = agType;
 
+				locked.pos = ag.GetPos();
+
 				Character ch = ag.GetCharacter();
 				locked.cHealth = int(ch.GetCurrentHealth());
 				locked.mHealth = int(ch.GetMaxHealth());
@@ -283,6 +307,8 @@ void ESP()
 				locked.valid = true;
 				locked.id = ag.GetAgentId();
 				locked.type = agType;
+
+				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
@@ -304,6 +330,8 @@ void ESP()
 				locked.valid = true;
 				locked.id = ag.GetAgentId();
 				locked.type = agType;
+
+				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
@@ -351,7 +379,7 @@ void ESP()
 				if (cHealth > 0 && mHealth > 1)
 				{ 
 					// Filter those out of range
-					if (Dist(mypos, pos) <= floatRadius)
+					if (Dist(self.pos, pos) <= floatRadius)
 					{
 						Float floater;
 						floater.pos = pos;
@@ -450,6 +478,48 @@ void ESP()
 					break;
 				}
 			}
+		}
+
+		// Displacement
+		if (logDisplacement)
+		{
+			if (logDisplacementEnemy)
+			{
+				if (locked.valid) {
+					if (locked.id != bufferDisplacement.id || (bufferDisplacement.start.x == 0 && bufferDisplacement.start.y == 0 && bufferDisplacement.start.z == 0))
+					{
+						bufferDisplacement.start = locked.pos;
+						bufferDisplacement.id = locked.id;
+					}
+					else
+					{
+						float displacement = Dist(bufferDisplacement.start, locked.pos);
+						bufferDisplacement.dist = int(displacement);
+					}
+				}
+				else
+				{
+					// reset
+					bufferDisplacement = {};
+				}
+			}
+			else
+			{
+				if (bufferDisplacement.start.x == 0 && bufferDisplacement.start.y == 0 && bufferDisplacement.start.z == 0)
+				{
+					bufferDisplacement.start = self.pos;
+				}
+				else
+				{
+					float displacement = Dist(bufferDisplacement.start, self.pos);
+					bufferDisplacement.dist = int(displacement);
+				}
+			}
+		}
+		else
+		{
+			// reset
+			bufferDisplacement = {};
 		}
 	}
 
@@ -726,6 +796,8 @@ void ESP()
 			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
 			font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
 
+			aTop.y += strInfo.y + padY*2;
+
 			if (floatCircles)
 			{
 				float x, y;
@@ -736,7 +808,7 @@ void ESP()
 						{
 							stringstream fs;
 							if (floatType)
-								fs << format("%i") % int(Dist(mypos, floater.pos));
+								fs << format("%i") % int(Dist(self.pos, floater.pos));
 							else
 								fs << format("%i") % floater.mHealth;
 
@@ -757,7 +829,7 @@ void ESP()
 						{
 							stringstream fs;
 							if (floatType)
-								fs << format("%i") % int(Dist(mypos, floater.pos));
+								fs << format("%i") % int(Dist(self.pos, floater.pos));
 							else
 								fs << format("%i") % floater.mHealth;
 
@@ -778,7 +850,7 @@ void ESP()
 						{
 							stringstream fs;
 							if (floatType)
-								fs << format("%i") % int(Dist(mypos, floater.pos));
+								fs << format("%i") % int(Dist(self.pos, floater.pos));
 							else
 								fs << format("%i") % floater.mHealth;
 
@@ -799,7 +871,7 @@ void ESP()
 						{
 							stringstream fs;
 							if (floatType)
-								fs << format("%i") % int(Dist(mypos, floater.pos));
+								fs << format("%i") % int(Dist(self.pos, floater.pos));
 							else
 								fs << format("%i") % floater.mHealth;
 
@@ -822,6 +894,78 @@ void ESP()
 					}
 				}
 			}
+		}
+
+		if (logSpeedometer) {
+			stringstream ss;
+			StrInfo strInfo;
+
+			ss << format("Speed: ");
+			
+			if (!bufferSpeedometer.empty())
+			{
+				double average[2] {};
+				size_t samples = 0;
+
+				// Speed ~ .5s
+				samples = 5;
+				if (samples > bufferSpeedometer.size())
+					samples = bufferSpeedometer.size();
+				average[0] = 0;
+				for (size_t i = 0; i < samples; i++)
+					average[0] += bufferSpeedometer[i];
+				average[0] = average[0] / samples * (1000 / 100);
+
+				// Speed ~ 3s
+				samples = 30;
+				if (samples > bufferSpeedometer.size())
+					samples = bufferSpeedometer.size();
+				average[1] = 0;
+				for (size_t i = 0; i < samples; i++)
+					average[1] += bufferSpeedometer[i];
+				average[1] = average[1] / samples * (1000 / 100);
+
+				// Prepare String
+				ss << format("%i in/s, %i in/s") % int(average[0]) % int(average[1]);
+			}
+			else
+			{
+				ss << format("0 in/s, 0 in/s");
+			}
+
+			strInfo = StringInfo(ss.str());
+			float x = round(aTop.x - strInfo.x / 2);
+			float y = round(aTop.y);
+
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor - (logSpeedometerEnemy ? 0x00aa0000 : 0), ss.str());
+
+			aTop.y += strInfo.y + padY * 2;
+		}
+
+		if (logDisplacement)
+		{
+			stringstream ss;
+			StrInfo strInfo;
+
+			ss << format("Displacement: %i") % bufferDisplacement.dist;
+
+			strInfo = StringInfo(ss.str());
+			float x = round(aTop.x - strInfo.x / 2);
+			float y = round(aTop.y);
+
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor - (logDisplacementEnemy ? 0x00aa0000 : 0), ss.str());
+
+			aTop.y += strInfo.y + padY * 2;
+			
+		}
+		else
+		{
+			if (logDisplacementStart.x != 0 || logDisplacementStart.y != 0 || logDisplacementStart.z != 0)
+				logDisplacementStart = Vector3(0, 0, 0);
 		}
 	}
 
@@ -847,7 +991,7 @@ void ESP()
 				average[1] = 0;
 				for (size_t i = 0; i < samples; i++)
 					average[1] += bufferDps[i];
-				average[1] = average[1] / samples * (1000 / dpsPollingRate);
+				average[1] = average[1] / samples * (1000 / 250);
 
 				// DP5s
 				samples = 20; // 5s/250ms=20
@@ -856,7 +1000,7 @@ void ESP()
 				average[5] = 0;
 				for (size_t i = 0; i < samples; i++)
 					average[5] += bufferDps[i];
-				average[5] = average[5] / samples * (1000 / dpsPollingRate);
+				average[5] = average[5] / samples * (1000 / 250);
 
 				// Prepare String
 				ss << format("DP1s: %0.0f\n") % average[1];
@@ -1085,6 +1229,7 @@ public:
 		NewThread(threadKillTimer);
 		NewThread(threadHits);
 		NewThread(threadAttackRate);
+		NewThread(threadSpeedometer);
 		
 		if (!font.Init(lineHeight, "Verdana"))
 		{

@@ -33,7 +33,7 @@ static const DWORD borderColor = 0xff444444;
 // THREADS //
 int targetLockID;
 struct Target {
-	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0) {}
+	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)) {}
 
 	bool valid;
 	bool alive;
@@ -44,6 +44,8 @@ struct Target {
 	int pHealth;
 	int lvl;
 	int lvlActual;
+
+	Vector3 pos;
 };
 Target selected;
 Target locked;
@@ -103,9 +105,18 @@ struct Killtimer {
 };
 Killtimer bufferKillTimer;
 Killtimer bufferKillTimerHistory;
+struct Displacement {
+	Displacement() : id(0), start(Vector3(0, 0, 0)), dist(0) {}
+
+	int id;
+	Vector3 start;
+	int dist;
+};
+Displacement bufferDisplacement;
 boost::circular_buffer<int> bufferDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
+boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRate,3s worth
 
 // Layout Anchors
 struct Anchor {

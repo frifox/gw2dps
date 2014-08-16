@@ -50,7 +50,7 @@ void threadHits() {
 							file.open(logHitsFile, ios::app);
 							if (file.is_open())
 							{
-								// instead of hits, log {time \t damageDealt}
+								// log as "time \t hit"
 								bool logDamageOverTime = false;
 
 								if (logFileEmpty)
