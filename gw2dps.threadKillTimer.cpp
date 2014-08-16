@@ -16,6 +16,15 @@ void threadKillTimer()
 			if (pHealth == 0)
 				pHealth = locked.cHealth;
 
+			if (locked.cHealth == locked.mHealth)
+			{
+				// 100% hp, reset
+				pAgentId = locked.id;
+				pHealth = locked.cHealth;
+				bufferKillTimer = {};
+				continue;
+			}
+
 			if (locked.cHealth == locked.mHealth && bufferKillTimer.dmg == 0)
 			{
 				Sleep(1); // no idea why but it only works with this being here
