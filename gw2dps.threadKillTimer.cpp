@@ -22,6 +22,10 @@ void threadKillTimer()
 				pAgentId = locked.id;
 				pHealth = locked.cHealth;
 				bufferKillTimer = {};
+				
+				if(!timer.is_stopped())
+					timer.stop();
+
 				continue;
 			}
 
