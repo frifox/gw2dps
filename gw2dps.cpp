@@ -7,7 +7,9 @@ bool selfHealthPercent = true;
 bool loopLimiter = true;
 
 bool targetSelected = true;
+bool targetInfo = false;
 bool targetLock = false;
+
 bool dpsAllowNegative = false;
 
 bool logDps = true;
@@ -93,7 +95,8 @@ void ESP()
 		stringstream ss;
 		ss << format("[%i] Self Health Percent (Alt P)\n") % selfHealthPercent;
 		ss << format("\n");
-		ss << format("[%i] Selected/Locked Target Info (Alt S)\n") % targetSelected;
+		ss << format("[%i] Selected/Locked Target HP (Alt S)\n") % targetSelected;
+		ss << format("[%i] Selected Target Details (Alt I)\n") % targetInfo;
 		ss << format("[%i] Lock On Target (Alt L)\n") % targetLock;
 		ss << format("[%i] Allow Negative DPS (Alt N)\n") % dpsAllowNegative;
 		ss << format("\n");
@@ -700,16 +703,78 @@ void ESP()
 
 	// TopLeft Element //
 	{
-		stringstream ss;
-		StrInfo strInfo;
-
 		if (targetSelected)
 		{
 			if (targetLock && selected.valid && locked.valid && selected.id == locked.id)
 			{
-				Character chLocked = agLocked.GetCharacter();
+				
+				stringstream ss;
+				StrInfo strInfo;
 
 				ss << format("Selected & Locked: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+
+				strInfo = StringInfo(ss.str());
+				float x = round(aTopLeft.x - strInfo.x / 2);
+				float y = round(aTopLeft.y);
+
+				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+				font.Draw(x, y, fontColor, ss.str());
+
+				// Prepare for Next Element
+				aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+			}
+			else
+			{
+				if (selected.valid)
+				{
+					stringstream ss;
+					StrInfo strInfo;
+					
+					ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+
+					strInfo = StringInfo(ss.str());
+					float x = round(aTopLeft.x - strInfo.x / 2);
+					float y = round(aTopLeft.y);
+
+					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+					font.Draw(x, y, fontColor, ss.str());
+
+					// Prepare for Next Element
+					aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+				}
+
+				if (targetLock && locked.valid)
+				{
+					stringstream ss;
+					StrInfo strInfo;
+					
+					ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
+
+					strInfo = StringInfo(ss.str());
+					float x = round(aTopLeft.x - strInfo.x / 2);
+					float y = round(aTopLeft.y);
+
+					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+					font.Draw(x, y, fontColor, ss.str());
+
+					// Prepare for Next Element
+					aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+				}
+			}
+
+			if (targetInfo && selected.valid)
+			{
+				//aTopLeft.y += lineHeight;
+				
+				stringstream ss;
+				StrInfo strInfo;
+
+				//ss << "Selected Info\n";
+
+				ss << format("Distance: %i") % int(Dist(self.pos, selected.pos));
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTopLeft.x - strInfo.x / 2);
@@ -723,44 +788,6 @@ void ESP()
 				ss.str("");
 				aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
 			}
-			else
-			{
-				if (selected.valid)
-				{
-					Character chLocked = agLocked.GetCharacter();
-
-					ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
-
-					strInfo = StringInfo(ss.str());
-					float x = round(aTopLeft.x - strInfo.x / 2);
-					float y = round(aTopLeft.y);
-
-					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
-					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-					font.Draw(x, y, fontColor, ss.str());
-
-					// Prepare for Next Element
-					ss.str("");
-					aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
-				}
-
-				if (targetLock && locked.valid)
-				{
-					ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
-
-					strInfo = StringInfo(ss.str());
-					float x = round(aTopLeft.x - strInfo.x / 2);
-					float y = round(aTopLeft.y);
-
-					DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
-					DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-					font.Draw(x, y, fontColor, ss.str());
-				}
-			}
-			
-			// Prepare for Next Element
-			ss.str("");
-			aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
 		}
 	}
 

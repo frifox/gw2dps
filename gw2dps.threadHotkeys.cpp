@@ -6,8 +6,9 @@
 #define SELF_HEALTH_PERCENT 3
 
 #define TARGET_SELECTED 10
-#define TARGET_LOCK 11
-#define DPS_ALLOW_NEGATIVE 12
+#define TARGET_INFO 11
+#define TARGET_LOCK 12
+#define DPS_ALLOW_NEGATIVE 13
 
 #define LOG_DPS 20
 #define LOG_DPS_DETAILS 21
@@ -52,6 +53,7 @@ void threadHotKeys()
 	RegisterHotKey(NULL, SELF_HEALTH_PERCENT, MOD_ALT | MOD_NOREPEAT, 0x50); // selfHealthPercent
 
 	RegisterHotKey(NULL, TARGET_SELECTED, MOD_ALT | MOD_NOREPEAT, 0x53); // targetSelected
+	RegisterHotKey(NULL, TARGET_INFO, MOD_ALT | MOD_NOREPEAT, 0x49); // targetInfo
 	RegisterHotKey(NULL, TARGET_LOCK, MOD_ALT | MOD_NOREPEAT, 0x4C); // targetLock
 	RegisterHotKey(NULL, DPS_ALLOW_NEGATIVE, MOD_ALT | MOD_NOREPEAT, 0x4E); // dpsAllowNegative
 
@@ -102,6 +104,7 @@ void threadHotKeys()
 			if (msg.wParam == SELF_HEALTH_PERCENT) selfHealthPercent = !selfHealthPercent;
 
 			if (msg.wParam == TARGET_SELECTED) targetSelected = !targetSelected;
+			if (msg.wParam == TARGET_INFO) targetInfo = !targetInfo;
 			if (msg.wParam == TARGET_LOCK) targetLock = !targetLock;
 			if (msg.wParam == DPS_ALLOW_NEGATIVE) dpsAllowNegative = !dpsAllowNegative;
 			
