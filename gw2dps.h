@@ -80,6 +80,7 @@ struct Allies {
 struct Float {
 	Vector3 pos;
 	int mHealth;
+	int prof;
 };
 struct Siege {
 	int type;

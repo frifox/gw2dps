@@ -40,6 +40,7 @@ int wvwBonus = 0;
 bool floatAllyNpc = false;
 bool floatEnemyNpc = false;
 bool floatAllyPlayer = false;
+bool floatAllyPlayerProf = false;
 bool floatEnemyPlayer = false;
 bool floatSiege = false;
 int floatRadius = 7000;
@@ -377,6 +378,7 @@ void ESP()
 				int cHealth = int(ch.GetCurrentHealth());
 				int mHealth = int(ch.GetMaxHealth());
 				int attitude = ch.GetAttitude();
+				int prof = ch.GetProfession();
 
 				// Filter the dead
 				if (cHealth > 0 && mHealth > 1)
@@ -387,6 +389,7 @@ void ESP()
 						Float floater;
 						floater.pos = pos;
 						floater.mHealth = mHealth;
+						floater.prof = prof;
 
 						// player vs npc
 						if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
@@ -824,6 +827,35 @@ void ESP()
 			font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
 
 			aTop.y += strInfo.y + padY*2;
+
+			if (floatAllyPlayerProf)
+			{
+				int prof[10] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				for (auto & ally : floaters.allyPlayer) {
+					prof[ally.prof]++;
+				}
+				
+				ss.str("");
+				ss << format("War: %i") % prof[2];
+				ss << format(" | Guard: %i") %prof[1];
+				ss << format(" | Ele :%i") % prof[6];
+				ss << format(" | Thief: %i") % prof[5];
+				ss << format(" | Mes: %i") % prof[7];
+				ss << format(" | Engi: %i") % prof[3];
+				ss << format(" | Ranger: %i") % prof[4];
+				ss << format(" | Necro: %i") % prof[8];
+
+				strInfo = StringInfo(ss.str());
+				float x = round(aTop.x - strInfo.x / 2);
+				float y = round(aTop.y);
+
+				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+				font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
+
+				aTop.y += strInfo.y + padY * 2;
+			}
+
 
 			if (floatCircles)
 			{

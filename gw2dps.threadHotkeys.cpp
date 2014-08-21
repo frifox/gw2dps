@@ -38,8 +38,9 @@
 #define FLOAT_ALLY_NPC 74
 #define FLOAT_ENEMY_NPC 75
 #define FLOAT_ALLY_PLAYER 76
-#define FLOAT_ENEMY_PLAYER 77
-#define FLOAT_SIEGE 78
+#define FLOAT_ALLY_PLAYER_PROF 77
+#define FLOAT_ENEMY_PLAYER 78
+#define FLOAT_SIEGE 79
 
 #define LOG_SPEEDOMETER 80
 #define LOG_SPEEDOMETER_ENEMY 81
@@ -84,9 +85,10 @@ void threadHotKeys()
 	RegisterHotKey(NULL, FLOAT_ALLY_NPC, MOD_ALT, 0x31); // floatAllyNpc
 	RegisterHotKey(NULL, FLOAT_ENEMY_NPC, MOD_ALT, 0x32); // floatEnemyNpc
 	RegisterHotKey(NULL, FLOAT_ALLY_PLAYER, MOD_ALT, 0x33); // floatAllyPlayer
+	RegisterHotKey(NULL, FLOAT_ALLY_PLAYER_PROF, MOD_ALT | MOD_SHIFT, 0x33); // floatAllyPlayerProf
 	RegisterHotKey(NULL, FLOAT_ENEMY_PLAYER, MOD_ALT, 0x34); // floatEnemyPlayer
 	RegisterHotKey(NULL, FLOAT_SIEGE, MOD_ALT, 0x35); // floatSiege
-
+	
 	RegisterHotKey(NULL, LOG_SPEEDOMETER, MOD_ALT, 0x39); // logSpeedometer
 	RegisterHotKey(NULL, LOG_SPEEDOMETER_ENEMY, MOD_ALT | MOD_SHIFT, 0x39); // logSpeedometerEnemy
 	RegisterHotKey(NULL, LOG_DISPLACEMENT, MOD_ALT, 0x30); // logDisplacement
@@ -136,6 +138,7 @@ void threadHotKeys()
 			if (msg.wParam == FLOAT_ALLY_NPC) floatAllyNpc = !floatAllyNpc;
 			if (msg.wParam == FLOAT_ENEMY_NPC) floatEnemyNpc = !floatEnemyNpc;
 			if (msg.wParam == FLOAT_ALLY_PLAYER) floatAllyPlayer = !floatAllyPlayer;
+			if (msg.wParam == FLOAT_ALLY_PLAYER_PROF) floatAllyPlayerProf = !floatAllyPlayerProf;
 			if (msg.wParam == FLOAT_ENEMY_PLAYER) floatEnemyPlayer = !floatEnemyPlayer;
 			if (msg.wParam == FLOAT_SIEGE) floatSiege = !floatSiege;
 
