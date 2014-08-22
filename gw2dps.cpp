@@ -838,7 +838,7 @@ void ESP()
 				ss.str("");
 				ss << format("War: %i") % prof[2];
 				ss << format(" | Guard: %i") %prof[1];
-				ss << format(" | Ele :%i") % prof[6];
+				ss << format(" | Ele: %i") % prof[6];
 				ss << format(" | Thief: %i") % prof[5];
 				ss << format(" | Mes: %i") % prof[7];
 				ss << format(" | Engi: %i") % prof[3];
