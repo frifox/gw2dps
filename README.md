@@ -1,5 +1,3 @@
-Sept 9 patch broke it. I'll update gw2dps once gw2lib is updated for the patch.
-
 GW2DPS
 =======
 
