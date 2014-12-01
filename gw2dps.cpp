@@ -57,12 +57,12 @@ bool logDisplacementEnemy = false;
 Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
 // Threads //
-#include "thread.Hotkeys.cpp"
-#include "thread.Dps.cpp"
-#include "thread.KillTimer.cpp"
-#include "thread.Hits.cpp"
-#include "thread.AttackRate.cpp"
-#include "thread.Speedometer.cpp"
+#include "gw2dps/thread.Hotkeys.cpp"
+#include "gw2dps/thread.Dps.cpp"
+#include "gw2dps/thread.KillTimer.cpp"
+#include "gw2dps/thread.Hits.cpp"
+#include "gw2dps/thread.AttackRate.cpp"
+#include "gw2dps/thread.Speedometer.cpp"
 
 // Self
 Character me;
@@ -455,7 +455,7 @@ void ESP()
 
 				baseHpReturn base = baseHp(ally.lvl, ally.profession);
 				ally.vitality = int(round((ally.mHealth - base.health) / 10));
-				ally.traits = (916.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
+				ally.traits = (926.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
 				ally.traits = round(ally.traits * 10) / 10; // round to 0.0
 
 				switch (ally.profession)

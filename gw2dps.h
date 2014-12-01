@@ -254,18 +254,24 @@ baseHpReturn baseHp(int lvl, int profession)
 {
 	// base stats
 	float hp = 0;
-	float vit = 16;
+	float vit = 0;
 
 	// calc base vit
-	if (lvl >=  0 && lvl <=  9) vit += (lvl -  0) *  4; if (lvl >  9) vit += 10 * 4;
-	if (lvl >= 10 && lvl <= 19) vit += (lvl -  9) *  6; if (lvl > 19) vit += 10 * 6;
-	if (lvl >= 20 && lvl <= 29) vit += (lvl - 19) *  8; if (lvl > 29) vit += 10 * 8;
-	if (lvl >= 30 && lvl <= 39) vit += (lvl - 29) * 10; if (lvl > 39) vit += 10 * 10;
-	if (lvl >= 40 && lvl <= 49) vit += (lvl - 39) * 12; if (lvl > 49) vit += 10 * 12;
-	if (lvl >= 50 && lvl <= 59) vit += (lvl - 49) * 14; if (lvl > 59) vit += 10 * 14;
-	if (lvl >= 60 && lvl <= 69) vit += (lvl - 59) * 16; if (lvl > 69) vit += 10 * 16;
-	if (lvl >= 70 && lvl <= 79) vit += (lvl - 69) * 18; if (lvl > 79) vit += 10 * 18;
-	if (lvl >= 80 && lvl <= 89) vit += (lvl - 79) * 20; if (lvl > 89) vit += 10 * 20;
+	if (lvl >=  1) vit += 24;
+	if (lvl >=  4) vit += 30;
+	if (lvl >= 10) vit += 35;
+	if (lvl >= 16) vit += 35;
+	if (lvl >= 22) vit += 40;
+	if (lvl >= 28) vit += 55;
+	if (lvl >= 34) vit += 60;
+	if (lvl >= 40) vit += 70;
+	if (lvl >= 46) vit += 73;
+	if (lvl >= 52) vit += 80;
+	if (lvl >= 58) vit += 80;
+	if (lvl >= 64) vit += 82;
+	if (lvl >= 70) vit += 82;
+	if (lvl >= 76) vit += 85;
+	if (lvl >= 80) vit += 95;
 
 	// calc base hp
 	switch (profession)
