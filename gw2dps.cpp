@@ -1,5 +1,5 @@
 #include "gw2lib.h"
-#include "gw2dps.h"
+#include "gw2dps/gw2dps.h"
 
 // Settings //
 bool killApp = false;
@@ -10,6 +10,7 @@ bool loopLimiter = true;
 
 bool targetSelected = true;
 bool targetInfo = false;
+bool targetInfoAlt = false;
 bool targetLock = false;
 
 bool dpsAllowNegative = false;
@@ -66,6 +67,7 @@ Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
 // Self
 Character me;
+Agent meAg = me.GetAgent();
 
 void ESP()
 {
@@ -309,6 +311,8 @@ void ESP()
 					locked.pHealth = 0;
 				locked.lvl = ch.GetScaledLevel();
 				locked.lvlActual = ch.GetLevel();
+
+				
 			}
 			else if (agType == GW2::AGENT_TYPE_GADGET) // structure
 			{
@@ -779,9 +783,48 @@ void ESP()
 				stringstream ss;
 				StrInfo strInfo;
 
-				//ss << "Selected Info\n";
+				if (targetInfoAlt)
+				{
+					if (agLocked.GetType() == GW2::AGENT_TYPE_CHAR)
+					{
+						int stats[7] {};
+						stats[0] = 0; // power
+						stats[1] = 0; // precision
+						stats[2] = 0; // toughness
+						stats[3] = 0; // vitality
+						stats[4] = 0; // ferocity
+						stats[5] = 0; // healing
+						stats[6] = 0; // condition
 
-				ss << format("Distance: %i") % int(Dist(self.pos, selected.pos));
+						unsigned long shift;
+						shift = *(unsigned long*)agLocked.m_ptr;
+						shift = *(unsigned long*)(shift + 0x30);
+						shift = *(unsigned long*)(shift + 0x138);
+
+						stats[0] = *(unsigned long*)(shift + 0x18c + 0x4 * 0);
+						stats[1] = *(unsigned long*)(shift + 0x18c + 0x4 * 1);
+						stats[2] = *(unsigned long*)(shift + 0x18c + 0x4 * 2);
+						stats[3] = *(unsigned long*)(shift + 0x18c + 0x4 * 3);
+						stats[4] = *(unsigned long*)(shift + 0x18c + 0x4 * 4);
+						stats[5] = *(unsigned long*)(shift + 0x18c + 0x4 * 5);
+						stats[6] = *(unsigned long*)(shift + 0x18c + 0x4 * 6);
+
+						ss << format("Power - %i") % stats[0];
+						ss << format("\nPrecision - %i") % stats[1];
+						ss << format("\nToughness - %i") % stats[2];
+						ss << format("\nVitality - %i") % stats[3];
+						ss << format("\nFerocity - %i") % stats[4];
+						ss << format("\nHealing - %i") % stats[5];
+						ss << format("\nCondition - %i") % stats[6];
+
+						ss << format("\n");
+						ss << format("\n(Agent: %p)") % (void**)agLocked.m_ptr;
+					}
+				}
+				else
+				{
+					ss << format("Distance: %i") % int(Dist(self.pos, selected.pos));
+				}
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTopLeft.x - strInfo.x / 2);
@@ -1297,8 +1340,17 @@ void GW2LIB::gw2lib_main()
         return;
     }
 
-	while (!killApp)
+	// wait for exit hotkey
+	while (GetAsyncKeyState(VK_F12) >= 0)
         ;
-
+	
+	// self destruct sequence
+	t1.interrupt();
+	t2.interrupt();
+	t3.interrupt();
+	t4.interrupt();
+	t5.interrupt();
+	t6.interrupt();
+	Sleep(500);
 	return;
 }

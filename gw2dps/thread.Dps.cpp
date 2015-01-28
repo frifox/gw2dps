@@ -55,5 +55,7 @@ void threadDps() {
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
+
+		this_thread::interruption_point();
 	}
 }
