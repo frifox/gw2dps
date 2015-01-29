@@ -10,6 +10,8 @@ void threadHits() {
 
 	while (true)
 	{
+		this_thread::interruption_point();
+		
 		if (!logHitsToFile && logFileInit)
 			logFileInit = false;
 
@@ -128,7 +130,5 @@ void threadHits() {
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
-
-		this_thread::interruption_point();
 	}
 }

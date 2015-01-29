@@ -7,6 +7,8 @@ void threadSpeedometer() {
 	timer.stop();
 	while (true)
 	{
+		this_thread::interruption_point();
+
 		if (logSpeedometer) {
 			int cId = 0;
 			Vector3 cPos = Vector3(0, 0, 0);
@@ -99,7 +101,5 @@ void threadSpeedometer() {
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
-
-		this_thread::interruption_point();
 	}
 }

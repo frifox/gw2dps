@@ -100,6 +100,8 @@ void threadHotKeys()
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
 	{
+		this_thread::interruption_point();
+
 		PeekMessage(&msg, 0, 0, 0, 0x0001);
 		switch (msg.message)
 		{
@@ -153,7 +155,5 @@ void threadHotKeys()
 			if (msg.wParam == LOG_DISPLACEMENT) logDisplacement = !logDisplacement;
 			if (msg.wParam == LOG_DISPLACEMENT_ENEMY) logDisplacementEnemy = !logDisplacementEnemy;
 		}
-
-		this_thread::interruption_point();
 	}
 }

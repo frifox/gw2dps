@@ -6,6 +6,8 @@ void threadDps() {
 	timer::cpu_timer timer;
 	while (true)
 	{
+		this_thread::interruption_point();
+
 		if (logDps && locked.valid && locked.id == pAgentId) {
 			if (timer.is_stopped())
 			{
@@ -55,7 +57,5 @@ void threadDps() {
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
-
-		this_thread::interruption_point();
 	}
 }

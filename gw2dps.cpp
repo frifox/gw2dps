@@ -1345,12 +1345,12 @@ void GW2LIB::gw2lib_main()
         ;
 	
 	// self destruct sequence
-	t1.interrupt();
-	t2.interrupt();
-	t3.interrupt();
-	t4.interrupt();
-	t5.interrupt();
-	t6.interrupt();
-	Sleep(500);
+	t1.interrupt(); //t1.join();
+	t2.interrupt(); //t2.join();
+	t3.interrupt(); //t3.join();
+	t4.interrupt(); //t4.join();
+	t5.interrupt(); //t5.join();
+	t6.interrupt(); //t6.join();
+	Sleep(1000);
 	return;
 }

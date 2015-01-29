@@ -10,6 +10,8 @@ void threadAttackRate() {
 	int hits = 0;
 	while (true)
 	{
+		this_thread::interruption_point();
+
 		if (!logAttackRateToFile && logFileInit)
 			logFileInit = false;
 
@@ -108,7 +110,5 @@ void threadAttackRate() {
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
-
-		this_thread::interruption_point();
 	}
 }

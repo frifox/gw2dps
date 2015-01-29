@@ -8,6 +8,8 @@ void threadKillTimer()
 
 	while (true)
 	{
+		this_thread::interruption_point();
+
 		if (logKillTimer && locked.valid && pAgentId == locked.id && locked.alive)
 		{
 			if (pHealth == 0)
@@ -104,7 +106,7 @@ void threadKillTimer()
 				{ // check if char is dead, if dead then tweak dps for accuracy
 					bool isAlive = false;
 					Agent ag;
-					while (ag.BeNext())
+					while (ag.BeNext() && !this_thread::interruption_requested())
 					{
 						if (pAgentId == ag.GetAgentId())
 						{
@@ -163,7 +165,5 @@ void threadKillTimer()
 		// go easy on the cpu
 		if (loopLimiter)
 			Sleep(1);
-
-		this_thread::interruption_point();
 	}
 }
