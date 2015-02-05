@@ -2,8 +2,9 @@
 
 #define HELP 0
 #define EXP_MODE 1
-#define LOOP_LIMITER 2
-#define SELF_HEALTH_PERCENT 3
+#define SELF_FLOAT 2
+#define LOOP_LIMITER 3
+#define SELF_HEALTH_PERCENT 4
 
 #define TARGET_SELECTED 10
 #define TARGET_INFO 11
@@ -54,6 +55,7 @@ void threadHotKeys()
 
 	RegisterHotKey(NULL, HELP, MOD_ALT | MOD_NOREPEAT, VK_OEM_2); // help
 	RegisterHotKey(NULL, EXP_MODE, MOD_ALT | MOD_NOREPEAT, 0x48); // expMode
+	RegisterHotKey(NULL, SELF_FLOAT, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x48); // selfFloat
 	RegisterHotKey(NULL, LOOP_LIMITER, MOD_ALT | MOD_NOREPEAT, 0x54); // loopLimiter
 	RegisterHotKey(NULL, SELF_HEALTH_PERCENT, MOD_ALT | MOD_NOREPEAT, 0x50); // selfHealthPercent
 
@@ -112,6 +114,7 @@ void threadHotKeys()
 
 			if (msg.wParam == HELP) help = !help;
 			if (msg.wParam == EXP_MODE) expMode = !expMode;
+			if (msg.wParam == SELF_FLOAT) selfFloat = !selfFloat;
 			if (msg.wParam == LOOP_LIMITER) loopLimiter = !loopLimiter;
 			if (msg.wParam == SELF_HEALTH_PERCENT) selfHealthPercent = !selfHealthPercent;
 

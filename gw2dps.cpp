@@ -6,6 +6,7 @@ bool killApp = false;
 
 bool help = false;
 bool expMode = false;
+bool selfFloat = false;
 bool selfHealthPercent = true;
 bool loopLimiter = true;
 
@@ -164,6 +165,13 @@ void ESP()
 
 		DrawRectFilled(x - box, y - box, box * 2, box * 2, 0xccFF0000);
 		DrawRect(x - box, y - box, box * 2, box * 2, borderColor);
+	}
+
+	if (selfFloat)
+	{
+		DWORD color = 0x4433ff00;
+		DrawCircleProjected(self.pos, 20.0f, color);
+		DrawCircleFilledProjected(self.pos, 20.0f, color - 0x30000000);
 	}
 
 	// Font Draw Debug
