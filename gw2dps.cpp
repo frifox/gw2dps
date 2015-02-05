@@ -5,6 +5,7 @@
 bool killApp = false;
 
 bool help = false;
+bool expMode = false;
 bool selfHealthPercent = true;
 bool loopLimiter = true;
 
@@ -98,7 +99,7 @@ void ESP()
 
 	if (help){
 		stringstream ss;
-		//ss << format("[%i] Kill GW2DPS App (Alt K)\n") % killApp;
+		//ss << format("[%i] Exp Mode Crosshair (Alt H)\n") % expMode;
 		//ss << format("\n");
 		ss << format("[%i] Self Health Percent (Alt P)\n") % selfHealthPercent;
 		ss << format("\n");
@@ -147,6 +148,22 @@ void ESP()
 		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
 		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
 		font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
+	}
+
+	// JP Skills
+	if (expMode)
+	{
+		float x = aCenter.x;
+		float y = aCenter.y + 28;
+		
+		float box = 2;
+		float line = 10;
+
+		DrawLine(x - line, y, x + line, y, borderColor);
+		DrawLine(x, y - line, x, y + line, borderColor);
+
+		DrawRectFilled(x - box, y - box, box * 2, box * 2, 0xccFF0000);
+		DrawRect(x - box, y - box, box * 2, box * 2, borderColor);
 	}
 
 	// Font Draw Debug
