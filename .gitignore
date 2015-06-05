@@ -1,0 +1,12 @@
+bin/
+CMakeFiles/
+dist/
+gw2_dps.dir/
+Release/
+Debug/
+*.vcxproj
+*.vcxproj.filters
+*.cmake
+*.sln
+*.sdf
+*.opensdf

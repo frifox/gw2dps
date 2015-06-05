@@ -3,6 +3,43 @@ GW2DPS
 
 DPS meter for GW2. Binaries are in the bin folder. Based on rafi's [gw2lib](http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709).
 
+Setup
+=======
+Install Visual Studio 2013
+Install Boost (See Boost section for more info)
+Install Git (add git to you PATH environment variable)
+Install CMake
+clone this repo with git (git clone https://github.com/Cubimon/gw2dps.git)
+call bootstrap.bat (this will clone rafzi's lib and setup the folder structure)
+now the project is inside hacklib/src/gw2dps
+
+Building
+=======
+call from the hacklib root directory:
+"cmake --build . --config Release" to build the release version or
+"cmake --build . --config" to build the debug version or
+import the project into visual studio with the *.sln file in the hacklib folder.
+(you have compile Boost libs again if you change from debug to release or release to debug)
+
+Boost v1.56.0
+=======
+Download Boost 1.56.0 from Sourceforge (url) and unzip.
+create a new environment variable with the key BOOST_ROOT and as value the path to Boost's root folder.
+(e.g. from command line "setx BOOST_ROOT C:/User/Cubimon/libs/Boost/")
+Then call from command line at the boost root folder:
+```
+bootstrap.bat
+```
+
+if you want to create the debug version:
+```
+b2 variant=debug
+```
+for the release otherwise:
+```
+b2 variant=release
+```
+
 Hotkeys
 =======
 ```
