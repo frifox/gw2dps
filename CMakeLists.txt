@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.2.3)
 
 # boost directory
 SET(BOOST_ROOT $ENV{BOOST_ROOT})
+SET(Boost_USE_STATIC_LIBS ON) 
 
 FIND_PACKAGE(Boost 1.56.0 COMPONENTS system thread date_time timer chrono regex REQUIRED)
 
