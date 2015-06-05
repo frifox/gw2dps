@@ -1,7 +1,5 @@
-#include "stdafx.h"
-#include "gw2esp.h"
+#include <afxwin.h>
 
-#include <windows.h> 
 #include <tlhelp32.h> 
 #include <shlwapi.h> 
 #include <conio.h> 
@@ -16,6 +14,8 @@
 
 BOOL Inject(DWORD pID, const char * DLL_NAME);
 DWORD GetTargetThreadIDFromProcName(const char * ProcName);
+
+#define CONFIG_DIR_ENV_KEY L"GW2DPS_CONFIG_DIR"
 
 
 // The one and only application object
@@ -55,11 +55,13 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	DWORD pID = GetTargetThreadIDFromProcName("Guild Wars 2");
 
 	// Get the dll's full path name 
-	char buf[MAX_PATH] = { 0 };
-	GetFullPathName("gw2dps.dll", MAX_PATH, buf, NULL);
+	wchar_t wchar_buf[MAX_PATH] = { 0 };
+	GetFullPathName(L"gw2dps.dll", MAX_PATH, wchar_buf, NULL);
+	char char_buf[MAX_PATH + 1] = { 0 };
+	wcstombs(char_buf, wchar_buf, wcslen(wchar_buf));
 
 	// Inject our main dll 
-	if (!Inject(pID, buf))
+	if (!Inject(pID, char_buf))
 	{
 		printf("DLL Not Loaded! \n");
 		system("Pause");
@@ -85,7 +87,7 @@ BOOL Inject(DWORD pID, const char * DLL_NAME)
 		return false;
 	}
 
-	LoadLibAddy = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+	LoadLibAddy = (LPVOID)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryA");
 
 	// Allocate space in the process for our DLL 
 	RemoteString = (LPVOID)VirtualAllocEx(Proc, NULL, strlen(DLL_NAME), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
