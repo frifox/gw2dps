@@ -94,6 +94,16 @@ struct Floaters {
 	vector<Float> enemyPlayer;
 	vector<Siege> siege;
 };
+struct WBoss {
+	int id;
+	Vector3 pos;
+	int mHealth;
+	int cHealth;
+	int pHealth;
+};
+struct WBosses {
+	vector<WBoss> list;
+};
 struct Killtimer {
 	Killtimer() : dmg(0), dps(0), time(0), samplesKnown(0), samplesUnknown(0) {}
 

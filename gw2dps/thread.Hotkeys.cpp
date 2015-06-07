@@ -5,6 +5,7 @@
 #define SELF_FLOAT 2
 #define LOOP_LIMITER 3
 #define SELF_HEALTH_PERCENT 4
+#define WORLD_BOSSES 5
 
 #define TARGET_SELECTED 10
 #define TARGET_INFO 11
@@ -29,25 +30,30 @@
 #define ATTACKRATE_CHAIN_HITS_MORE 53
 #define ATTACKRATE_CHAIN_HITS_LESS 54
 
-#define ALLIES_LIST 60
-#define WVW_BONUS_MORE 61
-#define WVW_BONUS_LESS 62
+#define LOG_CRITS 60
+#define LOG_CRITS_DETAILS 61
+#define LOG_CRITS_SAMPLE_MORE 62
+#define LOG_CRITS_SAMPLE_LESS 63
 
-#define FLOAT_CIRCLES 70
-#define FLOAT_TYPE 71
-#define FLOAT_RADIUS_MORE 72
-#define FLOAT_RADIUS_LESS 73
-#define FLOAT_ALLY_NPC 74
-#define FLOAT_ENEMY_NPC 75
-#define FLOAT_ALLY_PLAYER 76
-#define FLOAT_ALLY_PLAYER_PROF 77
-#define FLOAT_ENEMY_PLAYER 78
-#define FLOAT_SIEGE 79
+#define ALLIES_LIST 70
+#define WVW_BONUS_MORE 71
+#define WVW_BONUS_LESS 72
 
-#define LOG_SPEEDOMETER 80
-#define LOG_SPEEDOMETER_ENEMY 81
-#define LOG_DISPLACEMENT 82
-#define LOG_DISPLACEMENT_ENEMY 83
+#define FLOAT_CIRCLES 80
+#define FLOAT_TYPE 81
+#define FLOAT_RADIUS_MORE 82
+#define FLOAT_RADIUS_LESS 83
+#define FLOAT_ALLY_NPC 84
+#define FLOAT_ENEMY_NPC 85
+#define FLOAT_ALLY_PLAYER 86
+#define FLOAT_ALLY_PLAYER_PROF 87
+#define FLOAT_ENEMY_PLAYER 88
+#define FLOAT_SIEGE 89
+
+#define LOG_SPEEDOMETER 90
+#define LOG_SPEEDOMETER_ENEMY 91
+#define LOG_DISPLACEMENT 92
+#define LOG_DISPLACEMENT_ENEMY 93
 
 void threadHotKeys()
 {
@@ -58,6 +64,7 @@ void threadHotKeys()
 	RegisterHotKey(NULL, SELF_FLOAT, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x48); // selfFloat
 	RegisterHotKey(NULL, LOOP_LIMITER, MOD_ALT | MOD_NOREPEAT, 0x54); // loopLimiter
 	RegisterHotKey(NULL, SELF_HEALTH_PERCENT, MOD_ALT | MOD_NOREPEAT, 0x50); // selfHealthPercent
+	RegisterHotKey(NULL, WORLD_BOSSES, MOD_ALT | MOD_NOREPEAT, 0x42); // worldBoss
 
 	RegisterHotKey(NULL, TARGET_SELECTED, MOD_ALT | MOD_NOREPEAT, 0x53); // targetSelected
 	RegisterHotKey(NULL, TARGET_INFO, MOD_ALT | MOD_NOREPEAT, 0x49); // targetInfo
@@ -75,11 +82,16 @@ void threadHotKeys()
 	RegisterHotKey(NULL, LOG_HITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD8); // logHits
 	RegisterHotKey(NULL, LOG_HITS_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD2); // logHitsDetails
 	RegisterHotKey(NULL, LOG_HITS_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD5); // logHitsToFile
+
 	RegisterHotKey(NULL, LOG_ATTACK_RATE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD9); // logAttackRate
 	RegisterHotKey(NULL, LOG_ATTACK_RATE_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD3); // logAttackRateDetails
 	RegisterHotKey(NULL, LOG_ATTACK_RATE_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD6); // logAttackRateToFile
 	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_MORE, MOD_ALT, VK_PRIOR); // AttackRateChainHits +
 	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_LESS, MOD_ALT, VK_NEXT); // AttackRateChainHits -
+
+	RegisterHotKey(NULL, LOG_CRITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD0); // logCrits
+	RegisterHotKey(NULL, LOG_CRITS_SAMPLE_MORE, MOD_ALT, VK_INSERT); // logCritsSample +
+	RegisterHotKey(NULL, LOG_CRITS_SAMPLE_LESS, MOD_ALT, VK_DELETE); // logCritsSample -
 
 	RegisterHotKey(NULL, ALLIES_LIST, MOD_ALT | MOD_NOREPEAT, 0x43); // alliesList
 	RegisterHotKey(NULL, WVW_BONUS_MORE, MOD_ALT, VK_HOME); // wvwBonus +
@@ -117,6 +129,7 @@ void threadHotKeys()
 			if (msg.wParam == SELF_FLOAT) selfFloat = !selfFloat;
 			if (msg.wParam == LOOP_LIMITER) loopLimiter = !loopLimiter;
 			if (msg.wParam == SELF_HEALTH_PERCENT) selfHealthPercent = !selfHealthPercent;
+			if (msg.wParam == WORLD_BOSSES) woldBosses = !woldBosses;
 
 			if (msg.wParam == TARGET_SELECTED) targetSelected = !targetSelected;
 			if (msg.wParam == TARGET_INFO) targetInfo = !targetInfo;
@@ -140,6 +153,10 @@ void threadHotKeys()
 			if (msg.wParam == LOG_ATTACK_RATE_TO_FILE) logAttackRateToFile = !logAttackRateToFile;
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_MORE) if (AttackRateChainHits < 50) AttackRateChainHits += 1;
 			if (msg.wParam == ATTACKRATE_CHAIN_HITS_LESS) if (AttackRateChainHits > 1) AttackRateChainHits -= 1;
+
+			if (msg.wParam == LOG_CRITS) logCrits = !logCrits;
+			if (msg.wParam == LOG_CRITS_SAMPLE_MORE) if (logCritsSample < 10000) logCritsSample += 1;
+			if (msg.wParam == LOG_CRITS_SAMPLE_LESS) if (logCritsSample > 1) logCritsSample -= 1;
 
 			if (msg.wParam == ALLIES_LIST) alliesList = !alliesList;
 			if (msg.wParam == WVW_BONUS_MORE) if (wvwBonus < 10) wvwBonus += 1;

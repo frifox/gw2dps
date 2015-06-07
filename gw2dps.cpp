@@ -10,6 +10,8 @@ bool selfFloat = false;
 bool selfHealthPercent = true;
 bool loopLimiter = true;
 
+bool woldBosses = false;
+
 bool targetSelected = true;
 bool targetInfo = false;
 bool targetInfoAlt = false;
@@ -39,6 +41,15 @@ int AttackRateChainTime = 0; // not used atm
 string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
 int threadAttackRateCounter = 0;
 
+int logCrits = false;
+int logCritsDetails = true;
+int logCritsSample = 0;
+int logCritsGlances = 0;
+int logCritsNormals = 0;
+int logCritsCrits = 0;
+int logCritsToFile = false;
+string logCritsFile = "gw2dpsLog-Crits.txt";
+
 bool alliesList = false;
 int wvwBonus = 0;
 
@@ -65,6 +76,7 @@ Vector3 logDisplacementStart = Vector3(0, 0, 0);
 #include "gw2dps/thread.KillTimer.cpp"
 #include "gw2dps/thread.Hits.cpp"
 #include "gw2dps/thread.AttackRate.cpp"
+#include "gw2dps/thread.Crits.cpp"
 #include "gw2dps/thread.Speedometer.cpp"
 
 // Self
@@ -313,6 +325,7 @@ void ESP()
 	Floaters floaters;
 	Allies allies;
 	Agent ag;
+	WBosses wbosses;
 	while (ag.BeNext())
 	{
 		// Locked Target (Data)
@@ -336,8 +349,6 @@ void ESP()
 					locked.pHealth = 0;
 				locked.lvl = ch.GetScaledLevel();
 				locked.lvlActual = ch.GetLevel();
-
-				
 			}
 			else if (agType == GW2::AGENT_TYPE_GADGET) // structure
 			{
@@ -394,6 +405,30 @@ void ESP()
 				else
 					locked = {};
 			}
+		}
+
+		// Wold Bosses
+		if (woldBosses && ag.GetType() == GW2::AGENT_TYPE_GADGET_ATTACK_TARGET) {
+			WBoss wboss;
+
+			wboss.id = ag.GetAgentId();
+			wboss.pos = ag.GetPos();
+			
+			unsigned long shift = *(unsigned long*)ag.m_ptr;
+			shift = *(unsigned long*)(shift + 0x30);
+			shift = *(unsigned long*)(shift + 0x28);
+			shift = *(unsigned long*)(shift + 0x17c);
+			if (shift)
+			{
+				wboss.cHealth = int(*(float*)(shift + 0x8));
+				wboss.mHealth = int(*(float*)(shift + 0xC));
+			}
+			if (wboss.mHealth > 0)
+				wboss.pHealth = int(100.f * float(wboss.cHealth) / float(wboss.mHealth));
+			else
+				wboss.pHealth = 0;
+
+			wbosses.list.push_back(wboss);
 		}
 
 		// Floaters
@@ -1027,6 +1062,57 @@ void ESP()
 			}
 		}
 
+		// World Boss
+		if (woldBosses)
+		{
+			stringstream fs;
+			fs << format("Wold Bosses: %i") % wbosses.list.size();
+
+			StrInfo strInfo = StringInfo(fs.str());
+			float lx = 12;
+			float ly = 32;
+
+			DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+			DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(lx, ly, fontColor, fs.str());
+
+			ly = ly + 12;
+			
+			if (wbosses.list.size() > 0) {
+				float fx, fy;
+				for (auto & wboss : wbosses.list) {
+					// floater
+					if (WorldToScreen(wboss.pos, &fx, &fy))
+					{
+						stringstream fs;
+						//fs << format("%i / %i") % wboss.cHealth % wboss.mHealth;
+						fs << format("[%i] %i") % wboss.id % int(Dist(self.pos, wboss.pos));
+
+						StrInfo strInfo = StringInfo(fs.str());
+						fx = round(fx - strInfo.x / 2);
+						fy = round(fy - 15);
+
+						DrawRectFilled(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+						DrawRect(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+						font.Draw(fx, fy, fontColor, fs.str());
+					}
+
+					// list
+					{
+						stringstream fs;
+						fs << format("[%i] %i / %i (%i)") % wboss.id % wboss.cHealth % wboss.mHealth % int(Dist(self.pos, wboss.pos));
+
+						StrInfo strInfo = StringInfo(fs.str());
+						ly = round(ly + strInfo.y + padY);
+
+						DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+						DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+						font.Draw(lx, ly, fontColor, fs.str());
+					}
+				}
+			}
+		}
+
 		if (logSpeedometer) {
 			stringstream ss;
 			StrInfo strInfo;
@@ -1215,10 +1301,10 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logAttackRateToFile)
-				ss << format("« Recording »\n");
+				ss << format("?Recording ?n");
 			else
-				ss << format("« Monitoring »\n");
-			ss << format("« Attack Rate »\n");
+				ss << format("?Monitoring ?n");
+			ss << format("?Attack Rate ?n");
 			ss << format("\n");
 
 			if (!bufferAttackRate.empty())
@@ -1240,7 +1326,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferAttackRate.size(); i++)
-						ss << format("• %0.3fs\n") % bufferAttackRate[i];
+						ss << format("?%0.3fs\n") % bufferAttackRate[i];
 				}
 			}
 			else
@@ -1254,7 +1340,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("• ...\n");
+					ss << format("?...\n");
 				}
 			}
 			ss << format("\n");
@@ -1285,11 +1371,11 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logHitsToFile)
-				ss << format("« Recording »\n");
+				ss << format("?Recording ?n");
 			else
-				ss << format("« Monitoring »\n");
+				ss << format("?Monitoring ?n");
 
-			ss << format("« Damage Hits »\n");
+			ss << format("?Damage Hits ?n");
 			ss << format("\n");
 
 			if (!bufferHits.empty())
@@ -1309,7 +1395,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferHits.size(); i++)
-						ss << format("• %i\n") % bufferHits[i];
+						ss << format("?%i\n") % bufferHits[i];
 				}
 			}
 			else
@@ -1321,7 +1407,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("• ...\n");
+					ss << format("?...\n");
 				}
 			}
 
@@ -1344,7 +1430,65 @@ void ESP()
 			//aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
 			aRight.x = x - padX * 2 - 5;
 		}
+
+		if (logCrits)
+		{
+			stringstream ss;
+			StrInfo strInfo;
+
+			if (logCritsToFile)
+				ss << format("?Recording ?n");
+			else
+				ss << format("?Monitoring ?n");
+
+			ss << format("?Crit Chance ?n");
+			ss << format("\n");
+
+			ss << format("Samples: %i\n") % (logCritsGlances + logCritsNormals + logCritsCrits);
+			ss << format("Glances: %i\n") % logCritsGlances;
+			ss << format("Normals: %i\n") % logCritsNormals;
+			ss << format("Crits: %i\n") % logCritsCrits;
+			ss << format("\n");
+
+
+			float critA = 0;
+			if ((logCritsGlances + logCritsNormals + logCritsCrits) > 0)
+				critA = logCritsCrits / (logCritsGlances + logCritsNormals + logCritsCrits + 0.f) * 100;
+				
+			float critB = 0;
+			if ((logCritsNormals + logCritsCrits) > 0)
+				critB = logCritsCrits / (logCritsNormals + logCritsCrits + 0.f) * 100;
+
+			ss << format("?Crit Chance ?n");
+			ss << format("GlIncl: %0.4f\n") % critA;
+			ss << format("GlExcl: %0.4f\n") % critB;
+
+			ss << format("\n");
+			ss << format("Sample Hit: %i\n") % logCritsSample;
+			
+
+			strInfo = StringInfo(ss.str());
+
+
+			float aAdjustX = 120; // adjust anchor -120
+			if (strInfo.x < aAdjustX)
+				strInfo.x = aAdjustX; // perma box min-width
+			float x = round(aRight.x - strInfo.x);
+			float y = round(aRight.y);
+
+			// Draw
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor - (logCritsToFile ? 0x00aa0000 : 0), ss.str());
+
+			// Prepare for Next Element
+			//ss.str("");
+			//aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+			aRight.x = x - padX * 2 - 5;
+		}
 	}
+
+	
 }
 
 void GW2LIB::gw2lib_main()
@@ -1357,7 +1501,8 @@ void GW2LIB::gw2lib_main()
 	thread t3(&threadKillTimer);
 	thread t4(&threadHits);
 	thread t5(&threadAttackRate);
-	thread t6(&threadSpeedometer);
+	thread t6(&threadCrits);
+	thread t7(&threadSpeedometer);
 
 	if (!font.Init(lineHeight, "Verdana"))
     {
@@ -1376,6 +1521,7 @@ void GW2LIB::gw2lib_main()
 	t4.interrupt(); //t4.join();
 	t5.interrupt(); //t5.join();
 	t6.interrupt(); //t6.join();
+	t7.interrupt(); //t7.join();
 	Sleep(1000);
 	return;
 }
