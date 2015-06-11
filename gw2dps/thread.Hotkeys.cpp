@@ -1,5 +1,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include "default_config.h"
 
 #define KILL_APP 999
@@ -74,55 +76,55 @@ void threadHotKeys()
 	ptree pt;
 	read_ini(f, pt);
 	
-	registerHotKeyWrapper(KILL_APP, readIniValue(pt, "config.kill_app")); // killApp
+	registerHotKeyWrapper(KILL_APP, readIniValue(pt, "Hotkeys.KILL_APP")); // killApp
 
-	registerHotKeyWrapper(HELP, readIniValue(pt, "config.help")); // help
-	registerHotKeyWrapper(EXP_MODE, readIniValue(pt, "config.exp_mode")); // expMode
-	registerHotKeyWrapper(SELF_FLOAT, readIniValue(pt, "config.self_float")); // selfFloat
-	registerHotKeyWrapper(LOOP_LIMITER, readIniValue(pt, "config.loop_limiter")); // loopLimiter
-	registerHotKeyWrapper(SELF_HEALTH_PERCENT, readIniValue(pt, "config.self_health_percent")); // selfHealthPercent
+	registerHotKeyWrapper(HELP, readIniValue(pt, "Hotkeys.HELP")); // help
+	registerHotKeyWrapper(EXP_MODE, readIniValue(pt, "Hotkeys.EXP_MODE")); // expMode
+	registerHotKeyWrapper(SELF_FLOAT, readIniValue(pt, "Hotkeys.SELF_FLOAT")); // selfFloat
+	registerHotKeyWrapper(LOOP_LIMITER, readIniValue(pt, "Hotkeys.LOOP_LIMITER")); // loopLimiter
+	registerHotKeyWrapper(SELF_HEALTH_PERCENT, readIniValue(pt, "Hotkeys.SELF_HEALTH_PERCENT")); // selfHealthPercent
 
-	registerHotKeyWrapper(TARGET_SELECTED, readIniValue(pt, "config.target_selected")); // targetSelected
-	registerHotKeyWrapper(TARGET_INFO, readIniValue(pt, "config.target_info")); // targetInfo
-	registerHotKeyWrapper(TARGET_INFO_ALT, readIniValue(pt, "config.target_info_alt")); // targetInfoAlt
-	registerHotKeyWrapper(TARGET_LOCK, readIniValue(pt, "config.target_lock")); // targetLock
-	registerHotKeyWrapper(DPS_ALLOW_NEGATIVE, readIniValue(pt, "config.dps_allow_negative")); // dpsAllowNegative
+	registerHotKeyWrapper(TARGET_SELECTED, readIniValue(pt, "Hotkeys.TARGET_SELECTED")); // targetSelected
+	registerHotKeyWrapper(TARGET_INFO, readIniValue(pt, "Hotkeys.TARGET_INFO")); // targetInfo
+	registerHotKeyWrapper(TARGET_INFO_ALT, readIniValue(pt, "Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
+	registerHotKeyWrapper(TARGET_LOCK, readIniValue(pt, "Hotkeys.TARGET_LOCK")); // targetLock
+	registerHotKeyWrapper(DPS_ALLOW_NEGATIVE, readIniValue(pt, "Hotkeys.DPS_ALLOW_NEGATIVE")); // dpsAllowNegative
 
-	registerHotKeyWrapper(LOG_DPS, readIniValue(pt, "config.log_dps")); // logDps
-	registerHotKeyWrapper(LOG_DPS_DETAILS, readIniValue(pt, "config.log_dps_details")); // logDpsDetails
+	registerHotKeyWrapper(LOG_DPS, readIniValue(pt, "Hotkeys.LOG_DPS")); // logDps
+	registerHotKeyWrapper(LOG_DPS_DETAILS, readIniValue(pt, "Hotkeys.LOG_DPS_DETAILS")); // logDpsDetails
 
-	registerHotKeyWrapper(LOG_KILL_TIMER, readIniValue(pt, "config.log_kill_timer")); // logKillTimer
-	registerHotKeyWrapper(LOG_KILL_TIMER_DETAILS, readIniValue(pt, "config.log_kill_timer_details")); // logKillTimerDetails
-	registerHotKeyWrapper(LOG_KILL_TIMER_TO_FILE, readIniValue(pt, "config.log_kill_timer_to_file")); // logKillTimerToFile
+	registerHotKeyWrapper(LOG_KILL_TIMER, readIniValue(pt, "Hotkeys.LOG_KILL_TIMER")); // logKillTimer
+	registerHotKeyWrapper(LOG_KILL_TIMER_DETAILS, readIniValue(pt, "Hotkeys.LOG_KILL_TIMER_DETAILS")); // logKillTimerDetails
+	registerHotKeyWrapper(LOG_KILL_TIMER_TO_FILE, readIniValue(pt, "Hotkeys.LOG_KILL_TIMER_TO_FILE")); // logKillTimerToFile
 	
-	registerHotKeyWrapper(LOG_HITS, readIniValue(pt, "config.log_hits")); // logHits
-	registerHotKeyWrapper(LOG_HITS_DETAILS, readIniValue(pt, "config.log_hits_details")); // logHitsDetails
-	registerHotKeyWrapper(LOG_HITS_TO_FILE, readIniValue(pt, "config.log_hits_to_file")); // logHitsToFile
-	registerHotKeyWrapper(LOG_ATTACK_RATE, readIniValue(pt, "config.log_attack_rate")); // logAttackRate
-	registerHotKeyWrapper(LOG_ATTACK_RATE_DETAILS, readIniValue(pt, "config.log_attack_rate_details")); // logAttackRateDetails
-	registerHotKeyWrapper(LOG_ATTACK_RATE_TO_FILE, readIniValue(pt, "config.log_attack_rate_to_file")); // logAttackRateToFile
-	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_MORE, readIniValue(pt, "config.attackrate_chain_hits_more")); // AttackRateChainHits +
-	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_LESS, readIniValue(pt, "config.attackrate_chain_hits_less")); // AttackRateChainHits -
+	registerHotKeyWrapper(LOG_HITS, readIniValue(pt, "Hotkeys.LOG_HITS")); // logHits
+	registerHotKeyWrapper(LOG_HITS_DETAILS, readIniValue(pt, "Hotkeys.LOG_HITS_DETAILS")); // logHitsDetails
+	registerHotKeyWrapper(LOG_HITS_TO_FILE, readIniValue(pt, "Hotkeys.LOG_HITS_TO_FILE")); // logHitsToFile
+	registerHotKeyWrapper(LOG_ATTACK_RATE, readIniValue(pt, "Hotkeys.LOG_ATTACK_RATE")); // logAttackRate
+	registerHotKeyWrapper(LOG_ATTACK_RATE_DETAILS, readIniValue(pt, "Hotkeys.LOG_ATTACK_RATE_DETAILS")); // logAttackRateDetails
+	registerHotKeyWrapper(LOG_ATTACK_RATE_TO_FILE, readIniValue(pt, "Hotkeys.LOG_ATTACK_RATE_TO_FILE")); // logAttackRateToFile
+	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_MORE, readIniValue(pt, "Hotkeys.ATTACKRATE_CHAIN_HITS_MORE")); // AttackRateChainHits +
+	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_LESS, readIniValue(pt, "Hotkeys.ATTACKRATE_CHAIN_HITS_LESS")); // AttackRateChainHits -
 
-	registerHotKeyWrapper(ALLIES_LIST, readIniValue(pt, "config.allies_list")); // alliesList
-	registerHotKeyWrapper(WVW_BONUS_MORE, readIniValue(pt, "config.wvw_bonus_more")); // wvwBonus +
-	registerHotKeyWrapper(WVW_BONUS_LESS, readIniValue(pt, "config.wvw_bonus_less")); // wvwBonus -
+	registerHotKeyWrapper(ALLIES_LIST, readIniValue(pt, "Hotkeys.ALLIES_LIST")); // alliesList
+	registerHotKeyWrapper(WVW_BONUS_MORE, readIniValue(pt, "Hotkeys.WVW_BONUS_MORE")); // wvwBonus +
+	registerHotKeyWrapper(WVW_BONUS_LESS, readIniValue(pt, "Hotkeys.WVW_BONUS_LESS")); // wvwBonus -
 
-	registerHotKeyWrapper(FLOAT_CIRCLES, readIniValue(pt, "config.float_circles")); // floatCircles
-	registerHotKeyWrapper(FLOAT_TYPE, readIniValue(pt, "config.float_type")); // floatType
-	registerHotKeyWrapper(FLOAT_RADIUS_MORE, readIniValue(pt, "config.float_radius_more")); // floatRadius +
-	registerHotKeyWrapper(FLOAT_RADIUS_LESS, readIniValue(pt, "config.float_radius_less")); // floatRadius -
-	registerHotKeyWrapper(FLOAT_ALLY_NPC, readIniValue(pt, "config.float_ally_npc")); // floatAllyNpc
-	registerHotKeyWrapper(FLOAT_ENEMY_NPC, readIniValue(pt, "config.float_enemy_npc")); // floatEnemyNpc
-	registerHotKeyWrapper(FLOAT_ALLY_PLAYER, readIniValue(pt, "config.float_ally_player")); // floatAllyPlayer
-	registerHotKeyWrapper(FLOAT_ALLY_PLAYER_PROF, readIniValue(pt, "config.float_ally_player_prof")); // floatAllyPlayerProf
-	registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, readIniValue(pt, "config.float_enemy_player")); // floatEnemyPlayer
-	registerHotKeyWrapper(FLOAT_SIEGE, readIniValue(pt, "config.float_siege")); // floatSiege
+	registerHotKeyWrapper(FLOAT_CIRCLES, readIniValue(pt, "Hotkeys.FLOAT_CIRCLES")); // floatCircles
+	registerHotKeyWrapper(FLOAT_TYPE, readIniValue(pt, "Hotkeys.FLOAT_TYPE")); // floatType
+	registerHotKeyWrapper(FLOAT_RADIUS_MORE, readIniValue(pt, "Hotkeys.FLOAT_RADIUS_MORE")); // floatRadius +
+	registerHotKeyWrapper(FLOAT_RADIUS_LESS, readIniValue(pt, "Hotkeys.FLOAT_RADIUS_LESS")); // floatRadius -
+	registerHotKeyWrapper(FLOAT_ALLY_NPC, readIniValue(pt, "Hotkeys.FLOAT_ALLY_NPC")); // floatAllyNpc
+	registerHotKeyWrapper(FLOAT_ENEMY_NPC, readIniValue(pt, "Hotkeys.FLOAT_ENEMY_NPC")); // floatEnemyNpc
+	registerHotKeyWrapper(FLOAT_ALLY_PLAYER, readIniValue(pt, "Hotkeys.FLOAT_ALLY_PLAYER")); // floatAllyPlayer
+	registerHotKeyWrapper(FLOAT_ALLY_PLAYER_PROF, readIniValue(pt, "Hotkeys.FLOAT_ALLY_PLAYER_PROF")); // floatAllyPlayerProf
+	registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, readIniValue(pt, "Hotkeys.FLOAT_ENEMY_PLAYER")); // floatEnemyPlayer
+	registerHotKeyWrapper(FLOAT_SIEGE, readIniValue(pt, "Hotkeys.FLOAT_SIEGE")); // floatSiege
 	
-	registerHotKeyWrapper(LOG_SPEEDOMETER, readIniValue(pt, "config.log_speedometer")); // logSpeedometer
-	registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, readIniValue(pt, "config.log_speedometer_enemy")); // logSpeedometerEnemy
-	registerHotKeyWrapper(LOG_DISPLACEMENT, readIniValue(pt, "config.log_displacement")); // logDisplacement
-	registerHotKeyWrapper(LOG_DISPLACEMENT_ENEMY, readIniValue(pt, "config.log_displacement_enemy")); // logDisplacementEnemy
+	registerHotKeyWrapper(LOG_SPEEDOMETER, readIniValue(pt, "Hotkeys.LOG_SPEEDOMETER")); // logSpeedometer
+	registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, readIniValue(pt, "Hotkeys.LOG_SPEEDOMETER_ENEMY")); // logSpeedometerEnemy
+	registerHotKeyWrapper(LOG_DISPLACEMENT, readIniValue(pt, "Hotkeys.LOG_DISPLACEMENT")); // logDisplacement
+	registerHotKeyWrapper(LOG_DISPLACEMENT_ENEMY, readIniValue(pt, "Hotkeys.LOG_DISPLACEMENT_ENEMY")); // logDisplacementEnemy
 
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
@@ -189,7 +191,15 @@ void threadHotKeys()
 
 string readIniValue(ptree pt, string key)
 {
-	return pt.get<string>(key);
+	try
+	{
+		return pt.get<string>(key);
+	}
+	catch (std::exception e)
+	{
+		printf("couldn't find key %s in Hotkeys.ini", key.c_str());
+		return "";
+	}
 }
 
 void registerHotKeyWrapper(int id, string key)
@@ -202,38 +212,41 @@ void registerHotKeyWrapper(int id, string key)
 	string key_hex;
 	for (unsigned int i = 0; i < key.size(); i++)
 	{
-		switch(key[i])
+		switch (key[i])
 		{
-			case ' ':
-				break;
-			case 'a':
-				if (key.compare(i, alt.size(), alt) == 0)
-				{
-					i += alt.size();
-					modifier |= MOD_ALT;
-				}
-				break;
-			case 's':
-				if (key.compare(i, shift.size(), shift) == 0)
-				{
-					i += shift.size();
-					modifier |= MOD_SHIFT;
-				}
-				break;
-			case 'c':
-				if (key.compare(i, ctrl.size(), ctrl) == 0)
-				{
-					i += ctrl.size();
-					modifier |= MOD_CONTROL;
-				}
-				break;
-			case '0':
-				key_hex = key.substr(i, 4);
-				uiKey = strtol(key_hex.c_str(), 0, 16);
-				i += 4;
-				break;
-			default:
-				return;
+		case ' ':
+			break;
+		case 'a':
+		case 'A':
+			if (boost::iequals(key.substr(i, alt.size()), alt))
+			{
+				i += alt.size();
+				modifier |= MOD_ALT;
+			}
+			break;
+		case 's':
+		case 'S':
+			if (boost::iequals(key.substr(i, shift.size()), shift))
+			{
+				i += shift.size();
+				modifier |= MOD_SHIFT;
+			}
+			break;
+		case 'c':
+		case 'C':
+			if (boost::iequals(key.substr(i, ctrl.size()), ctrl))
+			{
+				i += ctrl.size();
+				modifier |= MOD_CONTROL;
+			}
+			break;
+		case '0':
+			key_hex = key.substr(i, 4);
+			uiKey = strtol(key_hex.c_str(), 0, 16);
+			i += 4;
+			break;
+		default:
+			return;
 		}
 	}
 	RegisterHotKey(NULL, id, modifier, uiKey);
