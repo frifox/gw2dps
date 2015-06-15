@@ -9,7 +9,7 @@ Setup
 - Install Boost (See Boost section for more info).  
 - Install Git (add git to you PATH environment variable).  
 - Install CMake.  
-- Clone this repo with git (git clone https://github.com/Cubimon/gw2dps.git).  
+- Clone this repo with git (git clone https://github.com/frifox/gw2dps.git).  
 - Call bootstrap.bat (this will clone rafzi's lib and setup the folder structure).  
 - Now the project is inside hacklib/src/gw2dps.  
 
@@ -25,7 +25,7 @@ Boost v1.56.0
 =======
 - Download Boost 1.56.0 from Sourceforge (http://sourceforge.net/projects/boost/files/boost/1.56.0/) and unzip.  
 - Create a new environment variable with the key BOOST_ROOT and as value the path to Boost's root folder.  
-(e.g. from command line "setx BOOST_ROOT C:/User/Cubimon/libs/Boost/").  
+(e.g. from command line "setx BOOST_ROOT C:/User/User/libs/Boost/").  
 - Call from command line at the boost root folder:
 ```
 bootstrap.bat
