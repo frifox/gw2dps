@@ -1,0 +1,13 @@
+bin/
+CMakeCache.txt
+CMakeFiles/
+gw2dps_exe.dir/*
+gw2dps_lib.dir/*
+Release/
+Debug/
+*.vcxproj
+*.vcxproj.filters
+*.cmake
+*.sln
+*.sdf
+*.opensdf
