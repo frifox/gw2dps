@@ -3,7 +3,7 @@ GW2DPS
 
 DPS meter for GW2. Binaries are in the bin folder. Based on rafi's [gw2lib](http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709).
 
-Binaries
+Download
 =======
 - You can download compiled binaries here: https://github.com/frifox/gw2dps/releases
 
