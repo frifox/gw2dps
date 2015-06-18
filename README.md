@@ -89,6 +89,6 @@ Notes
 - Before launching GW2DPS switch GW2 to "Windowed"/"Windowed Fullscreen" mode (Options->Graphics->Resolution). Once GW2DPS is running, feel free to switch back to Fullscreen. 
 - Some reported SweetFX caususing compatiblity issues. If it's causing crashes, switch it off.
 - If you have a 64 bit (x64) version of MS Visual C++ 2013 Redistributable installed, uninstall it. 
-- If app is complaining about missing MSVCP120d.dll, install vsredist_x86.exe (see link below).
-- If app is complaining about missing dx3dx9_43.dll, install dxwebsetup.exe (see link below).
-- both vsredist_x86 and dxwebsetup can be found here: https://github.com/frifox/gw2dps/releases/tag/1
+- If app is complaining about missing MSVCP120d.dll, install vsredist_x86.exe.
+- If app is complaining about missing dx3dx9_43.dll, install dxwebsetup.exe.
+- both vsredist_x86 and dxwebsetup can be found here: https://github.com/frifox/gw2dps/releases/tag/redist
