@@ -2,6 +2,8 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 #include "default_config.h"
 
 #define KILL_APP 999
@@ -61,24 +63,33 @@
 #define LOG_DISPLACEMENT 92
 #define LOG_DISPLACEMENT_ENEMY 93
 
-#define CONFIG_FILE_NAME "config.ini"
+#define CONFIG_FILE_NAME L"config.ini"
 
 using boost::property_tree::ptree;
+using boost::interprocess::shared_memory_object;
+using boost::interprocess::mapped_region;
 	
 void registerHotKeyWrapper(int id, string key);
 string readIniValue(ptree pt, string key);
 
 void threadHotKeys()
 {
+	// read gw2dps directory from shared memory
+	shared_memory_object shm(boost::interprocess::open_only, "config_path", boost::interprocess::read_only);
+	mapped_region region(shm, boost::interprocess::read_only);
+	wchar_t* cur_path = (wchar_t*) region.get_address();
+	
+	wstring abs_file_name = wstring(cur_path) + L"\\" + CONFIG_FILE_NAME;
 	fstream f;
-	f.open(CONFIG_FILE_NAME, fstream::in);
+	f.open(abs_file_name.c_str(), fstream::in);
 	if (!f.is_open())
 	{
-		f.open(CONFIG_FILE_NAME, fstream::out);
+		f.open(abs_file_name.c_str(), fstream::out);
 		f << DEFAULT_CONFIG_FILE;
 	}
+	// TODO: rewind is better than reopen
 	f.close();
-	f.open(CONFIG_FILE_NAME, fstream::in);
+	f.open(abs_file_name.c_str(), fstream::in);
 	ptree pt;
 	read_ini(f, pt);
 	

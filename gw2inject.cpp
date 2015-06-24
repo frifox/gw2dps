@@ -5,6 +5,9 @@
 #include <conio.h> 
 #include <stdio.h> 
 
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -16,6 +19,8 @@ BOOL Inject(DWORD pID, const char * DLL_NAME);
 DWORD GetTargetThreadIDFromProcName(const char * ProcName);
 
 using namespace std;
+using boost::interprocess::shared_memory_object;
+using boost::interprocess::mapped_region;
 
 int main(int argc, TCHAR* argv[], TCHAR* envp[])
 {
@@ -29,6 +34,15 @@ int main(int argc, TCHAR* argv[], TCHAR* envp[])
 	GetFullPathName(L"gw2dps.dll", MAX_PATH, wchar_buf, NULL);
 	char char_buf[MAX_PATH + 1] = { 0 };
 	wcstombs(char_buf, wchar_buf, wcslen(wchar_buf));
+	
+	// write current directory in shared memory
+	int cur_path_len = GetCurrentDirectory(0, NULL);
+	shared_memory_object shm(boost::interprocess::open_or_create, "config_path", boost::interprocess::read_write);
+	shm.truncate(cur_path_len + 1);
+	mapped_region region(shm, boost::interprocess::read_write);
+	wchar_t* shm_pointer = (wchar_t*) region.get_address();
+	GetCurrentDirectory(cur_path_len, shm_pointer);
+	shm_pointer[cur_path_len] = '\0';
 
 	// Inject our main dll 
 	if (!Inject(pID, char_buf))
