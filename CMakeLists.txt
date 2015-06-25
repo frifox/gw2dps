@@ -19,6 +19,8 @@ PROJECT(${PROJ_NAME})
 
 # gw2dps.dll
 ADD_LIBRARY(${PROJ_NAME}_lib SHARED 
+	config.cpp 
+	hotkey.cpp 
 	gw2dps.cpp)
 
 SET_TARGET_PROPERTIES(${PROJ_NAME}_lib PROPERTIES 
@@ -28,7 +30,7 @@ TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_lib PUBLIC
 	${Boost_INCLUDE_DIR})
 
 TARGET_LINK_LIBRARIES(${PROJ_NAME}_lib 
-	hacklib_gw2
+	hacklib_gw2 
 	${Boost_LIBRARIES})
 
 

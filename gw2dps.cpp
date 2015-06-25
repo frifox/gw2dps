@@ -1,5 +1,6 @@
 #include "gw2lib.h"
 #include "gw2dps/gw2dps.h"
+#include "gw2dps/config.h"
 
 // Settings //
 bool killApp = false;
@@ -1494,6 +1495,8 @@ void ESP()
 void GW2LIB::gw2lib_main()
 {
 	locale::global(locale("en-US"));
+	
+	init_config();
 
     EnableEsp(ESP);
 	thread t1(&threadHotKeys);
