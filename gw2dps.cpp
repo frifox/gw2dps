@@ -1,6 +1,7 @@
 #include "gw2lib.h"
 #include "gw2dps/gw2dps.h"
 #include "gw2dps/config.h"
+#include "gw2dps/keymap.h"
 
 // Settings //
 bool killApp = false;

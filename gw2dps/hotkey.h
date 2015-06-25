@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef HOTKEY_H
+#define HOTKEY_H
 
 class HotKey
 {

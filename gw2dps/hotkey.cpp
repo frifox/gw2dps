@@ -1,5 +1,5 @@
-#ifndef CONFIG_CPP
-#define CONFIG_CPP
+#ifndef HOTKEY_CPP
+#define HOTKEY_CPP
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
