@@ -25,7 +25,7 @@ void init_config()
 	// TODO: rewind is better than reopen
 	in_config_file.close();
 	in_config_file.open(abs_file_name.c_str(), fstream::in);
-	read_ini(f, config_pt);
+	read_ini(in_config_file, config_pt);
 }
 
 #endif

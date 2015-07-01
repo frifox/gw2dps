@@ -1497,6 +1497,7 @@ void GW2LIB::gw2lib_main()
 {
 	locale::global(locale("en-US"));
 	
+	init_keymap();
 	init_config();
 
     EnableEsp(ESP);

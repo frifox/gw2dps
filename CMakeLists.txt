@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2.3)
 
 # boost directory
 SET(BOOST_ROOT $ENV{BOOST_ROOT})
-SET(Boost_USE_STATIC_LIBS ON) 
+SET(Boost_USE_STATIC_LIBS ON)
 
 FIND_PACKAGE(Boost 1.56.0 COMPONENTS system thread date_time timer chrono regex REQUIRED)
 
@@ -10,8 +10,8 @@ FIND_PACKAGE(Boost 1.56.0 COMPONENTS system thread date_time timer chrono regex 
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # MFC
-ADD_DEFINITIONS(-D_AFXDLL)
-SET(CMAKE_MFC_FLAG 2)
+# ADD_DEFINITIONS(-D_AFXDLL)
+# SET(CMAKE_MFC_FLAG 2)
 
 SET(PROJ_NAME gw2dps)
 PROJECT(${PROJ_NAME})
@@ -19,8 +19,12 @@ PROJECT(${PROJ_NAME})
 
 # gw2dps.dll
 ADD_LIBRARY(${PROJ_NAME}_lib SHARED 
-	config.cpp 
-	hotkey.cpp 
+	gw2dps/config.h 
+	gw2dps/config.cpp 
+	gw2dps/keymap.h 
+	gw2dps/keymap.cpp 
+	gw2dps/hotkey.h 
+	gw2dps/hotkey.cpp 
 	gw2dps.cpp)
 
 SET_TARGET_PROPERTIES(${PROJ_NAME}_lib PROPERTIES 
@@ -43,7 +47,7 @@ SET_TARGET_PROPERTIES(${PROJ_NAME}_exe PROPERTIES
 
 TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_exe PUBLIC 
 	${Boost_INCLUDE_DIR})
-	
+
 TARGET_LINK_LIBRARIES(${PROJ_NAME}_exe 
 	${Boost_LIBRARIES})
 

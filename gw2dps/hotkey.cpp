@@ -3,6 +3,15 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include "hotkey.h"
+
+HotKey::HotKey(bool _alt, bool _shift, bool _ctrl, UINT _key)
+{
+	alt = _alt;
+	shift = _shift;
+	ctrl = _ctrl;
+	key = _key;
+}
 
 HotKey::HotKey(string str)
 {

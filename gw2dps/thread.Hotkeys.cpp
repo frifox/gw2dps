@@ -57,7 +57,7 @@
 #define LOG_SPEEDOMETER_ENEMY 91
 #define LOG_DISPLACEMENT 92
 #define LOG_DISPLACEMENT_ENEMY 93
-	
+
 void registerHotKeyWrapper(int id, string key);
 string readConfigValue(string key);
 
