@@ -2,6 +2,7 @@
 #include "gw2dps/gw2dps.h"
 #include "gw2dps/config.h"
 #include "gw2dps/keymap.h"
+#include "gw2dps/hotkey.h"
 
 // Settings //
 bool killApp = false;
@@ -112,48 +113,50 @@ void ESP()
 	aBottom.y = round(GetWindowHeight() - float(85));
 
 
-	if (help){
+	if (help)
+	{
 		stringstream ss;
+		
 		//ss << format("[%i] Exp Mode Crosshair (Alt H)\n") % expMode;
 		//ss << format("\n");
-		ss << format("[%i] Self Health Percent (Alt P)\n") % selfHealthPercent;
+		ss << format("[%i] Self Health Percent (%s)\n") % selfHealthPercent % get_key_description("Hotkeys.SELF_HEALTH_PERCENT");
 		ss << format("\n");
-		ss << format("[%i] Selected/Locked Target HP (Alt S)\n") % targetSelected;
-		ss << format("[%i] Selected Target Details (Alt I)\n") % targetInfo;
-		ss << format("[%i] Lock On Target (Alt L)\n") % targetLock;
-		ss << format("[%i] Allow Negative DPS (Alt N)\n") % dpsAllowNegative;
+		ss << format("[%i] Selected/Locked Target HP (%s)\n") % targetSelected % get_key_description("Hotkeys.TARGET_SELECTED");
+		ss << format("[%i] Selected Target Details (%s)\n") % targetInfo % get_key_description("Hotkeys.TARGET_INFO");
+		ss << format("[%i] Lock On Target (%s)\n") % targetLock % get_key_description("Hotkeys.TARGET_LOCK");
+		ss << format("[%i] Allow Negative DPS (%s)\n") % dpsAllowNegative % get_key_description("Hotkeys.DPS_ALLOW_NEGATIVE");
 		ss << format("\n");
-		ss << format("[%i] DPS Meter (Alt D)\n") % logDps;
-		ss << format("[%i] DPS Meter History (Alt Shift D)\n") % logDpsDetails;
+		ss << format("[%i] DPS Meter (%s)\n") % logDps % get_key_description("Hotkeys.LOG_DPS");
+		ss << format("[%i] DPS Meter History (%s)\n") % logDpsDetails % get_key_description("Hotkeys.LOG_DPS_DETAILS");
 		ss << format("\n");
-		ss << format("[%i] Kill Timer (Alt Num7)\n") % logKillTimer;
-		ss << format("[%i] Kill Timer Details (Alt Num1)\n") % logKillTimerDetails;
+		ss << format("[%i] Kill Timer (%s)\n") % logKillTimer % get_key_description("Hotkeys.LOG_KILL_TIMER");
+		ss << format("[%i] Kill Timer Details (%s)\n") % logKillTimerDetails % get_key_description("Hotkeys.LOG_KILL_TIMER_DETAILS");
 		//ss << format("[%i] Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;
 		ss << format("\n");
-		ss << format("[%i] Monitor Hits (Alt Num8)\n") % logHits;
-		ss << format("[%i] Show Hits History (Alt Num2)\n") % logHitsDetails;
-		ss << format("[%i] Record Hits to File (Alt Num5)\n") % logHitsToFile;
+		ss << format("[%i] Monitor Hits (%s)\n") % logHits % get_key_description("Hotkeys.LOG_HITS");
+		ss << format("[%i] Show Hits History (%s)\n") % logHitsDetails % get_key_description("Hotkeys.LOG_HITS_DETAILS");
+		ss << format("[%i] Record Hits to File (%s)\n") % logHitsToFile % get_key_description("Hotkeys.LOG_HITS_TO_FILE");
 		ss << format("\n");
-		ss << format("[%i] Monitor Attack Rate (Alt Num9)\n") % logAttackRate;
-		ss << format("[%i] Show Attack Rate History (Alt Num3)\n") % logAttackRateDetails;
-		ss << format("[%i] Record Attack Rate to File (Alt Num6)\n") % logAttackRateToFile;
-		ss << format("[%i] Adjust Attack Rate Threshold (Alt PgUp/PgDown)\n") % AttackRateChainHits;
+		ss << format("[%i] Monitor Attack Rate (%s)\n") % logAttackRate % get_key_description("Hotkeys.LOG_ATTACK_RATE");
+		ss << format("[%i] Show Attack Rate History (%s)\n") % logAttackRateDetails % get_key_description("Hotkeys.LOG_ATTACK_RATE_DETAILS");
+		ss << format("[%i] Record Attack Rate to File (%s)\n") % logAttackRateToFile % get_key_description("Hotkeys.LOG_ATTACK_RATE_TO_FILE");
+		ss << format("[%i] Adjust Attack Rate Threshold +(%s) and -(%s)\n") % AttackRateChainHits % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE") % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS");
 		ss << format("\n");
-		ss << format("[%i] Nearby Ally Players List (Alt C)\n") % alliesList;
-		ss << format("[%i] Adjust WvW HP Bonus (Alt Home/End)\n") % wvwBonus;
+		ss << format("[%i] Nearby Ally Players List (%s)\n") % alliesList % get_key_description("Hotkeys.ALLIES_LIST");
+		ss << format("[%i] Adjust WvW HP Bonus +(%s) and -(%s)\n") % wvwBonus % get_key_description("Hotkeys.WVW_BONUS_MORE") % get_key_description("Hotkeys.WVW_BONUS_LESS");
 		ss << format("\n");
-		ss << format("[%i] Count Ally NPCs (Alt 1)\n") % floatAllyNpc;
-		ss << format("[%i] Count Enemy NPCs (Alt 2)\n") % floatEnemyNpc;
-		ss << format("[%i] Count Ally Players (Alt 3)\n") % floatAllyPlayer;
-		ss << format("[%i] Count Enemy Players (Alt 4)\n") % floatEnemyPlayer;
+		ss << format("[%i] Count Ally NPCs (%s)\n") % floatAllyNpc % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
+		ss << format("[%i] Count Enemy NPCs (%s)\n") % floatEnemyNpc % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");
+		ss << format("[%i] Count Ally Players (%s)\n") % floatAllyPlayer % get_key_description("Hotkeys.FLOAT_ALLY_PLAYER");
+		ss << format("[%i] Count Enemy Players (%s)\n") % floatEnemyPlayer % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
 		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
-		ss << format("[%i] Show/Hide Floaters below counted (Alt F)\n") % floatCircles;
-		ss << format("[%i] Floaters show Max HP / Distance (Alt Shift F)\n") % floatType;
+		ss << format("[%i] Show/Hide Floaters below counted (%s)\n") % floatCircles % get_key_description("Hotkeys.FLOAT_CIRCLES");
+		ss << format("[%i] Floaters show Max HP / Distance (%s)\n") % floatType % get_key_description("Hotkeys.FLOAT_TYPE");
 		ss << format("\n");
-		ss << format("[%i] Speedometer (Alt 9)\n") % logSpeedometer;
-		ss << format("[%i] Speedometer for Self/Enemy (Alt Shift 9)\n") % logSpeedometerEnemy;
-		ss << format("[%i] Measure Distance (Alt 0)\n") % logDisplacement;
-		ss << format("[%i] Distance for Self/Enemy (Alt Shift 0)\n") % logDisplacementEnemy;
+		ss << format("[%i] Speedometer (%s)\n") % logSpeedometer % get_key_description("Hotkeys.LOG_SPEEDOMETER");
+		ss << format("[%i] Speedometer for Self/Enemy (%s)\n") % logSpeedometerEnemy % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
+		ss << format("[%i] Measure Distance (%s)\n") % logDisplacement % get_key_description("Hotkeys.LOG_DISPLACEMENT");
+		ss << format("[%i] Distance for Self/Enemy (%s)\n") % logDisplacementEnemy % get_key_description("Hotkeys.LOG_DISPLACEMENT_ENEMY");
 
 		StrInfo strInfo;
 		strInfo = StringInfo(ss.str());
@@ -1519,6 +1522,8 @@ void GW2LIB::gw2lib_main()
 	while (GetAsyncKeyState(VK_F12) >= 0)
         ;
 	
+	close_config();
+	
 	// self destruct sequence
 	t1.interrupt(); //t1.join();
 	t2.interrupt(); //t2.join();
@@ -1527,6 +1532,8 @@ void GW2LIB::gw2lib_main()
 	t5.interrupt(); //t5.join();
 	t6.interrupt(); //t6.join();
 	t7.interrupt(); //t7.join();
+	
+	unregisterHotkeys();
 	Sleep(1000);
 	return;
 }

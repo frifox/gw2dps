@@ -214,4 +214,46 @@ void init_keymap()
 	keycode_descriptions[VK_PA1] = "PA1 key";
 	keycode_descriptions[VK_OEM_CLEAR] = "Clear key";
 }
+
+string get_key_description(UINT keycode)
+{
+	if (keycode_descriptions.find(keycode) == keycode_descriptions.end())
+	{
+		return "unknown description";
+	}
+	else 
+	{
+		return keycode_descriptions[keycode];
+	}
+}
+
+string get_key_description(HotKey* hotkey)
+{
+	if (hotkey == NULL)
+	{
+		return NULL;
+	}
+	return get_key_description(hotkey->key);
+}
+
+string get_key_description(string config_key)
+{
+	HotKey* hotkey = read_hotkey(config_key);
+	string result = "";
+	if (hotkey->alt)
+	{
+		result += "ALT + ";
+	}
+	if (hotkey->shift)
+	{
+		result += "SHIFT + ";
+	}
+	if (hotkey->ctrl)
+	{
+		result += "CTRL + ";
+	}
+	result += get_key_description(hotkey);
+	delete hotkey;
+	return result;
+}
 #endif

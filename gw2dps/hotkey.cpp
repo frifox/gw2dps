@@ -19,9 +19,9 @@ HotKey::HotKey(string str)
 	shift = false;
 	ctrl = false;
 	key = 0;
-	string alt = "alt";
-	string shift = "shift";
-	string ctrl = "ctrl";
+	string alt_str = "alt";
+	string shift_str = "shift";
+	string ctrl_str = "ctrl";
 	UINT uiKey = 0;
 	UINT modifier = MOD_NOREPEAT;
 	string key_hex;
@@ -33,25 +33,25 @@ HotKey::HotKey(string str)
 			break;
 		case 'a':
 		case 'A':
-			if (boost::iequals(str.substr(i, alt.size()), alt))
+			if (boost::iequals(str.substr(i, alt_str.size()), alt_str))
 			{
-				i += alt.size();
+				i += alt_str.size();
 				alt = true;
 			}
 			break;
 		case 's':
 		case 'S':
-			if (boost::iequals(str.substr(i, shift.size()), shift))
+			if (boost::iequals(str.substr(i, shift_str.size()), shift_str))
 			{
-				i += shift.size();
+				i += shift_str.size();
 				shift = true;
 			}
 			break;
 		case 'c':
 		case 'C':
-			if (boost::iequals(str.substr(i, ctrl.size()), ctrl))
+			if (boost::iequals(str.substr(i, ctrl_str.size()), ctrl_str))
 			{
-				i += ctrl.size();
+				i += ctrl_str.size();
 				ctrl = true;
 			}
 			break;

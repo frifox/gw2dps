@@ -7,6 +7,7 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include "default_config.h"
+#include "hotkey.h"
 
 #define CONFIG_FILE_NAME L"config.ini"
 
@@ -21,5 +22,8 @@ extern ofstream out_config_file;
 extern ptree config_pt;
 
 void init_config();
+void close_config();
+string read_config_value(string key);
+HotKey* read_hotkey(string config_key);
 
 #endif

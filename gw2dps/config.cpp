@@ -21,11 +21,43 @@ void init_config()
 	{
 		out_config_file.open(abs_file_name.c_str(), fstream::out);
 		out_config_file << DEFAULT_CONFIG_FILE;
+		out_config_file.flush();
+		out_config_file.close();
 	}
 	// TODO: rewind is better than reopen
 	in_config_file.close();
 	in_config_file.open(abs_file_name.c_str(), fstream::in);
 	read_ini(in_config_file, config_pt);
+}
+
+void close_config()
+{
+	in_config_file.close();
+}
+
+string read_config_value(string key)
+{
+	try
+	{
+		return config_pt.get<string>(key);
+	}
+	catch (std::exception e)
+	{
+		return "";
+	}
+}
+
+HotKey* read_hotkey(string config_key)
+{
+	string config_value = read_config_value(config_key);
+	if (config_value.compare("") != 0)
+	{
+		return new HotKey(config_value);
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 #endif
