@@ -4,6 +4,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include "hotkey.h"
+#include "keymap.h"
 
 HotKey::HotKey(bool _alt, bool _shift, bool _ctrl, UINT _key)
 {
@@ -64,6 +65,46 @@ HotKey::HotKey(string str)
 			return;
 		}
 	}
+}
+
+string HotKey::toString()
+{
+	string result = "";
+	if (alt)
+	{
+		result += "ALT + ";
+	}
+	if (shift)
+	{
+		result += "SHIFT + ";
+	}
+	if (ctrl)
+	{
+		result += "CTRL + ";
+	}
+	result += get_key_description(this);
+	return result;
+}
+
+string HotKey::toConfigString()
+{
+	string result = "";
+	if (alt)
+	{
+		result += "ALT ";
+	}
+	if (shift)
+	{
+		result += "SHIFT ";
+	}
+	if (ctrl)
+	{
+		result += "CTRL ";
+	}
+	stringstream stream;
+	stream << hex << key;
+	result += "0x" + stream.str();
+	return result;
 }
 
 #endif

@@ -23,7 +23,11 @@ extern ptree config_pt;
 
 void init_config();
 void close_config();
+
 string read_config_value(string key);
+void write_config_value(string key, string value);
+
+void save_config();
 HotKey* read_hotkey(string config_key);
 
 #endif

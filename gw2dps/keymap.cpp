@@ -239,20 +239,7 @@ string get_key_description(HotKey* hotkey)
 string get_key_description(string config_key)
 {
 	HotKey* hotkey = read_hotkey(config_key);
-	string result = "";
-	if (hotkey->alt)
-	{
-		result += "ALT + ";
-	}
-	if (hotkey->shift)
-	{
-		result += "SHIFT + ";
-	}
-	if (hotkey->ctrl)
-	{
-		result += "CTRL + ";
-	}
-	result += get_key_description(hotkey);
+	string result = hotkey->toString();
 	delete hotkey;
 	return result;
 }

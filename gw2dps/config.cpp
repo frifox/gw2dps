@@ -6,6 +6,7 @@
 ifstream in_config_file;
 ofstream out_config_file;
 ptree config_pt;
+wstring abs_file_name;
 
 void init_config()
 {
@@ -14,7 +15,7 @@ void init_config()
 	mapped_region region(shm, boost::interprocess::read_only);
 	wchar_t* cur_path = (wchar_t*) region.get_address();
 	
-	wstring abs_file_name = wstring(cur_path) + L"\\" + CONFIG_FILE_NAME;
+	abs_file_name = wstring(cur_path) + L"\\" + CONFIG_FILE_NAME;
 	
 	in_config_file.open(abs_file_name.c_str(), fstream::in);
 	if (!in_config_file.is_open())
@@ -28,11 +29,11 @@ void init_config()
 	in_config_file.close();
 	in_config_file.open(abs_file_name.c_str(), fstream::in);
 	read_ini(in_config_file, config_pt);
+	in_config_file.close();
 }
 
 void close_config()
 {
-	in_config_file.close();
 }
 
 string read_config_value(string key)
@@ -45,6 +46,19 @@ string read_config_value(string key)
 	{
 		return "";
 	}
+}
+
+void write_config_value(string key, string value)
+{
+	config_pt.put(key, value);
+}
+
+void save_config()
+{
+	out_config_file.open(abs_file_name.c_str(), fstream::out);
+	write_ini(out_config_file, config_pt);
+	out_config_file.flush();
+	out_config_file.close();
 }
 
 HotKey* read_hotkey(string config_key)

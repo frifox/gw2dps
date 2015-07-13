@@ -1,8 +1,8 @@
 #include "gw2lib.h"
-#include "gw2dps/gw2dps.h"
-#include "gw2dps/config.h"
-#include "gw2dps/keymap.h"
-#include "gw2dps/hotkey.h"
+#include "gw2dps.h"
+#include "config.h"
+#include "keymap.h"
+#include "hotkey.h"
 
 // Settings //
 bool killApp = false;
@@ -74,13 +74,13 @@ bool logDisplacementEnemy = false;
 Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
 // Threads //
-#include "gw2dps/thread.Hotkeys.cpp"
-#include "gw2dps/thread.Dps.cpp"
-#include "gw2dps/thread.KillTimer.cpp"
-#include "gw2dps/thread.Hits.cpp"
-#include "gw2dps/thread.AttackRate.cpp"
-#include "gw2dps/thread.Crits.cpp"
-#include "gw2dps/thread.Speedometer.cpp"
+#include "thread.Hotkeys.cpp"
+#include "thread.Dps.cpp"
+#include "thread.KillTimer.cpp"
+#include "thread.Hits.cpp"
+#include "thread.AttackRate.cpp"
+#include "thread.Crits.cpp"
+#include "thread.Speedometer.cpp"
 
 // Self
 Character me;

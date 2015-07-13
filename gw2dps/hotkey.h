@@ -14,5 +14,8 @@ class HotKey
 
 		HotKey(bool _alt, bool _shift, bool _ctrl, UINT _key);
 		HotKey(string str);
+		
+		string toString();
+		string toConfigString();
 };
 #endif
