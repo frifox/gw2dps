@@ -14,10 +14,11 @@ wxBEGIN_EVENT_TABLE(ChangeKeyFrame, wxFrame)
     EVT_BUTTON(OK_KEY_ID,  ChangeKeyFrame::OnConfirmKey)
 wxEND_EVENT_TABLE()
 
-ChangeKeyFrame::ChangeKeyFrame(MainPane* parent, const wxString& title)
+ChangeKeyFrame::ChangeKeyFrame(MainPane* parent, const wxString& title, string config_key)
 	: wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, 
 		(wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT) & (~wxRESIZE_BORDER) & (~wxMAXIMIZE_BOX) & (~wxMINIMIZE_BOX))
 {
+	this->config_key = config_key;
 	this->parent = parent;
 	this->hotkey = new HotKey(false, false, false, 0);
 	
@@ -62,8 +63,8 @@ void ChangeKeyFrame::OnClose(wxCloseEvent& evt)
 		delete hotkey;
 		hotkey = NULL;
 	}
+	parent->OnChangeKeyFinish(this->config_key);
 	Destroy();
-	parent->OnChangeKeyFinish();
 }
 
 void ChangeKeyFrame::OnKeyDown(wxKeyEvent& evt)

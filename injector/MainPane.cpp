@@ -5,44 +5,60 @@
 #include <boost/format.hpp>
 #include <wx/utils.h>
 
+#include "HotKeyChangeButton.h"
 #include "MainPane.h"
 #include "ChangeKeyFrame.h"
 
+#include "../gw2dps/config_keys.h"
 #include "../gw2dps/config.h"
 #include "../gw2dps/keymap.h"
 #include "../gw2dps/hotkey.h"
 
 using boost::format;
 
-wxBEGIN_EVENT_TABLE(MainPane, wxScrolledWindow)
-    EVT_BUTTON(CHANGE_KEY_ID,  MainPane::OnChangeKey)
-wxEND_EVENT_TABLE()
-
 MainPane::MainPane(wxWindow* parent) 
 	: wxScrolledWindow(parent, wxID_ANY)
 {
 	// config
 	string hotkey_descriptions_string = getDescriptionTextBlock();
-	int n_lines = static_cast<int>(count(hotkey_descriptions_string.begin(), hotkey_descriptions_string.end(), '\n'));
+	char* hotkey_descriptions = new char[hotkey_descriptions_string.length() + 1];
+	strcpy(hotkey_descriptions, hotkey_descriptions_string.c_str());
+
+	char* cur_hotkey_description;
+	cur_hotkey_description = strtok(hotkey_descriptions, "\n");
+	
+	list<string> config_keys = get_help_config_keys();
+	list<string>::iterator it = config_keys.begin();
+
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* inner_sizer;
 	sizer->AddSpacer(10);
-	
-	for (int i = 0; i < n_lines; i++)
+
+	while (cur_hotkey_description != NULL)
 	{
 		inner_sizer = new wxBoxSizer(wxHORIZONTAL);
 		wxStaticText* cur_txt = new wxStaticText(this, -1, "hotkey_description");
-		wxButton* cur_btn = new wxButton(this, CHANGE_KEY_ID, "change hotkey");
 		inner_sizer->AddSpacer(10);
 		inner_sizer->Add(cur_txt, 0, wxALIGN_CENTER | wxALIGN_LEFT, 0);
 		inner_sizer->AddSpacer(10);
-		inner_sizer->Add(cur_btn, 0, wxALIGN_RIGHT, 0);
+		
+		int n_braces = static_cast<int>(count(cur_hotkey_description, cur_hotkey_description + strlen(cur_hotkey_description), '('));
+		for (int i = 0; i < n_braces && it != config_keys.end(); i++)
+		{
+			HotKeyChangeButton* cur_btn = new HotKeyChangeButton(this, "change hotkey", *it);
+			inner_sizer->Add(cur_btn, 0, wxALIGN_RIGHT, 0);
+			buttons.push_back(cur_btn);
+			it ++;
+		}
+
 		inner_sizer->AddSpacer(10);
 		labels.push_back(cur_txt);
-		buttons.push_back(cur_btn);
 		sizer->Add(inner_sizer, 0, 0, 0);
 		sizer->AddSpacer(10);
+		cur_hotkey_description = strtok(NULL, "\n");
 	}
+	
+	delete hotkey_descriptions;
 	
 	updateLabels();
 	
@@ -50,19 +66,19 @@ MainPane::MainPane(wxWindow* parent)
 	SetScrollRate(5, 5);
 }
 
-void MainPane::OnChangeKey(wxCommandEvent& WXUNUSED(event))
+void MainPane::OnChangeKey(string config_key)
 {
-	changeKeyDialog = new ChangeKeyFrame(this, "change hotkey");
+	changeKeyDialog = new ChangeKeyFrame(this, "change hotkey", config_key);
 	windowDisabler = new wxWindowDisabler(this);
 	changeKeyDialog->Show();
 }
 
-void MainPane::OnChangeKeyFinish()
+void MainPane::OnChangeKeyFinish(string config_key)
 {
 	HotKey* hotkey = changeKeyDialog->hotkey;
 	if (hotkey != NULL)
 	{
-		write_config_value("Hotkeys.SELF_HEALTH_PERCENT", hotkey->toConfigString());
+		write_config_value(config_key, hotkey->toConfigString());
 		save_config();
 		updateLabels();
 	}

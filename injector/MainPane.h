@@ -7,6 +7,7 @@
 
 #include <boost/thread.hpp>
 
+class HotKeyChangeButton;
 class ChangeKeyFrame;
 
 using boost::thread;
@@ -17,8 +18,8 @@ class MainPane : public wxScrolledWindow
 public:
     MainPane(wxWindow* parent);
 	
-	void OnChangeKey(wxCommandEvent& WXUNUSED(event));
-	void OnChangeKeyFinish();
+	void OnChangeKey(string config_key);
+	void OnChangeKeyFinish(string config_key);
 	
 private:
 	void updateLabels();
@@ -26,14 +27,7 @@ private:
 
 	ChangeKeyFrame* changeKeyDialog;
 	wxWindowDisabler* windowDisabler;
-	list<wxButton*> buttons;
+	list<HotKeyChangeButton*> buttons;
 	list<wxStaticText*> labels;
-	
-    wxDECLARE_EVENT_TABLE();
-};
-
-enum
-{
-	CHANGE_KEY_ID = 2,
 };
 #endif

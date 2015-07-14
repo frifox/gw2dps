@@ -2,14 +2,17 @@
 #define CHANGE_KEY_FRAME_H
 
 #include <wx/wxprec.h>
+#include <string>
 
 class MainPane;
 class HotKey;
 
+using namespace std;
+
 class ChangeKeyFrame : public wxFrame
 {
 public:
-    ChangeKeyFrame(MainPane* parent, const wxString& title);
+    ChangeKeyFrame(MainPane* parent, const wxString& title, string config_key);
 	~ChangeKeyFrame();
 
 	void OnClose(wxCloseEvent& evt);
@@ -21,6 +24,7 @@ public:
 	HotKey* hotkey;
 	
 private:
+	string config_key;
 	MainPane* parent;
 	wxStaticText* label;
 	wxButton* cancel;
