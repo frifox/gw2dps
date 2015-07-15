@@ -3,13 +3,17 @@ GW2DPS
 
 DPS meter for GW2. Binaries are in the bin folder. Based on rafi's [gw2lib](http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709).
 
+Download
+=======
+- You can download compiled binaries here: https://github.com/frifox/gw2dps/releases
+
 Setup
 =======
 - Install Visual Studio 2013.  
 - Install Boost (See Boost section for more info).  
 - Install Git (add git to you PATH environment variable).  
 - Install CMake.  
-- Clone this repo with git (git clone https://github.com/Cubimon/gw2dps.git).  
+- Clone this repo with git (git clone https://github.com/frifox/gw2dps.git).  
 - Call bootstrap.bat (this will clone rafzi's lib and setup the folder structure).  
 - Now the project is inside hacklib/src/gw2dps.  
 
@@ -25,7 +29,7 @@ Boost v1.56.0
 =======
 - Download Boost 1.56.0 from Sourceforge (http://sourceforge.net/projects/boost/files/boost/1.56.0/) and unzip.  
 - Create a new environment variable with the key BOOST_ROOT and as value the path to Boost's root folder.  
-(e.g. from command line "setx BOOST_ROOT C:/User/Cubimon/libs/Boost/").  
+(e.g. from command line "setx BOOST_ROOT C:/User/User/libs/Boost/").  
 - Call from command line at the boost root folder:
 ```
 bootstrap.bat
@@ -85,5 +89,6 @@ Notes
 - Before launching GW2DPS switch GW2 to "Windowed"/"Windowed Fullscreen" mode (Options->Graphics->Resolution). Once GW2DPS is running, feel free to switch back to Fullscreen. 
 - Some reported SweetFX caususing compatiblity issues. If it's causing crashes, switch it off.
 - If you have a 64 bit (x64) version of MS Visual C++ 2013 Redistributable installed, uninstall it. 
-- If app is complaining about missing MSVCP120d.dll, install vsredist_x86.exe from the dist folder.
-- If app is complaining about missing dx3dx9_43.dll, install dxwebsetup.exe from the dist folder.
+- If app is complaining about missing MSVCP120d.dll, install vsredist_x86.exe.
+- If app is complaining about missing dx3dx9_43.dll, install dxwebsetup.exe.
+- both vsredist_x86 and dxwebsetup can be found here: https://github.com/frifox/gw2dps/releases/tag/redist
