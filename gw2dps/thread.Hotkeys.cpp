@@ -1,3 +1,6 @@
+#include "config.h"
+#include "hotkey.h"
+
 #define KILL_APP 999
 
 #define HELP 0
@@ -55,63 +58,63 @@
 #define LOG_DISPLACEMENT 92
 #define LOG_DISPLACEMENT_ENEMY 93
 
+void registerHotKeyWrapper(int id, string key);
+
 void threadHotKeys()
-{
-	RegisterHotKey(NULL, KILL_APP, MOD_ALT | MOD_NOREPEAT, 0x4B); // killApp
+{	
+	registerHotKeyWrapper(KILL_APP, read_config_value("Hotkeys.KILL_APP")); // killApp
 
-	RegisterHotKey(NULL, HELP, MOD_ALT | MOD_NOREPEAT, VK_OEM_2); // help
-	RegisterHotKey(NULL, EXP_MODE, MOD_ALT | MOD_NOREPEAT, 0x48); // expMode
-	RegisterHotKey(NULL, SELF_FLOAT, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x48); // selfFloat
-	RegisterHotKey(NULL, LOOP_LIMITER, MOD_ALT | MOD_NOREPEAT, 0x54); // loopLimiter
-	RegisterHotKey(NULL, SELF_HEALTH_PERCENT, MOD_ALT | MOD_NOREPEAT, 0x50); // selfHealthPercent
-	RegisterHotKey(NULL, WORLD_BOSSES, MOD_ALT | MOD_NOREPEAT, 0x42); // worldBoss
+	registerHotKeyWrapper(HELP, read_config_value("Hotkeys.HELP")); // help
+	registerHotKeyWrapper(EXP_MODE, read_config_value("Hotkeys.EXP_MODE")); // expMode
+	registerHotKeyWrapper(SELF_FLOAT, read_config_value("Hotkeys.SELF_FLOAT")); // selfFloat
+	registerHotKeyWrapper(LOOP_LIMITER, read_config_value("Hotkeys.LOOP_LIMITER")); // loopLimiter
+	registerHotKeyWrapper(SELF_HEALTH_PERCENT, read_config_value("Hotkeys.SELF_HEALTH_PERCENT")); // selfHealthPercent
 
-	RegisterHotKey(NULL, TARGET_SELECTED, MOD_ALT | MOD_NOREPEAT, 0x53); // targetSelected
-	RegisterHotKey(NULL, TARGET_INFO, MOD_ALT | MOD_NOREPEAT, 0x49); // targetInfo
-	RegisterHotKey(NULL, TARGET_INFO_ALT, MOD_ALT | MOD_SHIFT| MOD_NOREPEAT, 0x49); // targetInfoAlt
-	RegisterHotKey(NULL, TARGET_LOCK, MOD_ALT | MOD_NOREPEAT, 0x4C); // targetLock
-	RegisterHotKey(NULL, DPS_ALLOW_NEGATIVE, MOD_ALT | MOD_NOREPEAT, 0x4E); // dpsAllowNegative
+	registerHotKeyWrapper(TARGET_SELECTED, read_config_value("Hotkeys.TARGET_SELECTED")); // targetSelected
+	registerHotKeyWrapper(TARGET_INFO, read_config_value("Hotkeys.TARGET_INFO")); // targetInfo
+	registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
+	registerHotKeyWrapper(TARGET_LOCK, read_config_value("Hotkeys.TARGET_LOCK")); // targetLock
+	registerHotKeyWrapper(DPS_ALLOW_NEGATIVE, read_config_value("Hotkeys.DPS_ALLOW_NEGATIVE")); // dpsAllowNegative
 
-	RegisterHotKey(NULL, LOG_DPS, MOD_ALT | MOD_NOREPEAT, 0x44); // logDps
-	RegisterHotKey(NULL, LOG_DPS_DETAILS, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x44); // logDpsDetails
+	registerHotKeyWrapper(LOG_DPS, read_config_value("Hotkeys.LOG_DPS")); // logDps
+	registerHotKeyWrapper(LOG_DPS_DETAILS, read_config_value("Hotkeys.LOG_DPS_DETAILS")); // logDpsDetails
 
-	RegisterHotKey(NULL, LOG_KILL_TIMER, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD7); // logKillTimer
-	RegisterHotKey(NULL, LOG_KILL_TIMER_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD1); // logKillTimerDetails
-	RegisterHotKey(NULL, LOG_KILL_TIMER_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD4); // logKillTimerToFile
+	registerHotKeyWrapper(LOG_KILL_TIMER, read_config_value("Hotkeys.LOG_KILL_TIMER")); // logKillTimer
+	registerHotKeyWrapper(LOG_KILL_TIMER_DETAILS, read_config_value("Hotkeys.LOG_KILL_TIMER_DETAILS")); // logKillTimerDetails
+	registerHotKeyWrapper(LOG_KILL_TIMER_TO_FILE, read_config_value("Hotkeys.LOG_KILL_TIMER_TO_FILE")); // logKillTimerToFile
 	
-	RegisterHotKey(NULL, LOG_HITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD8); // logHits
-	RegisterHotKey(NULL, LOG_HITS_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD2); // logHitsDetails
-	RegisterHotKey(NULL, LOG_HITS_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD5); // logHitsToFile
+	registerHotKeyWrapper(LOG_HITS, read_config_value("Hotkeys.LOG_HITS")); // logHits
+	registerHotKeyWrapper(LOG_HITS_DETAILS, read_config_value("Hotkeys.LOG_HITS_DETAILS")); // logHitsDetails
+	registerHotKeyWrapper(LOG_HITS_TO_FILE, read_config_value("Hotkeys.LOG_HITS_TO_FILE")); // logHitsToFile
+	registerHotKeyWrapper(LOG_ATTACK_RATE, read_config_value("Hotkeys.LOG_ATTACK_RATE")); // logAttackRate
+	registerHotKeyWrapper(LOG_ATTACK_RATE_DETAILS, read_config_value("Hotkeys.LOG_ATTACK_RATE_DETAILS")); // logAttackRateDetails
+	registerHotKeyWrapper(LOG_ATTACK_RATE_TO_FILE, read_config_value("Hotkeys.LOG_ATTACK_RATE_TO_FILE")); // logAttackRateToFile
+	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_MORE, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE")); // AttackRateChainHits +
+	registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_LESS, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS")); // AttackRateChainHits -
 
-	RegisterHotKey(NULL, LOG_ATTACK_RATE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD9); // logAttackRate
-	RegisterHotKey(NULL, LOG_ATTACK_RATE_DETAILS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD3); // logAttackRateDetails
-	RegisterHotKey(NULL, LOG_ATTACK_RATE_TO_FILE, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD6); // logAttackRateToFile
-	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_MORE, MOD_ALT, VK_PRIOR); // AttackRateChainHits +
-	RegisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_LESS, MOD_ALT, VK_NEXT); // AttackRateChainHits -
-
-	RegisterHotKey(NULL, LOG_CRITS, MOD_ALT | MOD_NOREPEAT, VK_NUMPAD0); // logCrits
-	RegisterHotKey(NULL, LOG_CRITS_SAMPLE_MORE, MOD_ALT, VK_INSERT); // logCritsSample +
-	RegisterHotKey(NULL, LOG_CRITS_SAMPLE_LESS, MOD_ALT, VK_DELETE); // logCritsSample -
-
-	RegisterHotKey(NULL, ALLIES_LIST, MOD_ALT | MOD_NOREPEAT, 0x43); // alliesList
-	RegisterHotKey(NULL, WVW_BONUS_MORE, MOD_ALT, VK_HOME); // wvwBonus +
-	RegisterHotKey(NULL, WVW_BONUS_LESS, MOD_ALT, VK_END); // wvwBonus -
-
-	RegisterHotKey(NULL, FLOAT_CIRCLES, MOD_ALT | MOD_NOREPEAT, 0x46); // floatCircles
-	RegisterHotKey(NULL, FLOAT_TYPE, MOD_ALT | MOD_SHIFT |  MOD_NOREPEAT, 0x46); // floatType
-	RegisterHotKey(NULL, FLOAT_RADIUS_MORE, MOD_ALT, VK_ADD); // floatRadius +
-	RegisterHotKey(NULL, FLOAT_RADIUS_LESS, MOD_ALT, VK_SUBTRACT); // floatRadius -
-	RegisterHotKey(NULL, FLOAT_ALLY_NPC, MOD_ALT, 0x31); // floatAllyNpc
-	RegisterHotKey(NULL, FLOAT_ENEMY_NPC, MOD_ALT, 0x32); // floatEnemyNpc
-	RegisterHotKey(NULL, FLOAT_ALLY_PLAYER, MOD_ALT, 0x33); // floatAllyPlayer
-	RegisterHotKey(NULL, FLOAT_ALLY_PLAYER_PROF, MOD_ALT | MOD_SHIFT, 0x33); // floatAllyPlayerProf
-	RegisterHotKey(NULL, FLOAT_ENEMY_PLAYER, MOD_ALT, 0x34); // floatEnemyPlayer
-	RegisterHotKey(NULL, FLOAT_SIEGE, MOD_ALT, 0x35); // floatSiege
+	registerHotKeyWrapper(LOG_CRITS, read_config_value("Hotkeys.LOG_CRITS")); // logCrits
+	registerHotKeyWrapper(LOG_CRITS_SAMPLE_MORE, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_MORE")); // logCritsSample +
+	registerHotKeyWrapper(LOG_CRITS_SAMPLE_LESS, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_LESS")); // logCritsSample -
 	
-	RegisterHotKey(NULL, LOG_SPEEDOMETER, MOD_ALT, 0x39); // logSpeedometer
-	RegisterHotKey(NULL, LOG_SPEEDOMETER_ENEMY, MOD_ALT | MOD_SHIFT, 0x39); // logSpeedometerEnemy
-	RegisterHotKey(NULL, LOG_DISPLACEMENT, MOD_ALT, 0x30); // logDisplacement
-	RegisterHotKey(NULL, LOG_DISPLACEMENT_ENEMY, MOD_ALT | MOD_SHIFT, 0x30); // logDisplacementEnemy
+	registerHotKeyWrapper(ALLIES_LIST, read_config_value("Hotkeys.ALLIES_LIST")); // alliesList
+	registerHotKeyWrapper(WVW_BONUS_MORE, read_config_value("Hotkeys.WVW_BONUS_MORE")); // wvwBonus +
+	registerHotKeyWrapper(WVW_BONUS_LESS, read_config_value("Hotkeys.WVW_BONUS_LESS")); // wvwBonus -
+
+	registerHotKeyWrapper(FLOAT_CIRCLES, read_config_value("Hotkeys.FLOAT_CIRCLES")); // floatCircles
+	registerHotKeyWrapper(FLOAT_TYPE, read_config_value("Hotkeys.FLOAT_TYPE")); // floatType
+	registerHotKeyWrapper(FLOAT_RADIUS_MORE, read_config_value("Hotkeys.FLOAT_RADIUS_MORE")); // floatRadius +
+	registerHotKeyWrapper(FLOAT_RADIUS_LESS, read_config_value("Hotkeys.FLOAT_RADIUS_LESS")); // floatRadius -
+	registerHotKeyWrapper(FLOAT_ALLY_NPC, read_config_value("Hotkeys.FLOAT_ALLY_NPC")); // floatAllyNpc
+	registerHotKeyWrapper(FLOAT_ENEMY_NPC, read_config_value("Hotkeys.FLOAT_ENEMY_NPC")); // floatEnemyNpc
+	registerHotKeyWrapper(FLOAT_ALLY_PLAYER, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER")); // floatAllyPlayer
+	registerHotKeyWrapper(FLOAT_ALLY_PLAYER_PROF, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER_PROF")); // floatAllyPlayerProf
+	registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, read_config_value("Hotkeys.FLOAT_ENEMY_PLAYER")); // floatEnemyPlayer
+	registerHotKeyWrapper(FLOAT_SIEGE, read_config_value("Hotkeys.FLOAT_SIEGE")); // floatSiege
+
+	registerHotKeyWrapper(LOG_SPEEDOMETER, read_config_value("Hotkeys.LOG_SPEEDOMETER")); // logSpeedometer
+	registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, read_config_value("Hotkeys.LOG_SPEEDOMETER_ENEMY")); // logSpeedometerEnemy
+	registerHotKeyWrapper(LOG_DISPLACEMENT, read_config_value("Hotkeys.LOG_DISPLACEMENT")); // logDisplacement
+	registerHotKeyWrapper(LOG_DISPLACEMENT_ENEMY, read_config_value("Hotkeys.LOG_DISPLACEMENT_ENEMY")); // logDisplacementEnemy
 
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
@@ -179,4 +182,75 @@ void threadHotKeys()
 			if (msg.wParam == LOG_DISPLACEMENT_ENEMY) logDisplacementEnemy = !logDisplacementEnemy;
 		}
 	}
+}
+
+void unregisterHotkeys()
+{
+	UnregisterHotKey(NULL, KILL_APP);
+	UnregisterHotKey(NULL, HELP);
+	UnregisterHotKey(NULL, EXP_MODE);
+	UnregisterHotKey(NULL, SELF_FLOAT);
+	UnregisterHotKey(NULL, LOOP_LIMITER);
+	UnregisterHotKey(NULL, SELF_HEALTH_PERCENT);
+	UnregisterHotKey(NULL, WORLD_BOSSES);
+	UnregisterHotKey(NULL, TARGET_SELECTED);
+	UnregisterHotKey(NULL, TARGET_INFO);
+	UnregisterHotKey(NULL, TARGET_INFO_ALT);
+	UnregisterHotKey(NULL, TARGET_LOCK);
+	UnregisterHotKey(NULL, DPS_ALLOW_NEGATIVE);
+	UnregisterHotKey(NULL, LOG_DPS);
+	UnregisterHotKey(NULL, LOG_DPS_DETAILS);
+	UnregisterHotKey(NULL, LOG_KILL_TIMER);
+	UnregisterHotKey(NULL, LOG_KILL_TIMER_DETAILS);
+	UnregisterHotKey(NULL, LOG_KILL_TIMER_TO_FILE);
+	UnregisterHotKey(NULL, LOG_HITS);
+	UnregisterHotKey(NULL, LOG_ATTACK_RATE);
+	UnregisterHotKey(NULL, LOG_ATTACK_RATE_DETAILS);
+	UnregisterHotKey(NULL, LOG_ATTACK_RATE_TO_FILE);
+	UnregisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_MORE);
+	UnregisterHotKey(NULL, ATTACKRATE_CHAIN_HITS_LESS);
+	UnregisterHotKey(NULL, LOG_CRITS);
+	UnregisterHotKey(NULL, LOG_CRITS_DETAILS);
+	UnregisterHotKey(NULL, LOG_CRITS_SAMPLE_MORE);
+	UnregisterHotKey(NULL, LOG_CRITS_SAMPLE_LESS);
+	UnregisterHotKey(NULL, ALLIES_LIST);
+	UnregisterHotKey(NULL, WVW_BONUS_MORE);
+	UnregisterHotKey(NULL, WVW_BONUS_LESS);
+	UnregisterHotKey(NULL, FLOAT_CIRCLES);
+	UnregisterHotKey(NULL, FLOAT_TYPE);
+	UnregisterHotKey(NULL, FLOAT_RADIUS_MORE);
+	UnregisterHotKey(NULL, FLOAT_RADIUS_LESS);
+	UnregisterHotKey(NULL, FLOAT_ALLY_NPC);
+	UnregisterHotKey(NULL, FLOAT_ENEMY_NPC);
+	UnregisterHotKey(NULL, FLOAT_ALLY_PLAYER);
+	UnregisterHotKey(NULL, FLOAT_ALLY_PLAYER_PROF);
+	UnregisterHotKey(NULL, FLOAT_ENEMY_PLAYER);
+	UnregisterHotKey(NULL, FLOAT_SIEGE);
+	UnregisterHotKey(NULL, LOG_SPEEDOMETER);
+	UnregisterHotKey(NULL, LOG_SPEEDOMETER_ENEMY);
+	UnregisterHotKey(NULL, LOG_DISPLACEMENT);
+	UnregisterHotKey(NULL, LOG_DISPLACEMENT_ENEMY);
+}
+
+void registerHotKeyWrapper(int id, string key)
+{
+	string alt = "alt";
+	string shift = "shift";
+	string ctrl = "ctrl";
+	UINT modifier = MOD_NOREPEAT;
+	HotKey hotkey = HotKey(key);
+
+	if (hotkey.alt)
+	{
+		modifier |= MOD_ALT;
+	}
+	if (hotkey.shift)
+	{
+		modifier |= MOD_SHIFT;
+	}
+	if (hotkey.ctrl)
+	{
+		modifier |= MOD_CONTROL;
+	}
+	RegisterHotKey(NULL, id, modifier, hotkey.key);
 }
