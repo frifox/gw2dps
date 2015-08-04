@@ -262,7 +262,7 @@ void ESP()
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x168);
+			shift = *(unsigned long*)(shift + 0x178);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -286,7 +286,7 @@ void ESP()
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x17c);
+			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -365,7 +365,7 @@ void ESP()
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x168);
+				shift = *(unsigned long*)(shift + 0x178);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
@@ -389,7 +389,7 @@ void ESP()
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
 				shift = *(unsigned long*)(shift + 0x28);
-				shift = *(unsigned long*)(shift + 0x17c);
+				shift = *(unsigned long*)(shift + 0x18c);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
@@ -422,7 +422,7 @@ void ESP()
 			unsigned long shift = *(unsigned long*)ag.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x17c);
+			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
 				wboss.cHealth = int(*(float*)(shift + 0x8));
