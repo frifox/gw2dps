@@ -66,7 +66,8 @@ ADD_EXECUTABLE(${PROJ_NAME}_exe WIN32
 	injector/Inject.h
 	injector/Inject.cpp
 	injector/HotKeyChangeButton.h
-	injector/HotKeyChangeButton.cpp)
+	injector/HotKeyChangeButton.cpp
+	injector/Icon.rc)
 
 SET_TARGET_PROPERTIES(${PROJ_NAME}_exe PROPERTIES
 	FOLDER ${PROJ_NAME}_exe
