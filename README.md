@@ -45,6 +45,7 @@ Build it yourself
 	- open c:\hacklib\hacklib_project.sln (should auto open with VS2013)
 	- Swap build to Release
 	- Build > Build Solution
+	- compiled binaries will be found in c:\hacklib\bin folder
 
 Notes
 =======
