@@ -39,7 +39,7 @@ Build it yourself
 	- ```git clone https://bitbucket.org/rafzi/hacklib.git .```
 	- ```git clone https://bitbucket.org/rafzi/hacklib_gw2.git ./src/hacklib_gw2```
 	- ```git clone https://github.com/frifox/gw2dps.git ./src/gw2dps```
-	- ```rd /s /q src\disableGfx src\injector src\beh_benchmark```
+	- ```rd /s /q src\disableGfx src\injector src\veh_benchmark```
 	- ```cmake .```
 7. Build
 	- open c:\hacklib\hacklib_project.sln (should auto open with VS2013)
