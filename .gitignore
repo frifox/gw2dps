@@ -1,7 +1,7 @@
 CMakeCache.txt
 CMakeFiles/
 gw2dps_exe.dir/*
-gw2dps_lib.dir/*
+gw2dps_dll.dir/*
 Release/
 Debug/
 *.vcxproj

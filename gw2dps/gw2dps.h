@@ -50,7 +50,7 @@ Target selected;
 Target locked;
 Target self;
 struct Ally {
-	Ally() : id(0), profession(0), lvl(0), lvlActual(0), cHealth(0), mHealth(0), pHealth(0), vitality(0), traits(0), name("") {}
+	Ally() : id(0), profession(0), lvl(0), lvlActual(0), cHealth(0), mHealth(0), pHealth(0), vitality(0), name("") {}
 
 	int id;
 	int profession;
@@ -61,12 +61,12 @@ struct Ally {
 	int pHealth; // current health in percent
 
 	int vitality;
-	float traits;
 	string name;
 };
 struct Allies {
 	vector<Ally> war;
 	vector<Ally> necro;
+	vector<Ally> rev;
 
 	vector<Ally> mes;
 	vector<Ally> ranger;
@@ -266,28 +266,60 @@ baseHpReturn baseHp(int lvl, int profession)
 	float hp = 0;
 	float vit = 0;
 
-	// calc base vit
-	if (lvl >=  1) vit += 24;
-	if (lvl >=  4) vit += 30;
-	if (lvl >= 10) vit += 35;
-	if (lvl >= 16) vit += 35;
-	if (lvl >= 22) vit += 40;
-	if (lvl >= 28) vit += 55;
-	if (lvl >= 34) vit += 60;
-	if (lvl >= 40) vit += 70;
-	if (lvl >= 46) vit += 73;
-	if (lvl >= 52) vit += 80;
-	if (lvl >= 58) vit += 80;
-	if (lvl >= 64) vit += 82;
-	if (lvl >= 70) vit += 82;
-	if (lvl >= 76) vit += 85;
-	if (lvl >= 80) vit += 95;
+	// calc base vit for the lvl
+	int cake = 0;
+	while (cake <= lvl) {
+
+		if (cake == 2)
+			vit += 44;
+
+		if (cake > 2 && cake < 11) {
+			vit += 7;
+		}
+		else {
+			if (cake % 2 == 0) {
+				if (11 < cake && cake < 21)
+					vit += 10;
+				if (21 < cake && cake < 25)
+					vit += 14;
+				if (25 < cake && cake < 27)
+					vit += 15;
+				if (27 < cake && cake < 31)
+					vit += 16;
+				if (31 < cake && cake < 41)
+					vit += 20;
+				if (41 < cake && cake < 45)
+					vit += 24;
+				if (45 < cake && cake < 47)
+					vit += 25;
+				if (47 < cake && cake < 51)
+					vit += 26;
+				if (51 < cake && cake < 61)
+					vit += 30;
+				if (61 < cake && cake < 65)
+					vit += 34;
+				if (65 < cake && cake < 67)
+					vit += 35;
+				if (67 < cake && cake < 71)
+					vit += 36;
+				if (71 < cake && cake < 75)
+					vit += 44;
+				if (75 < cake && cake < 77)
+					vit += 45;
+				if (77 < cake && cake <= 80)
+					vit += 46;
+			}
+		}
+
+		cake++;
+	}
 
 	// calc base hp
 	switch (profession)
 	{
 	case GW2::PROFESSION_WARRIOR:
 	case GW2::PROFESSION_NECROMANCER:
+	case GW2::PROFESSION_REVENANT:
 		hp = lvl * 28.f;
 		if (lvl > 19) hp += (lvl - 19) * float(42);
 		if (lvl > 39) hp += (lvl - 39) * float(70);

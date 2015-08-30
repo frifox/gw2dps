@@ -524,9 +524,7 @@ void ESP()
 
 				baseHpReturn base = baseHp(ally.lvl, ally.profession);
 				ally.vitality = int(round((ally.mHealth - base.health) / 10));
-				ally.traits = (926.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
-				ally.traits = round(ally.traits * 10) / 10; // round to 0.0
-
+				
 				switch (ally.profession)
 				{
 				case GW2::PROFESSION_WARRIOR:
@@ -554,6 +552,9 @@ void ESP()
 					break;
 				case GW2::PROFESSION_ELEMENTALIST:
 					allies.ele.push_back(ally);
+					break;
+				case GW2::PROFESSION_REVENANT:
+					allies.rev.push_back(ally);
 					break;
 				}
 			}
@@ -630,15 +631,12 @@ void ESP()
 			stringstream sn;
 			stringstream sh;
 			stringstream sv;
-			stringstream st;
-
 
 			ss << format("Nearby Ally Players (WvW HP Bonus: %i%s)") % wvwBonus % "%%";
 			sp << format("Class");
 			sn << format("Name");
 			sh << format("Health");
 			sv << format("Vitality");
-			st << format("Traits");
 
 			bool listEmpty = true;
 			if (!allies.war.empty())
@@ -648,7 +646,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -659,7 +656,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -671,7 +667,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -682,7 +677,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -694,7 +688,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -705,7 +698,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -716,7 +708,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -727,7 +718,16 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.rev.empty())
+			{
+				for (auto & ally : allies.rev) {
+					sp << format("\nRev:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
 				}
 				listEmpty = false;
 			}
@@ -737,7 +737,6 @@ void ESP()
 				sn << format("\n...");
 				sh << format("\n...");
 				sv << format("\n...");
-				st << format("\n...");
 			}
 
 
@@ -751,8 +750,7 @@ void ESP()
 			float snOffset = spOffset + 65;
 			float shOffset = snOffset + strInfo.x;
 			float svOffset = shOffset + 85;
-			float stOffset = svOffset + 70;
-			float sxOffset = stOffset + 60;
+			float sxOffset = svOffset + 60;
 
 			float x = round(aLeft.x);
 			float y = round(aLeft.y);
@@ -773,7 +771,6 @@ void ESP()
 			font.Draw(x + snOffset, y, fontColor, sn.str());
 			font.Draw(x + shOffset, y, fontColor, sh.str());
 			font.Draw(x + svOffset, y, fontColor, sv.str());
-			font.Draw(x + stOffset, y, fontColor, st.str());
 		}
 	}
 
@@ -956,6 +953,7 @@ void ESP()
 				ss << format(" | Engi: %i") % prof[3];
 				ss << format(" | Ranger: %i") % prof[4];
 				ss << format(" | Necro: %i") % prof[8];
+				ss << format(" | Rev: %i") % prof[9];
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTop.x - strInfo.x / 2);

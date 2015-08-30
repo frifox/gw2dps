@@ -14,7 +14,7 @@ FIND_PACKAGE(wxWidgets REQUIRED core base)
 SET(BOOST_ROOT $ENV{BOOST_ROOT})
 SET(Boost_USE_STATIC_LIBS ON)
 
-FIND_PACKAGE(Boost 1.56.0 REQUIRED system thread date_time timer chrono regex)
+FIND_PACKAGE(Boost 1.59.0 REQUIRED system thread date_time timer chrono regex)
 
 # to use unicode and avoid errors
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -25,34 +25,36 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 
 # gw2dps.dll
-ADD_LIBRARY(${PROJ_NAME}_lib SHARED 
-	gw2dps/config.h 
-	gw2dps/config.cpp 
-	gw2dps/keymap.h 
-	gw2dps/keymap.cpp 
-	gw2dps/hotkey.h 
-	gw2dps/hotkey.cpp 
+ADD_LIBRARY(${PROJ_NAME}_dll SHARED
+	gw2dps/config.h
+	gw2dps/config.cpp
+	gw2dps/keymap.h
+	gw2dps/keymap.cpp
+	gw2dps/hotkey.h
+	gw2dps/hotkey.cpp
+	gw2dps/gw2dps.h
 	gw2dps/gw2dps.cpp)
 
-SET_TARGET_PROPERTIES(${PROJ_NAME}_lib PROPERTIES 
-	FOLDER ${PROJ_NAME}_dll)
+SET_TARGET_PROPERTIES(${PROJ_NAME}_dll PROPERTIES
+	FOLDER ${PROJ_NAME}_dll
+	OUTPUT_NAME ${PROJ_NAME})
 
-TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_lib PUBLIC 
+TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_dll PUBLIC
 	${Boost_INCLUDE_DIR})
 
-TARGET_LINK_LIBRARIES(${PROJ_NAME}_lib 
-	hacklib_gw2 
+TARGET_LINK_LIBRARIES(${PROJ_NAME}_dll
+	hacklib_gw2
 	${Boost_LIBRARIES})
 
 
 # gw2dps.exe
-ADD_EXECUTABLE(${PROJ_NAME}_exe WIN32 
-	gw2dps/config.h 
-	gw2dps/config.cpp 
-	gw2dps/keymap.h 
-	gw2dps/keymap.cpp 
-	gw2dps/hotkey.h 
-	gw2dps/hotkey.cpp 
+ADD_EXECUTABLE(${PROJ_NAME}_exe WIN32
+	gw2dps/config.h
+	gw2dps/config.cpp
+	gw2dps/keymap.h
+	gw2dps/keymap.cpp
+	gw2dps/hotkey.h
+	gw2dps/hotkey.cpp
 	injector/MainFrame.h
 	injector/MainFrame.cpp
 	injector/ChangeKeyFrame.h
@@ -66,14 +68,15 @@ ADD_EXECUTABLE(${PROJ_NAME}_exe WIN32
 	injector/HotKeyChangeButton.h
 	injector/HotKeyChangeButton.cpp)
 
-SET_TARGET_PROPERTIES(${PROJ_NAME}_exe PROPERTIES 
-	FOLDER ${PROJ_NAME}_exe)
+SET_TARGET_PROPERTIES(${PROJ_NAME}_exe PROPERTIES
+	FOLDER ${PROJ_NAME}_exe
+	OUTPUT_NAME ${PROJ_NAME})
 
-TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_exe PUBLIC 
+TARGET_INCLUDE_DIRECTORIES(${PROJ_NAME}_exe PUBLIC
 	${Boost_INCLUDE_DIR}
 	${wxWidgets_INCLUDE_DIRS})
 
-TARGET_LINK_LIBRARIES(${PROJ_NAME}_exe 
+TARGET_LINK_LIBRARIES(${PROJ_NAME}_exe
 	${Boost_LIBRARIES}
 	${wxWidgets_LIBRARIES})
 
