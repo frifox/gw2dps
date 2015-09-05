@@ -319,7 +319,6 @@ baseHpReturn baseHp(int lvl, int profession)
 	{
 	case GW2::PROFESSION_WARRIOR:
 	case GW2::PROFESSION_NECROMANCER:
-	case GW2::PROFESSION_REVENANT:
 		hp = lvl * 28.f;
 		if (lvl > 19) hp += (lvl - 19) * float(42);
 		if (lvl > 39) hp += (lvl - 39) * float(70);
@@ -330,6 +329,7 @@ baseHpReturn baseHp(int lvl, int profession)
 	case GW2::PROFESSION_ENGINEER:
 	case GW2::PROFESSION_RANGER:
 	case GW2::PROFESSION_MESMER:
+	case GW2::PROFESSION_REVENANT:
 		hp = lvl * 18.f;
 		if (lvl > 19) hp += (lvl - 19) * float(27);
 		if (lvl > 39) hp += (lvl - 39) * float(45);
