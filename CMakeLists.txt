@@ -1,5 +1,3 @@
-# TODO use file/glob for better file adding
-
 cmake_minimum_required(VERSION 3.2.3)
 
 SET(PROJ_NAME gw2dps)
