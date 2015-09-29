@@ -861,7 +861,7 @@ void ESP()
 						unsigned long shift;
 						shift = *(unsigned long*)agLocked.m_ptr;
 						shift = *(unsigned long*)(shift + 0x30);
-						shift = *(unsigned long*)(shift + 0x138);
+						shift = *(unsigned long*)(shift + 0x15c);
 
 						stats[0] = *(unsigned long*)(shift + 0x18c + 0x4 * 0);
 						stats[1] = *(unsigned long*)(shift + 0x18c + 0x4 * 1);
