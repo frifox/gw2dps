@@ -1304,10 +1304,10 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logAttackRateToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
-			ss << format("?Attack Rate ?n");
+				ss << format(".: Monitoring :.\n");
+			ss << format(".: Attack Rate :.\n");
 			ss << format("\n");
 
 			if (!bufferAttackRate.empty())
@@ -1329,7 +1329,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferAttackRate.size(); i++)
-						ss << format("?%0.3fs\n") % bufferAttackRate[i];
+						ss << format("\u2022 %0.3fs\n") % bufferAttackRate[i];
 				}
 			}
 			else
@@ -1343,7 +1343,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("?...\n");
+					ss << format("\u2022 ...\n");
 				}
 			}
 			ss << format("\n");
@@ -1374,11 +1374,11 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logHitsToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
+				ss << format(".: Monitoring :.\n");
 
-			ss << format("?Damage Hits ?n");
+			ss << format(".: Damage Hits :.\n");
 			ss << format("\n");
 
 			if (!bufferHits.empty())
@@ -1398,7 +1398,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferHits.size(); i++)
-						ss << format("?%i\n") % bufferHits[i];
+						ss << format("\u2022 %i\n") % bufferHits[i];
 				}
 			}
 			else
@@ -1410,7 +1410,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("?...\n");
+					ss << format("\u2022 ...\n");
 				}
 			}
 
@@ -1440,11 +1440,11 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logCritsToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
+				ss << format(".: Monitoring :.\n");
 
-			ss << format("?Crit Chance ?n");
+			ss << format(".: Crit Chance :.\n");
 			ss << format("\n");
 
 			ss << format("Samples: %i\n") % (logCritsGlances + logCritsNormals + logCritsCrits);
@@ -1462,7 +1462,7 @@ void ESP()
 			if ((logCritsNormals + logCritsCrits) > 0)
 				critB = logCritsCrits / (logCritsNormals + logCritsCrits + 0.f) * 100;
 
-			ss << format("?Crit Chance ?n");
+			ss << format(".: Crit Chance :.\n");
 			ss << format("GlIncl: %0.4f\n") % critA;
 			ss << format("GlExcl: %0.4f\n") % critB;
 
