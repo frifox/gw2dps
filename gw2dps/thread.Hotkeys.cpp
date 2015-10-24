@@ -72,7 +72,6 @@ void threadHotKeys()
 
 	registerHotKeyWrapper(TARGET_SELECTED, read_config_value("Hotkeys.TARGET_SELECTED")); // targetSelected
 	registerHotKeyWrapper(TARGET_INFO, read_config_value("Hotkeys.TARGET_INFO")); // targetInfo
-	registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
 	registerHotKeyWrapper(TARGET_LOCK, read_config_value("Hotkeys.TARGET_LOCK")); // targetLock
 	registerHotKeyWrapper(DPS_ALLOW_NEGATIVE, read_config_value("Hotkeys.DPS_ALLOW_NEGATIVE")); // dpsAllowNegative
 
@@ -115,6 +114,10 @@ void threadHotKeys()
 	registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, read_config_value("Hotkeys.LOG_SPEEDOMETER_ENEMY")); // logSpeedometerEnemy
 	registerHotKeyWrapper(LOG_DISPLACEMENT, read_config_value("Hotkeys.LOG_DISPLACEMENT")); // logDisplacement
 	registerHotKeyWrapper(LOG_DISPLACEMENT_ENEMY, read_config_value("Hotkeys.LOG_DISPLACEMENT_ENEMY")); // logDisplacementEnemy
+
+	// special
+	registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
+	RegisterHotKey(NULL, WORLD_BOSSES, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x57); // worldBosses
 
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))

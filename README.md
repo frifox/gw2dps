@@ -1,91 +1,54 @@
 GW2DPS
 =======
-
-DPS meter for GW2. Binaries are in the bin folder. Based on rafi's [gw2lib](http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709).
+- A DPS meter for GW2. Based on rafi's [gw2lib](http://www.gamerevision.com/showthread.php?3691-Gw2lib&p=45709).
 
 Download
 =======
-- You can download compiled binaries here: https://github.com/frifox/gw2dps/releases
+- Download & extract latest release [here](https://github.com/frifox/gw2dps/releases) (2015-09-29)
+- Run gw2dps.exe
+- File > Inject
+- Have fun.
+- To exit, hit F12 key
 
-Setup
+Build it yourself
 =======
-- Install Visual Studio 2013.  
-- Install Boost (See Boost section for more info).  
-- Install Git (add git to you PATH environment variable).  
-- Install CMake.  
-- Clone this repo with git (git clone https://github.com/frifox/gw2dps.git).  
-- Call bootstrap.bat (this will clone rafzi's lib and setup the folder structure).  
-- Now the project is inside hacklib/src/gw2dps.  
-
-Building
-=======
-- Call from the hacklib root directory:  
-"cmake --build . --config Release" to build the release version or.  
-"cmake --build . --config" to build the debug version or  
-- import the project into visual studio with the *.sln file in the hacklib folder.  
-(you have to compile Boost libs again if you change from debug to release or release to debug).  
-
-Boost v1.56.0
-=======
-- Download Boost 1.56.0 from Sourceforge (http://sourceforge.net/projects/boost/files/boost/1.56.0/) and unzip.  
-- Create a new environment variable with the key BOOST_ROOT and as value the path to Boost's root folder.  
-(e.g. from command line "setx BOOST_ROOT C:/User/User/libs/Boost/").  
-- Call from command line at the boost root folder:
-```
-bootstrap.bat
-```
-if you want to create the debug version:
-```
-b2 variant=debug
-```
-for the release otherwise:
-```
-b2 variant=release
-```
-
-Hotkeys
-=======
-```
-Reference Screen (Alt /)
-
-DPS Meter (Alt D)
-DPS History (Alt Shift D)
-
-Kill Timer (Alt NumPad7)
-Kill Timer Average DPS (Alt NumPad1)
-
-Monitor Hits (Alt NumPad8)
-Record Hits to File (gw2exe's folder) (Alt NumPad5)
-Show Hits History (Alt NumPad2)
-
-Monitor Attack Rates (Alt NumPad9)
-Record Attack Rates to File (gw2exe's folder) (Alt NumPad6)
-Show Attack Rate History (Alt NumPad3)
-Adjust Attack Rate Threshold (Alt PgUp/PgDown)
-
-Nearby Ally Players List (Alt C)
-Adjust WvW Health Bonus (Alt Home/End)
-
-Count Ally NPCs (Alt 1)
-Count Enemy NPCs (Alt 2)
-Count Ally Players (Alt 3)
-Count Enemy Players (Alt 4)
-Show Floaters for the Counted (Alt F)
-Show Distance / Max HP for Floaters (Alt Shift F)
-Adjust Count Radius (Alt NumPad-/NumPad+)
-
-Speedometer (Alt 9)
-Speedometer lock on Self/Enemy (Alt Shift 9)
-Distance Measurement (Alt 0)
-Distance lock on Self/Enemy (Alt Shift 0)
-```
-
-----------------------------------
+1. Install Git
+2. Install Visual Studio 2013
+3. Install CMake
+4. Setup Boost
+	- download [BOOST](http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.zip/download)
+	- extract to c:\local so boost root ends up as "c:\local\boost_1_59_0"
+	- open cli and run,
+	- ```setx BOOST_ROOT "c:\local\boost_1_59_0"```
+	- ```cd %BOOST_ROOT%```
+	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"```
+	- ```bootstrap.bat```
+	- ```b2 variant=release```
+5. Setup wxWidgets
+	- download [wxWidgets](http://sourceforge.net/projects/wxwindows/files/3.0.2/wxWidgets-3.0.2.zip/download)
+	- extract to c:\local, so the wxwidgets root ends up as "c:\local\wxWidgets-3.0.2"
+	- open cli and run,
+	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"```
+	- ```setx WXWIDGET_ROOT "C:\local\wxWidgets-3.0.2"```
+	- ```cd %WXWIDGET_ROOT%\build\msw```
+	- ```nmake -f makefile.vc BUILD=release```
+6. Setup the project
+	- make a dir where you'll store the files, ie "c:\hacklib"
+	- open cli and run,
+	- ```cd c:\hacklib```
+	- ```git clone https://bitbucket.org/rafzi/hacklib.git .```
+	- ```git clone https://bitbucket.org/rafzi/hacklib_gw2.git ./src/hacklib_gw2```
+	- ```git clone https://github.com/frifox/gw2dps.git ./src/gw2dps```
+	- ```rd /s /q src\disableGfx src\injector src\veh_benchmark```
+	- ```cmake .```
+7. Build
+	- open c:\hacklib\hacklib_project.sln (should auto open with VS2013)
+	- Swap build to Release
+	- Build > Build Solution
+	- compiled binaries will be found in c:\hacklib\bin folder
 
 Notes
 =======
-
-- Make sure GW2 keybinds aren't conflicting with the ones I hardcoded above.
 - Before launching GW2DPS switch GW2 to "Windowed"/"Windowed Fullscreen" mode (Options->Graphics->Resolution). Once GW2DPS is running, feel free to switch back to Fullscreen. 
 - Some reported SweetFX caususing compatiblity issues. If it's causing crashes, switch it off.
 - If you have a 64 bit (x64) version of MS Visual C++ 2013 Redistributable installed, uninstall it. 

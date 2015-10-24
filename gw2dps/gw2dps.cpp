@@ -262,7 +262,7 @@ void ESP()
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x168);
+			shift = *(unsigned long*)(shift + 0x178);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -286,7 +286,7 @@ void ESP()
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x17c);
+			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
 				selected.cHealth = int(*(float*)(shift + 0x8));
@@ -365,7 +365,7 @@ void ESP()
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x168);
+				shift = *(unsigned long*)(shift + 0x178);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
@@ -389,7 +389,7 @@ void ESP()
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
 				shift = *(unsigned long*)(shift + 0x30);
 				shift = *(unsigned long*)(shift + 0x28);
-				shift = *(unsigned long*)(shift + 0x17c);
+				shift = *(unsigned long*)(shift + 0x18c);
 				if (shift)
 				{
 					locked.cHealth = int(*(float*)(shift + 0x8));
@@ -422,7 +422,7 @@ void ESP()
 			unsigned long shift = *(unsigned long*)ag.m_ptr;
 			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x17c);
+			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
 				wboss.cHealth = int(*(float*)(shift + 0x8));
@@ -524,9 +524,7 @@ void ESP()
 
 				baseHpReturn base = baseHp(ally.lvl, ally.profession);
 				ally.vitality = int(round((ally.mHealth - base.health) / 10));
-				ally.traits = (926.f / base.vitality) * ((ally.mHealth - base.health) / 100.f / 5.f);
-				ally.traits = round(ally.traits * 10) / 10; // round to 0.0
-
+				
 				switch (ally.profession)
 				{
 				case GW2::PROFESSION_WARRIOR:
@@ -554,6 +552,9 @@ void ESP()
 					break;
 				case GW2::PROFESSION_ELEMENTALIST:
 					allies.ele.push_back(ally);
+					break;
+				case GW2::PROFESSION_REVENANT:
+					allies.rev.push_back(ally);
 					break;
 				}
 			}
@@ -630,15 +631,12 @@ void ESP()
 			stringstream sn;
 			stringstream sh;
 			stringstream sv;
-			stringstream st;
-
 
 			ss << format("Nearby Ally Players (WvW HP Bonus: %i%s)") % wvwBonus % "%%";
 			sp << format("Class");
 			sn << format("Name");
 			sh << format("Health");
 			sv << format("Vitality");
-			st << format("Traits");
 
 			bool listEmpty = true;
 			if (!allies.war.empty())
@@ -648,7 +646,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -659,7 +656,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -671,7 +667,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -682,7 +677,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -694,7 +688,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -705,7 +698,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -716,7 +708,6 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
 				}
 				listEmpty = false;
 			}
@@ -727,7 +718,16 @@ void ESP()
 					sn << format("\n%s") % ally.name;
 					sh << format("\n%i hp") % ally.mHealth;
 					sv << format("\n%+i") % ally.vitality;
-					st << format("\n%+.1f") % ally.traits;
+				}
+				listEmpty = false;
+			}
+			if (!allies.rev.empty())
+			{
+				for (auto & ally : allies.rev) {
+					sp << format("\nRev:");
+					sn << format("\n%s") % ally.name;
+					sh << format("\n%i hp") % ally.mHealth;
+					sv << format("\n%+i") % ally.vitality;
 				}
 				listEmpty = false;
 			}
@@ -737,7 +737,6 @@ void ESP()
 				sn << format("\n...");
 				sh << format("\n...");
 				sv << format("\n...");
-				st << format("\n...");
 			}
 
 
@@ -751,8 +750,7 @@ void ESP()
 			float snOffset = spOffset + 65;
 			float shOffset = snOffset + strInfo.x;
 			float svOffset = shOffset + 85;
-			float stOffset = svOffset + 70;
-			float sxOffset = stOffset + 60;
+			float sxOffset = svOffset + 60;
 
 			float x = round(aLeft.x);
 			float y = round(aLeft.y);
@@ -773,7 +771,6 @@ void ESP()
 			font.Draw(x + snOffset, y, fontColor, sn.str());
 			font.Draw(x + shOffset, y, fontColor, sh.str());
 			font.Draw(x + svOffset, y, fontColor, sv.str());
-			font.Draw(x + stOffset, y, fontColor, st.str());
 		}
 	}
 
@@ -864,7 +861,7 @@ void ESP()
 						unsigned long shift;
 						shift = *(unsigned long*)agLocked.m_ptr;
 						shift = *(unsigned long*)(shift + 0x30);
-						shift = *(unsigned long*)(shift + 0x138);
+						shift = *(unsigned long*)(shift + 0x15c);
 
 						stats[0] = *(unsigned long*)(shift + 0x18c + 0x4 * 0);
 						stats[1] = *(unsigned long*)(shift + 0x18c + 0x4 * 1);
@@ -956,6 +953,7 @@ void ESP()
 				ss << format(" | Engi: %i") % prof[3];
 				ss << format(" | Ranger: %i") % prof[4];
 				ss << format(" | Necro: %i") % prof[8];
+				ss << format(" | Rev: %i") % prof[9];
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTop.x - strInfo.x / 2);
@@ -1306,10 +1304,10 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logAttackRateToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
-			ss << format("?Attack Rate ?n");
+				ss << format(".: Monitoring :.\n");
+			ss << format(".: Attack Rate :.\n");
 			ss << format("\n");
 
 			if (!bufferAttackRate.empty())
@@ -1331,7 +1329,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferAttackRate.size(); i++)
-						ss << format("?%0.3fs\n") % bufferAttackRate[i];
+						ss << format("\u2022 %0.3fs\n") % bufferAttackRate[i];
 				}
 			}
 			else
@@ -1345,7 +1343,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("?...\n");
+					ss << format("\u2022 ...\n");
 				}
 			}
 			ss << format("\n");
@@ -1376,11 +1374,11 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logHitsToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
+				ss << format(".: Monitoring :.\n");
 
-			ss << format("?Damage Hits ?n");
+			ss << format(".: Damage Hits :.\n");
 			ss << format("\n");
 
 			if (!bufferHits.empty())
@@ -1400,7 +1398,7 @@ void ESP()
 					ss << format("\n");
 					ss << format("History\n");
 					for (size_t i = 0; i < bufferHits.size(); i++)
-						ss << format("?%i\n") % bufferHits[i];
+						ss << format("\u2022 %i\n") % bufferHits[i];
 				}
 			}
 			else
@@ -1412,7 +1410,7 @@ void ESP()
 				{
 					ss << format("\n");
 					ss << format("History\n");
-					ss << format("?...\n");
+					ss << format("\u2022 ...\n");
 				}
 			}
 
@@ -1442,11 +1440,11 @@ void ESP()
 			StrInfo strInfo;
 
 			if (logCritsToFile)
-				ss << format("?Recording ?n");
+				ss << format(".: Recording :.\n");
 			else
-				ss << format("?Monitoring ?n");
+				ss << format(".: Monitoring :.\n");
 
-			ss << format("?Crit Chance ?n");
+			ss << format(".: Crit Chance :.\n");
 			ss << format("\n");
 
 			ss << format("Samples: %i\n") % (logCritsGlances + logCritsNormals + logCritsCrits);
@@ -1464,7 +1462,7 @@ void ESP()
 			if ((logCritsNormals + logCritsCrits) > 0)
 				critB = logCritsCrits / (logCritsNormals + logCritsCrits + 0.f) * 100;
 
-			ss << format("?Crit Chance ?n");
+			ss << format(".: Crit Chance :.\n");
 			ss << format("GlIncl: %0.4f\n") % critA;
 			ss << format("GlExcl: %0.4f\n") % critB;
 
