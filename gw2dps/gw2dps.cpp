@@ -116,7 +116,7 @@ void ESP()
 	if (help)
 	{
 		stringstream ss;
-		
+
 		//ss << format("[%i] Exp Mode Crosshair (Alt H)\n") % expMode;
 		//ss << format("\n");
 		ss << format("[%i] Self Health Percent (%s)\n") % selfHealthPercent % get_key_description("Hotkeys.SELF_HEALTH_PERCENT");
@@ -173,7 +173,7 @@ void ESP()
 	{
 		float x = aCenter.x;
 		float y = aCenter.y + 28;
-		
+
 		float box = 2;
 		float line = 10;
 
@@ -261,7 +261,7 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
+			shift = *(unsigned long*)(shift + 0x34);
 			shift = *(unsigned long*)(shift + 0x178);
 			if (shift)
 			{
@@ -284,8 +284,8 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x28);
+			shift = *(unsigned long*)(shift + 0x34);
+			shift = *(unsigned long*)(shift + 0x2c);
 			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
@@ -364,7 +364,7 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x30);
+				shift = *(unsigned long*)(shift + 0x34);
 				shift = *(unsigned long*)(shift + 0x178);
 				if (shift)
 				{
@@ -387,8 +387,8 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x28);
+				shift = *(unsigned long*)(shift + 0x34);
+				shift = *(unsigned long*)(shift + 0x2c);
 				shift = *(unsigned long*)(shift + 0x18c);
 				if (shift)
 				{
@@ -418,10 +418,10 @@ void ESP()
 
 			wboss.id = ag.GetAgentId();
 			wboss.pos = ag.GetPos();
-			
+
 			unsigned long shift = *(unsigned long*)ag.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x28);
+			shift = *(unsigned long*)(shift + 0x34);
+			shift = *(unsigned long*)(shift + 0x2c);
 			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
@@ -524,7 +524,7 @@ void ESP()
 
 				baseHpReturn base = baseHp(ally.lvl, ally.profession);
 				ally.vitality = int(round((ally.mHealth - base.health) / 10));
-				
+
 				switch (ally.profession)
 				{
 				case GW2::PROFESSION_WARRIOR:
@@ -860,16 +860,16 @@ void ESP()
 
 						unsigned long shift;
 						shift = *(unsigned long*)agLocked.m_ptr;
-						shift = *(unsigned long*)(shift + 0x30);
-						shift = *(unsigned long*)(shift + 0x15c);
+						shift = *(unsigned long*)(shift + 0x34);
+						shift = *(unsigned long*)(shift + 0x17c);
 
-						stats[0] = *(unsigned long*)(shift + 0x18c + 0x4 * 0);
-						stats[1] = *(unsigned long*)(shift + 0x18c + 0x4 * 1);
-						stats[2] = *(unsigned long*)(shift + 0x18c + 0x4 * 2);
-						stats[3] = *(unsigned long*)(shift + 0x18c + 0x4 * 3);
-						stats[4] = *(unsigned long*)(shift + 0x18c + 0x4 * 4);
-						stats[5] = *(unsigned long*)(shift + 0x18c + 0x4 * 5);
-						stats[6] = *(unsigned long*)(shift + 0x18c + 0x4 * 6);
+						stats[0] = *(unsigned long*)(shift + 0xa0 + 0x4 * 0);
+						stats[1] = *(unsigned long*)(shift + 0xa0 + 0x4 * 1);
+						stats[2] = *(unsigned long*)(shift + 0xa0 + 0x4 * 2);
+						stats[3] = *(unsigned long*)(shift + 0xa0 + 0x4 * 3);
+						stats[4] = *(unsigned long*)(shift + 0xa0 + 0x4 * 4);
+						stats[5] = *(unsigned long*)(shift + 0xa0 + 0x4 * 5);
+						stats[6] = *(unsigned long*)(shift + 0xa0 + 0x4 * 6);
 
 						ss << format("Power - %i") % stats[0];
 						ss << format("\nPrecision - %i") % stats[1];
@@ -1080,7 +1080,7 @@ void ESP()
 			font.Draw(lx, ly, fontColor, fs.str());
 
 			ly = ly + 12;
-			
+
 			if (wbosses.list.size() > 0) {
 				float fx, fy;
 				for (auto & wboss : wbosses.list) {
@@ -1457,7 +1457,7 @@ void ESP()
 			float critA = 0;
 			if ((logCritsGlances + logCritsNormals + logCritsCrits) > 0)
 				critA = logCritsCrits / (logCritsGlances + logCritsNormals + logCritsCrits + 0.f) * 100;
-				
+
 			float critB = 0;
 			if ((logCritsNormals + logCritsCrits) > 0)
 				critB = logCritsCrits / (logCritsNormals + logCritsCrits + 0.f) * 100;
@@ -1468,7 +1468,7 @@ void ESP()
 
 			ss << format("\n");
 			ss << format("Sample Hit: %i\n") % logCritsSample;
-			
+
 
 			strInfo = StringInfo(ss.str());
 
@@ -1491,17 +1491,17 @@ void ESP()
 		}
 	}
 
-	
+
 }
 
 void GW2LIB::gw2lib_main()
 {
 	locale::global(locale("en-US"));
-	
+
 	init_keymap();
 	init_config();
 
-    EnableEsp(ESP);
+	EnableEsp(ESP);
 	thread t1(&threadHotKeys);
 	thread t2(&threadDps);
 	thread t3(&threadKillTimer);
@@ -1511,17 +1511,17 @@ void GW2LIB::gw2lib_main()
 	thread t7(&threadSpeedometer);
 
 	if (!font.Init(lineHeight, "Verdana"))
-    {
-        //DbgOut("could not create font");
-        return;
-    }
+	{
+		//DbgOut("could not create font");
+		return;
+	}
 
 	// wait for exit hotkey
 	while (GetAsyncKeyState(VK_F12) >= 0)
-        ;
-	
+		;
+
 	close_config();
-	
+
 	// self destruct sequence
 	t1.interrupt(); //t1.join();
 	t2.interrupt(); //t2.join();
@@ -1530,7 +1530,7 @@ void GW2LIB::gw2lib_main()
 	t5.interrupt(); //t5.join();
 	t6.interrupt(); //t6.join();
 	t7.interrupt(); //t7.join();
-	
+
 	unregisterHotkeys();
 	Sleep(1000);
 	return;
