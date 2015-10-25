@@ -59,6 +59,7 @@
 #define LOG_DISPLACEMENT_ENEMY 93
 
 void registerHotKeyWrapper(int id, string key);
+void registerHotKeyWrapper(int id, string key, bool repeat);
 
 void threadHotKeys()
 {	
@@ -101,8 +102,8 @@ void threadHotKeys()
 
 	registerHotKeyWrapper(FLOAT_CIRCLES, read_config_value("Hotkeys.FLOAT_CIRCLES")); // floatCircles
 	registerHotKeyWrapper(FLOAT_TYPE, read_config_value("Hotkeys.FLOAT_TYPE")); // floatType
-	registerHotKeyWrapper(FLOAT_RADIUS_MORE, read_config_value("Hotkeys.FLOAT_RADIUS_MORE")); // floatRadius +
-	registerHotKeyWrapper(FLOAT_RADIUS_LESS, read_config_value("Hotkeys.FLOAT_RADIUS_LESS")); // floatRadius -
+	registerHotKeyWrapper(FLOAT_RADIUS_MORE, read_config_value("Hotkeys.FLOAT_RADIUS_MORE"), true); // floatRadius +
+	registerHotKeyWrapper(FLOAT_RADIUS_LESS, read_config_value("Hotkeys.FLOAT_RADIUS_LESS"), true); // floatRadius -
 	registerHotKeyWrapper(FLOAT_ALLY_NPC, read_config_value("Hotkeys.FLOAT_ALLY_NPC")); // floatAllyNpc
 	registerHotKeyWrapper(FLOAT_ENEMY_NPC, read_config_value("Hotkeys.FLOAT_ENEMY_NPC")); // floatEnemyNpc
 	registerHotKeyWrapper(FLOAT_ALLY_PLAYER, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER")); // floatAllyPlayer
@@ -237,10 +238,15 @@ void unregisterHotkeys()
 
 void registerHotKeyWrapper(int id, string key)
 {
+	registerHotKeyWrapper(id, key, false);
+}
+
+void registerHotKeyWrapper(int id, string key, bool repeat)
+{
 	string alt = "alt";
 	string shift = "shift";
 	string ctrl = "ctrl";
-	UINT modifier = MOD_NOREPEAT;
+	UINT modifier = repeat ? 0 : MOD_NOREPEAT;
 	HotKey hotkey = HotKey(key);
 
 	if (hotkey.alt)
