@@ -58,7 +58,7 @@ ChangeKeyFrame::~ChangeKeyFrame()
 
 void ChangeKeyFrame::OnClose(wxCloseEvent& evt)
 {
-	if (hotkey!= NULL && hotkey->key == 0)
+	if (hotkey != NULL && hotkey->key == 0)
 	{
 		delete hotkey;
 		hotkey = NULL;
