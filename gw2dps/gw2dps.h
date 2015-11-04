@@ -32,7 +32,7 @@ static const DWORD borderColor = 0xff444444;
 // THREADS //
 int targetLockID;
 struct Target {
-	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)) {}
+	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(-1) {}
 
 	bool valid;
 	bool alive;
@@ -43,6 +43,7 @@ struct Target {
 	int pHealth;
 	int lvl;
 	int lvlActual;
+	float breakbar;
 
 	Vector3 pos;
 };
