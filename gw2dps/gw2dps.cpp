@@ -888,7 +888,7 @@ void ESP()
 				{
 					ss << format("Distance: %i\n") % int(Dist(self.pos, selected.pos));
 					if (selected.breakbar > 0)
-						ss << format("Defiance: %3.01f%s") % selected.breakbar % "%%";
+						ss << format("BB: %3.05f%s") % selected.breakbar % "%%";
 				}
 
 				strInfo = StringInfo(ss.str());
