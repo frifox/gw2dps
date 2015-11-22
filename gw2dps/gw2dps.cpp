@@ -251,6 +251,7 @@ void ESP()
 				selected.pHealth = 0;
 			selected.lvl = chLocked.GetScaledLevel();
 			selected.lvlActual = chLocked.GetLevel();
+			selected.breakbar = chLocked.GetBreakbarPercent() * 100;
 		}
 		else if (agType == GW2::AGENT_TYPE_GADGET) // structure
 		{
@@ -885,7 +886,9 @@ void ESP()
 				}
 				else
 				{
-					ss << format("Distance: %i") % int(Dist(self.pos, selected.pos));
+					ss << format("Distance: %i\n") % int(Dist(self.pos, selected.pos));
+					if (selected.breakbar > 0)
+						ss << format("Defiance: %3.01f%s") % selected.breakbar % "%%";
 				}
 
 				strInfo = StringInfo(ss.str());
