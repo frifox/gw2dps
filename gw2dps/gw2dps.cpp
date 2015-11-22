@@ -262,7 +262,7 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x34);
+			shift = *(unsigned long*)(shift + 0x30);
 			shift = *(unsigned long*)(shift + 0x178);
 			if (shift)
 			{
@@ -285,8 +285,8 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x34);
-			shift = *(unsigned long*)(shift + 0x2c);
+			shift = *(unsigned long*)(shift + 0x30);
+			shift = *(unsigned long*)(shift + 0x28);
 			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
@@ -365,7 +365,7 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x34);
+				shift = *(unsigned long*)(shift + 0x30);
 				shift = *(unsigned long*)(shift + 0x178);
 				if (shift)
 				{
@@ -388,8 +388,8 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x34);
-				shift = *(unsigned long*)(shift + 0x2c);
+				shift = *(unsigned long*)(shift + 0x30);
+				shift = *(unsigned long*)(shift + 0x28);
 				shift = *(unsigned long*)(shift + 0x18c);
 				if (shift)
 				{
@@ -421,8 +421,8 @@ void ESP()
 			wboss.pos = ag.GetPos();
 
 			unsigned long shift = *(unsigned long*)ag.m_ptr;
-			shift = *(unsigned long*)(shift + 0x34);
-			shift = *(unsigned long*)(shift + 0x2c);
+			shift = *(unsigned long*)(shift + 0x30);
+			shift = *(unsigned long*)(shift + 0x28);
 			shift = *(unsigned long*)(shift + 0x18c);
 			if (shift)
 			{
@@ -861,8 +861,8 @@ void ESP()
 
 						unsigned long shift;
 						shift = *(unsigned long*)agLocked.m_ptr;
-						shift = *(unsigned long*)(shift + 0x34);
-						shift = *(unsigned long*)(shift + 0x17c);
+						shift = *(unsigned long*)(shift + 0x30);
+						shift = *(unsigned long*)(shift + 0x15c);
 
 						stats[0] = *(unsigned long*)(shift + 0xa0 + 0x4 * 0);
 						stats[1] = *(unsigned long*)(shift + 0xa0 + 0x4 * 1);
