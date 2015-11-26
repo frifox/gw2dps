@@ -73,6 +73,26 @@ bool logDisplacement = false;
 bool logDisplacementEnemy = false;
 Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
+#ifdef ARCH_64BIT
+uintptr_t hp_shift1 = 0x58;
+uintptr_t hp_shift2 = 0x1c0;
+uintptr_t hp_shift3 = 0x50;
+uintptr_t hp_shift4 = 0x1e8;
+uintptr_t hp_shift_cur = 0xc;
+uintptr_t hp_shift_max = 0x10;
+uintptr_t stats_shift1 = 0x250;
+uintptr_t stats_shift2 = 0xac;
+#else
+uintptr_t hp_shift1 = 0x30;
+uintptr_t hp_shift2 = 0x178;
+uintptr_t hp_shift3 = 0x28;
+uintptr_t hp_shift4 = 0x18c;
+uintptr_t hp_shift_cur = 0x8;
+uintptr_t hp_shift_max = 0xc;
+uintptr_t stats_shift1 = 0x15c;
+uintptr_t stats_shift2 = 0xa0;
+#endif
+
 // Threads //
 #include "thread.Hotkeys.cpp"
 #include "thread.Dps.cpp"
@@ -216,10 +236,10 @@ void ESP()
 		self.id = GetOwnAgent().GetAgentId();
 		self.pos = GetOwnAgent().GetPos();
 
-		self.cHealth = int(me.GetCurrentHealth());
-		self.mHealth = int(me.GetMaxHealth());
+		self.cHealth = me.GetCurrentHealth();
+		self.mHealth = me.GetMaxHealth();
 		if (self.mHealth > 0)
-			self.pHealth = int(100.f * float(self.cHealth) / float(self.mHealth));
+			self.pHealth = 100.f * (self.cHealth / self.mHealth);
 		else
 			self.pHealth = 0;
 
@@ -243,10 +263,10 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			Character chLocked = agLocked.GetCharacter();
-			selected.cHealth = int(chLocked.GetCurrentHealth());
-			selected.mHealth = int(chLocked.GetMaxHealth());
+			selected.cHealth = chLocked.GetCurrentHealth();
+			selected.mHealth = chLocked.GetMaxHealth();
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
+				selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
 			else
 				selected.pHealth = 0;
 			selected.lvl = chLocked.GetScaledLevel();
@@ -262,15 +282,15 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x178);
+			shift = *(unsigned long*)(shift + hp_shift1);
+			shift = *(unsigned long*)(shift + hp_shift2);
 			if (shift)
 			{
-				selected.cHealth = int(*(float*)(shift + 0x8));
-				selected.mHealth = int(*(float*)(shift + 0xC));
+				selected.cHealth = *(float*)(shift + hp_shift1_cur);
+				selected.mHealth = *(float*)(shift + hp_shift1_max);
 			}
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
+				selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
 			else
 				selected.pHealth = 0;
 			//selected.lvl = chLocked.GetScaledLevel();
@@ -285,16 +305,16 @@ void ESP()
 			selected.pos = agLocked.GetPos();
 
 			unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x18c);
+			shift = *(unsigned long*)(shift + hp_shift1);
+			shift = *(unsigned long*)(shift + hp_shift3);
+			shift = *(unsigned long*)(shift + hp_shift4);
 			if (shift)
 			{
-				selected.cHealth = int(*(float*)(shift + 0x8));
-				selected.mHealth = int(*(float*)(shift + 0xC));
+				selected.cHealth = *(float*)(shift + hp_shift_cur);
+				selected.mHealth = *(float*)(shift + hp_shift_max);
 			}
 			if (selected.mHealth > 0)
-				selected.pHealth = int(100.f * float(selected.cHealth) / float(selected.mHealth));
+				selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
 			else
 				selected.pHealth = 0;
 
@@ -347,10 +367,10 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				Character ch = ag.GetCharacter();
-				locked.cHealth = int(ch.GetCurrentHealth());
-				locked.mHealth = int(ch.GetMaxHealth());
+				locked.cHealth = ch.GetCurrentHealth();
+				locked.mHealth = ch.GetMaxHealth();
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
+					locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
 				else
 					locked.pHealth = 0;
 				locked.lvl = ch.GetScaledLevel();
@@ -365,15 +385,15 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x178);
+				shift = *(unsigned long*)(shift + hp_shift1);
+				shift = *(unsigned long*)(shift + hp_shift2);
 				if (shift)
 				{
-					locked.cHealth = int(*(float*)(shift + 0x8));
-					locked.mHealth = int(*(float*)(shift + 0xC));
+					locked.cHealth = *(float*)(shift + hp_shift_cur);
+					locked.mHealth = *(float*)(shift + hp_shift_max);
 				}
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
+					locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
 				else
 					locked.pHealth = 0;
 				//locked.lvl = ch.GetScaledLevel();
@@ -388,16 +408,16 @@ void ESP()
 				locked.pos = ag.GetPos();
 
 				unsigned long shift = *(unsigned long*)ag.m_ptr;
-				shift = *(unsigned long*)(shift + 0x30);
-				shift = *(unsigned long*)(shift + 0x28);
-				shift = *(unsigned long*)(shift + 0x18c);
+				shift = *(unsigned long*)(shift + hp_shift1);
+				shift = *(unsigned long*)(shift + hp_shift3);
+				shift = *(unsigned long*)(shift + hp_shift4);
 				if (shift)
 				{
-					locked.cHealth = int(*(float*)(shift + 0x8));
-					locked.mHealth = int(*(float*)(shift + 0xC));
+					locked.cHealth = *(float*)(shift + hp_shift_cur);
+					locked.mHealth = *(float*)(shift + hp_shift_max);
 				}
 				if (locked.mHealth > 0)
-					locked.pHealth = int(100.f * float(locked.cHealth) / float(locked.mHealth));
+					locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
 				else
 					locked.pHealth = 0;
 				//locked.lvl = ch.GetScaledLevel();
@@ -421,16 +441,16 @@ void ESP()
 			wboss.pos = ag.GetPos();
 
 			unsigned long shift = *(unsigned long*)ag.m_ptr;
-			shift = *(unsigned long*)(shift + 0x30);
-			shift = *(unsigned long*)(shift + 0x28);
-			shift = *(unsigned long*)(shift + 0x18c);
+			shift = *(unsigned long*)(shift + hp_shift1);
+			shift = *(unsigned long*)(shift + hp_shift3);
+			shift = *(unsigned long*)(shift + hp_shift4);
 			if (shift)
 			{
-				wboss.cHealth = int(*(float*)(shift + 0x8));
-				wboss.mHealth = int(*(float*)(shift + 0xC));
+				wboss.cHealth = *(float*)(shift + hp_shift_cur);
+				wboss.mHealth = *(float*)(shift + hp_shift_max);
 			}
 			if (wboss.mHealth > 0)
-				wboss.pHealth = int(100.f * float(wboss.cHealth) / float(wboss.mHealth));
+				wboss.pHealth = 100.f * (wboss.cHealth / wboss.mHealth);
 			else
 				wboss.pHealth = 0;
 
@@ -449,8 +469,8 @@ void ESP()
 
 				// gather data
 				Vector3 pos = ag.GetPos();
-				int cHealth = int(ch.GetCurrentHealth());
-				int mHealth = int(ch.GetMaxHealth());
+				float cHealth = ch.GetCurrentHealth();
+				float mHealth = ch.GetMaxHealth();
 				int attitude = ch.GetAttitude();
 				int prof = ch.GetProfession();
 
@@ -516,7 +536,7 @@ void ESP()
 				ally.mHealth = int(round(ch.GetMaxHealth() / (100 + wvwBonus) * 100));
 				//ally.cHealth = int(ch.GetCurrentHealth());
 				//if (ally.mHealth > 0)
-				//ally.pHealth = int(100.f * float(ally.cHealth) / float(ally.mHealth));
+				//ally.pHealth = 100.f * (ally.cHealth / ally.mHealth);
 				//else
 				//ally.pHealth = 0;
 				ally.lvl = ch.GetScaledLevel();
@@ -611,7 +631,7 @@ void ESP()
 
 		if (selfHealthPercent && self.alive)
 		{
-			ss << format("%i") % self.pHealth;
+			ss << format("%i") % (int)self.pHealth;
 
 			strInfo = StringInfo(ss.str());
 			float x = round(aBottom.x - strInfo.x / 2);
@@ -785,7 +805,7 @@ void ESP()
 				stringstream ss;
 				StrInfo strInfo;
 
-				ss << format("Selected & Locked: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+				ss << format("Selected & Locked: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
 
 				strInfo = StringInfo(ss.str());
 				float x = round(aTopLeft.x - strInfo.x / 2);
@@ -805,7 +825,7 @@ void ESP()
 					stringstream ss;
 					StrInfo strInfo;
 
-					ss << format("Selected: %i / %i [%i%s]") % selected.cHealth % selected.mHealth % selected.pHealth % "%%";
+					ss << format("Selected: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
 
 					strInfo = StringInfo(ss.str());
 					float x = round(aTopLeft.x - strInfo.x / 2);
@@ -824,7 +844,7 @@ void ESP()
 					stringstream ss;
 					StrInfo strInfo;
 
-					ss << format("Locked: %i / %i [%i%s]") % locked.cHealth % locked.mHealth % locked.pHealth % "%%";
+					ss << format("Selected & Locked: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
 
 					strInfo = StringInfo(ss.str());
 					float x = round(aTopLeft.x - strInfo.x / 2);
@@ -861,16 +881,16 @@ void ESP()
 
 						unsigned long shift;
 						shift = *(unsigned long*)agLocked.m_ptr;
-						shift = *(unsigned long*)(shift + 0x30);
-						shift = *(unsigned long*)(shift + 0x15c);
+						shift = *(unsigned long*)(shift + hp_shift1);
+						shift = *(unsigned long*)(shift + stats_shift1);
 
-						stats[0] = *(unsigned long*)(shift + 0xa0 + 0x4 * 0);
-						stats[1] = *(unsigned long*)(shift + 0xa0 + 0x4 * 1);
-						stats[2] = *(unsigned long*)(shift + 0xa0 + 0x4 * 2);
-						stats[3] = *(unsigned long*)(shift + 0xa0 + 0x4 * 3);
-						stats[4] = *(unsigned long*)(shift + 0xa0 + 0x4 * 4);
-						stats[5] = *(unsigned long*)(shift + 0xa0 + 0x4 * 5);
-						stats[6] = *(unsigned long*)(shift + 0xa0 + 0x4 * 6);
+						stats[0] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 0);
+						stats[1] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 1);
+						stats[2] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 2);
+						stats[3] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 3);
+						stats[4] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 4);
+						stats[5] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 5);
+						stats[6] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 6);
 
 						ss << format("Power - %i") % stats[0];
 						ss << format("\nPrecision - %i") % stats[1];
@@ -887,7 +907,7 @@ void ESP()
 				else
 				{
 					ss << format("Distance: %i\n") % int(Dist(self.pos, selected.pos));
-					if (selected.breakbar > 0)
+					if (agLocked.GetCharacter().GetBreakbarState() != GW2::BREAKBAR_STATE_NONE)
 						ss << format("BB: %3.05f%s") % selected.breakbar % "%%";
 				}
 
@@ -1106,7 +1126,7 @@ void ESP()
 					// list
 					{
 						stringstream fs;
-						fs << format("[%i] %i / %i (%i)") % wboss.id % wboss.cHealth % wboss.mHealth % int(Dist(self.pos, wboss.pos));
+						fs << format("[%i] %i / %i (%i)") % wboss.id % (int)wboss.cHealth % (int)wboss.mHealth % int(Dist(self.pos, wboss.pos));
 
 						StrInfo strInfo = StringInfo(fs.str());
 						ly = round(ly + strInfo.y + padY);

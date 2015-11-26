@@ -1,6 +1,6 @@
 void threadHits() {
 	int pAgentId = 0;
-	int pHealth = 0;
+	float pHealth = 0;
 	bool logFileInit = false;
 	bool logFileEmpty = false;
 
@@ -19,7 +19,7 @@ void threadHits() {
 		{
 			if (locked.id == pAgentId)
 			{
-				int cHealth = locked.cHealth;
+				float cHealth = locked.cHealth;
 
 				if (cHealth == pHealth)
 					continue;
@@ -27,7 +27,7 @@ void threadHits() {
 				{
 					if (cHealth < pHealth && cHealth != 0)
 					{
-						int hit = pHealth - cHealth;
+						int hit = int(pHealth - cHealth);
 						bufferHits.push_front(hit);
 						threadHitsCounter++;
 

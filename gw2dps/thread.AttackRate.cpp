@@ -1,6 +1,6 @@
 void threadAttackRate() {
 	int pAgentId = 0;
-	int pHealth = 0;
+	float pHealth = 0;
 	bool logFileInit = false;
 	bool logFileEmpty = false;
 
@@ -20,8 +20,8 @@ void threadAttackRate() {
 			if (timer.is_stopped())
 				timer.start();
 
-			int cHealth = locked.cHealth;
-			int mHealth = locked.mHealth;
+			float cHealth = locked.cHealth;
+			float mHealth = locked.mHealth;
 			if (pHealth == 0)
 				pHealth = cHealth;
 

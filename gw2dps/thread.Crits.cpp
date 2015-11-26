@@ -1,6 +1,6 @@
 void threadCrits() {
 	int pAgentId = 0;
-	int pHealth = 0;
+	float pHealth = 0;
 	bool logFileInit = false;
 	bool logFileEmpty = false;
 
@@ -15,7 +15,7 @@ void threadCrits() {
 		{
 			if (locked.id == pAgentId)
 			{
-				int cHealth = locked.cHealth;
+				float cHealth = locked.cHealth;
 
 				if (cHealth == pHealth)
 					continue;
@@ -23,7 +23,7 @@ void threadCrits() {
 				{
 					if (cHealth < pHealth && cHealth != 0)
 					{
-						int hit = pHealth - cHealth;
+						int hit = int(pHealth - cHealth);
 						
 						int limitLow = int(floor(logCritsSample * (900.f / 1100.f)));
 						int limitHigh = int(ceil(logCritsSample * (1100.f / 900.f)));

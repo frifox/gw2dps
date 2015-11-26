@@ -1,6 +1,6 @@
 void threadDps() {
 	int pAgentId = 0;
-	int pHealth = 0;
+	float pHealth = 0;
 	double pollingRate = 250; // ms
 
 	timer::cpu_timer timer;
@@ -22,12 +22,12 @@ void threadDps() {
 			if (elapsedMs > pollingRate)
 			{
 				timer.start();
-				int cHealth = locked.cHealth;
+				float cHealth = locked.cHealth;
 
 				if (pHealth == 0)
 					pHealth = cHealth;
 
-				int dmg = pHealth - cHealth;
+				float dmg = pHealth - cHealth;
 				pHealth = cHealth;
 
 				if (!dpsAllowNegative && dmg < 0)
