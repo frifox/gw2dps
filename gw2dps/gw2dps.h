@@ -61,6 +61,8 @@ struct Ally {
 	float mHealth; // max health
 	float pHealth; // current health in percent
 
+	Vector3 pos;
+
 	int vitality;
 	string name;
 };
