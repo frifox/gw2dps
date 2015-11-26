@@ -1,7 +1,7 @@
 void threadKillTimer()
 {
 	int pAgentId = 0;
-	int pHealth = 0;
+	float pHealth = 0;
 	double pollingRate = 250; // ms
 
 	timer::cpu_timer timer;
@@ -47,8 +47,8 @@ void threadKillTimer()
 
 			if (elapsedSample > pollingRate)
 			{	
-				int cHealth = locked.cHealth;
-				int dmg = pHealth - cHealth;
+				float cHealth = locked.cHealth;
+				float dmg = pHealth - cHealth;
 
 				if (dmg >= 0)
 				{

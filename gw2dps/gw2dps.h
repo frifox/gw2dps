@@ -32,15 +32,15 @@ static const DWORD borderColor = 0xff444444;
 // THREADS //
 int targetLockID;
 struct Target {
-	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(-1) {}
+	Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(0) {}
 
 	bool valid;
 	bool alive;
 	int id;
 	int type; // 0 char, 9 struct, 10 wboss
-	int cHealth;
-	int mHealth;
-	int pHealth;
+	float cHealth;
+	float mHealth;
+	float pHealth;
 	int lvl;
 	int lvlActual;
 	float breakbar;
@@ -51,15 +51,15 @@ Target selected;
 Target locked;
 Target self;
 struct Ally {
-	Ally() : id(0), profession(0), lvl(0), lvlActual(0), cHealth(0), mHealth(0), pHealth(0), vitality(0), name("") {}
+	Ally() : id(0), profession(0), lvl(0), lvlActual(0), cHealth(0), mHealth(0), pHealth(0), vitality(0), pos({ 0, 0, 0 }), name("") {}
 
 	int id;
 	int profession;
 	int lvl;
 	int lvlActual;
-	int cHealth; // current health
-	int mHealth; // max health
-	int pHealth; // current health in percent
+	float cHealth; // current health
+	float mHealth; // max health
+	float pHealth; // current health in percent
 
 	int vitality;
 	string name;
@@ -79,14 +79,14 @@ struct Allies {
 };
 struct Float {
 	Vector3 pos;
-	int mHealth;
+	float mHealth;
 	int prof;
 };
 struct Siege {
 	int type;
 	Vector3 pos;
-	int mHealth;
-	int cHealth;
+	float mHealth;
+	float cHealth;
 };
 struct Floaters {
 	vector<Float> allyNpc;
@@ -98,9 +98,9 @@ struct Floaters {
 struct WBoss {
 	int id;
 	Vector3 pos;
-	int mHealth;
-	int cHealth;
-	int pHealth;
+	float mHealth;
+	float cHealth;
+	float pHealth;
 };
 struct WBosses {
 	vector<WBoss> list;
@@ -108,7 +108,7 @@ struct WBosses {
 struct Killtimer {
 	Killtimer() : dmg(0), dps(0), time(0), samplesKnown(0), samplesUnknown(0) {}
 
-	int dmg;
+	float dmg;
 	double dps;
 	double time; // seconds
 	int samplesKnown;
@@ -123,7 +123,7 @@ struct Displacement {
 	int dist;
 };
 Displacement bufferDisplacement;
-boost::circular_buffer<int> bufferDps(20); // 5s of 250ms samples
+boost::circular_buffer<float> bufferDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
 boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRate,3s worth
