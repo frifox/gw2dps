@@ -286,8 +286,8 @@ void ESP()
 			shift = *(unsigned long*)(shift + hp_shift2);
 			if (shift)
 			{
-				selected.cHealth = *(float*)(shift + hp_shift1_cur);
-				selected.mHealth = *(float*)(shift + hp_shift1_max);
+				selected.cHealth = *(float*)(shift + hp_shift_cur);
+				selected.mHealth = *(float*)(shift + hp_shift_max);
 			}
 			if (selected.mHealth > 0)
 				selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
