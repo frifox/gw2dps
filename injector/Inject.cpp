@@ -32,6 +32,7 @@ BOOL IsWow64(DWORD pID)
             return true;
         }
     }
+    else return true;
 
     CloseHandle(Proc);
     return bIsWow64;
