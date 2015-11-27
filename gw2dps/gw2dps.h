@@ -62,6 +62,8 @@ struct Ally {
 	float pHealth; // current health in percent
 	Vector3 pos;
 
+	Vector3 pos;
+
 	int vitality;
 	string name;
 };
