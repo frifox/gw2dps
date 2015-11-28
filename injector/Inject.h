@@ -4,4 +4,5 @@
 #include <wx/wxprec.h>
 
 int inject();
+bool inject64();
 #endif
