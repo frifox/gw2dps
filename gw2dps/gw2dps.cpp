@@ -93,6 +93,8 @@ uintptr_t stats_shift1 = 0x15c;
 uintptr_t stats_shift2 = 0xa0;
 #endif
 
+DWORD thread_id_hotkey = 0;
+
 // Threads //
 #include "thread.Hotkeys.cpp"
 #include "thread.Dps.cpp"
@@ -1545,6 +1547,9 @@ void GW2LIB::gw2lib_main()
 
 	close_config();
 
+	// make threads clean-up first before interrupting
+	PostThreadMessage(thread_id_hotkey, WM_USER, NULL, NULL);
+
 	// self destruct sequence
 	t1.interrupt(); //t1.join();
 	t2.interrupt(); //t2.join();
@@ -1554,7 +1559,6 @@ void GW2LIB::gw2lib_main()
 	t6.interrupt(); //t6.join();
 	t7.interrupt(); //t7.join();
 
-	unregisterHotkeys();
 	Sleep(1000);
 	return;
 }

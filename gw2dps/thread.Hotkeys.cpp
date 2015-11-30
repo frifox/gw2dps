@@ -60,9 +60,12 @@
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
+void unregisterHotkeys();
 
 void threadHotKeys()
-{	
+{
+	thread_id_hotkey = GetCurrentThreadId();
+
 	registerHotKeyWrapper(KILL_APP, read_config_value("Hotkeys.KILL_APP")); // killApp
 
 	registerHotKeyWrapper(HELP, read_config_value("Hotkeys.HELP")); // help
@@ -123,6 +126,8 @@ void threadHotKeys()
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
 	{
+		if (msg.message == WM_USER) unregisterHotkeys();
+
 		this_thread::interruption_point();
 
 		PeekMessage(&msg, 0, 0, 0, 0x0001);
