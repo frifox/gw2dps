@@ -4,6 +4,7 @@ gw2dps_exe.dir/*
 gw2dps_dll.dir/*
 Release/
 Debug/
+*.user
 *.vcxproj
 *.vcxproj.filters
 *.cmake

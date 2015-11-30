@@ -12,7 +12,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     // Get the dll's full path name 
     wchar_t wchar_buf[MAX_PATH] = { 0 };
-    GetFullPathName(L"gw2dps_x64.dll", MAX_PATH, wchar_buf, NULL);
+    GetFullPathName(L"gw2dps64.dll", MAX_PATH, wchar_buf, NULL);
     char char_buf[MAX_PATH + 1] = { 0 };
     wcstombs_s(&converted, char_buf, wchar_buf, wcslen(wchar_buf));
 
