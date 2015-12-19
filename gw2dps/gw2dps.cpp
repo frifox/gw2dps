@@ -80,8 +80,6 @@ uintptr_t hp_shift3 = 0x50;
 uintptr_t hp_shift4 = 0x1e8;
 uintptr_t hp_shift_cur = 0xc;
 uintptr_t hp_shift_max = 0x10;
-uintptr_t stats_shift1 = 0x250;
-uintptr_t stats_shift2 = 0xac;
 #else
 uintptr_t hp_shift1 = 0x30;
 uintptr_t hp_shift2 = 0x178;
@@ -89,8 +87,6 @@ uintptr_t hp_shift3 = 0x28;
 uintptr_t hp_shift4 = 0x18c;
 uintptr_t hp_shift_cur = 0x8;
 uintptr_t hp_shift_max = 0xc;
-uintptr_t stats_shift1 = 0x15c;
-uintptr_t stats_shift2 = 0xa0;
 #endif
 
 DWORD thread_id_hotkey = 0;
@@ -872,35 +868,15 @@ void ESP()
 				{
 					if (agLocked.GetType() == GW2::AGENT_TYPE_CHAR)
 					{
-						int stats[7] {};
-						stats[0] = 0; // power
-						stats[1] = 0; // precision
-						stats[2] = 0; // toughness
-						stats[3] = 0; // vitality
-						stats[4] = 0; // ferocity
-						stats[5] = 0; // healing
-						stats[6] = 0; // condition
+						GW2::CharacterStats stats = agLocked.GetCharacter().GetStats();
 
-						unsigned long shift;
-						shift = *(unsigned long*)agLocked.m_ptr;
-						shift = *(unsigned long*)(shift + hp_shift1);
-						shift = *(unsigned long*)(shift + stats_shift1);
-
-						stats[0] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 0);
-						stats[1] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 1);
-						stats[2] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 2);
-						stats[3] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 3);
-						stats[4] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 4);
-						stats[5] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 5);
-						stats[6] = *(unsigned long*)(shift + stats_shift2 + 0x4 * 6);
-
-						ss << format("Power - %i") % stats[0];
-						ss << format("\nPrecision - %i") % stats[1];
-						ss << format("\nToughness - %i") % stats[2];
-						ss << format("\nVitality - %i") % stats[3];
-						ss << format("\nFerocity - %i") % stats[4];
-						ss << format("\nHealing - %i") % stats[5];
-						ss << format("\nCondition - %i") % stats[6];
+						ss << format("Power - %i") % stats.power;
+						ss << format("\nPrecision - %i") % stats.precision;
+						ss << format("\nToughness - %i") % stats.toughness;
+						ss << format("\nVitality - %i") % stats.vitality;
+						ss << format("\nFerocity - %i") % stats.ferocity;
+						ss << format("\nHealing - %i") % stats.healing;
+						ss << format("\nCondition - %i") % stats.condition;
 
 						ss << format("\n");
 						ss << format("\n(Agent: %p)") % (void**)agLocked.m_ptr;
