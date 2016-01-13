@@ -4,7 +4,7 @@ GW2DPS
 
 Download
 =======
-- Download & extract latest release [here](https://github.com/frifox/gw2dps/releases) (2015-12-01)
+- Download & extract latest release [here](https://github.com/frifox/gw2dps/releases)
 - Run gw2dps.exe
 - File > Inject
 - Have fun.
