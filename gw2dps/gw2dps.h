@@ -215,12 +215,12 @@ StrInfo StringInfo(string str)
 		//replace_all(str, "&&", "&");
 		
 		// find longest line
-		LONG width = 0;
+		size_t width = 0;
 		string longLine;
 		for (auto & line : lines) {
 			RECT r = { 0, 0, 0, 0 };
 			DrawText(hdc, convert(line.c_str()).c_str(), -1, &r, DT_CALCRECT);
-			LONG w = abs(r.right - r.left);
+			size_t w = abs(r.right - r.left);
 
 			// refine the width
 			size_t i;

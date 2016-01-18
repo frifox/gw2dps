@@ -81,9 +81,9 @@ uintptr_t hp_shift4 = 0x1e8;
 uintptr_t hp_shift_cur = 0xc;
 uintptr_t hp_shift_max = 0x10;
 #else
-uintptr_t hp_shift1 = 0x30;
+uintptr_t hp_shift1 = 0x34;
 uintptr_t hp_shift2 = 0x178;
-uintptr_t hp_shift3 = 0x28;
+uintptr_t hp_shift3 = 0x2c;
 uintptr_t hp_shift4 = 0x18c;
 uintptr_t hp_shift_cur = 0x8;
 uintptr_t hp_shift_max = 0xc;
@@ -531,7 +531,7 @@ void ESP()
 				ally.id = ag.GetAgentId();
 
 				ally.profession = ch.GetProfession();
-				ally.mHealth = int(round(ch.GetMaxHealth() / (100 + wvwBonus) * 100));
+				ally.mHealth = round(ch.GetMaxHealth() / (100 + wvwBonus) * 100);
 				//ally.cHealth = int(ch.GetCurrentHealth());
 				//if (ally.mHealth > 0)
 				//ally.pHealth = 100.f * (ally.cHealth / ally.mHealth);

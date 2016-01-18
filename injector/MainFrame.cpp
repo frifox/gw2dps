@@ -47,8 +47,9 @@ void MainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 		"and developed by frifox. \n"
 		"\n"
 		"Other contributors: \n"
-		"cubimon",
-		"About GW2DPS", 
+		"cubimon - GUI\n"
+		"hairys - 64-bit, patches",
+		"About GW2DPS",
 		wxOK | wxICON_INFORMATION,
 		this);
 }

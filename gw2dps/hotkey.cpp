@@ -26,7 +26,7 @@ HotKey::HotKey(string str)
 	UINT uiKey = 0;
 	UINT modifier = MOD_NOREPEAT;
 	string key_hex;
-	for (unsigned int i = 0; i < str.size(); i++)
+	for (size_t i = 0; i < str.size(); i++)
 	{
 		switch (str[i])
 		{

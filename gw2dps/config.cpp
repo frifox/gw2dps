@@ -6,6 +6,7 @@
 ifstream in_config_file;
 ofstream out_config_file;
 ptree config_pt;
+ptree def_config_pt;
 wstring abs_file_name;
 
 void init_config()
@@ -30,6 +31,10 @@ void init_config()
 	in_config_file.open(abs_file_name.c_str(), fstream::in);
 	read_ini(in_config_file, config_pt);
 	in_config_file.close();
+
+	stringstream ss;
+	ss << DEFAULT_CONFIG_FILE;
+	read_ini(ss, def_config_pt);
 }
 
 void close_config()
@@ -70,7 +75,18 @@ HotKey* read_hotkey(string config_key)
 	}
 	else
 	{
-		return NULL;
+		// read from default config
+		try
+		{
+			config_value = def_config_pt.get<string>(config_key);
+			config_pt.add(config_key, config_value);
+			save_config();
+			return new HotKey(config_value);
+		}
+		catch (std::exception e)
+		{
+			return NULL;
+		}
 	}
 }
 
