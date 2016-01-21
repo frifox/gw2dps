@@ -20,6 +20,7 @@ using namespace std;
 extern ifstream in_config_file;
 extern ofstream out_config_file;
 extern ptree config_pt;
+extern ptree def_config_pt;
 
 void init_config();
 void close_config();

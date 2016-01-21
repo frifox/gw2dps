@@ -3,6 +3,7 @@
 #include "config.h"
 #include "keymap.h"
 #include "hotkey.h"
+#include "preferences.h"
 
 // Settings //
 bool killApp = false;
@@ -44,13 +45,13 @@ int AttackRateChainTime = 0; // not used atm
 string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
 int threadAttackRateCounter = 0;
 
-int logCrits = false;
-int logCritsDetails = true;
+bool logCrits = false;
+bool logCritsDetails = true;
 int logCritsSample = 0;
 int logCritsGlances = 0;
 int logCritsNormals = 0;
 int logCritsCrits = 0;
-int logCritsToFile = false;
+bool logCritsToFile = false;
 string logCritsFile = "gw2dpsLog-Crits.txt";
 
 bool alliesList = false;
@@ -1495,12 +1496,99 @@ void ESP()
 
 }
 
+
+void load_preferences() {
+	expMode = Str2Bool(read_config_value("Preferences.EXP_MODE"));
+	selfFloat = Str2Bool(read_config_value("Preferences.SELF_FLOAT"));
+	loopLimiter = Str2Bool(read_config_value("Preferences.LOOP_LIMITER"), true);
+	selfHealthPercent = Str2Bool(read_config_value("Preferences.SELF_HEALTH_PERCENT"), true);
+	woldBosses = Str2Bool(read_config_value("Preferences.WORLD_BOSSES"));
+	targetSelected = Str2Bool(read_config_value("Preferences.TARGET_SELECTED"), true);
+	targetInfo = Str2Bool(read_config_value("Preferences.TARGET_INFO"));
+	targetInfoAlt = Str2Bool(read_config_value("Preferences.TARGET_INFO_ALT"));
+	targetLock = Str2Bool(read_config_value("Preferences.TARGET_LOCK"));
+	dpsAllowNegative = Str2Bool(read_config_value("Preferences.DPS_ALLOW_NEGATIVE"));
+	logDps = Str2Bool(read_config_value("Preferences.LOG_DPS"), true);
+	logDpsDetails = Str2Bool(read_config_value("Preferences.LOG_DPS_DETAILS"));
+	logKillTimer = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER"));
+	logKillTimerDetails = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_DETAILS"));
+	logKillTimerToFile = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_TO_FILE"));
+	logHits = Str2Bool(read_config_value("Preferences.LOG_HITS"));
+	logHitsDetails = Str2Bool(read_config_value("Preferences.LOG_HITS_DETAILS"));
+	logHitsToFile = Str2Bool(read_config_value("Preferences.LOG_HITS_TO_FILE"));
+	logAttackRate = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE"));
+	logAttackRateDetails = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE_DETAILS"));
+	logAttackRateToFile = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE_TO_FILE"));
+	logCrits = Str2Bool(read_config_value("Preferences.LOG_CRITS"));
+	alliesList = Str2Bool(read_config_value("Preferences.ALLIES_LIST"));
+	floatCircles = Str2Bool(read_config_value("Preferences.FLOAT_CIRCLES"));
+	floatType = Str2Bool(read_config_value("Preferences.FLOAT_TYPE"), true);
+	floatAllyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_NPC"));
+	floatEnemyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_NPC"));
+	floatAllyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER"));
+	floatAllyPlayerProf = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF"));
+	floatEnemyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_PLAYER"));
+	floatSiege = Str2Bool(read_config_value("Preferences.FLOAT_SIEGE"));
+	logSpeedometer = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER"));
+	logSpeedometerEnemy = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER_ENEMY"));
+	logDisplacement = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT"));
+	logDisplacementEnemy = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT_ENEMY"));
+	floatRadius = Str2Int(read_config_value("Preferences.FLOAT_RADIUS"), 7000);
+	wvwBonus = Str2Int(read_config_value("Preferences.WVW_BONUS"));
+	AttackRateChainHits = Str2Int(read_config_value("Preferences.ATTACKRATE_CHAIN_HITS"), 1);
+	logCritsSample = Str2Int(read_config_value("Preferences.LOG_CRITS_SAMPLE"));
+}
+
+void save_preferences() {
+	write_config_value("Preferences.EXP_MODE", Bool2Str(expMode));
+	write_config_value("Preferences.SELF_FLOAT", Bool2Str(selfFloat));
+	write_config_value("Preferences.LOOP_LIMITER", Bool2Str(loopLimiter));
+	write_config_value("Preferences.SELF_HEALTH_PERCENT", Bool2Str(selfHealthPercent));
+	write_config_value("Preferences.WORLD_BOSSES", Bool2Str(woldBosses));
+	write_config_value("Preferences.TARGET_SELECTED", Bool2Str(targetSelected));
+	write_config_value("Preferences.TARGET_INFO", Bool2Str(targetInfo));
+	write_config_value("Preferences.TARGET_INFO_ALT", Bool2Str(targetInfoAlt));
+	write_config_value("Preferences.TARGET_LOCK", Bool2Str(targetLock));
+	write_config_value("Preferences.DPS_ALLOW_NEGATIVE", Bool2Str(dpsAllowNegative));
+	write_config_value("Preferences.LOG_DPS", Bool2Str(logDps));
+	write_config_value("Preferences.LOG_DPS_DETAILS", Bool2Str(logDpsDetails));
+	write_config_value("Preferences.LOG_KILL_TIMER", Bool2Str(logKillTimer));
+	write_config_value("Preferences.LOG_KILL_TIMER_DETAILS", Bool2Str(logKillTimerDetails));
+	write_config_value("Preferences.LOG_KILL_TIMER_TO_FILE", Bool2Str(logKillTimerToFile));
+	write_config_value("Preferences.LOG_HITS", Bool2Str(logHits));
+	write_config_value("Preferences.LOG_HITS_DETAILS", Bool2Str(logHitsDetails));
+	write_config_value("Preferences.LOG_HITS_TO_FILE", Bool2Str(logHitsToFile));
+	write_config_value("Preferences.LOG_ATTACK_RATE", Bool2Str(logAttackRate));
+	write_config_value("Preferences.LOG_ATTACK_RATE_DETAILS", Bool2Str(logAttackRateDetails));
+	write_config_value("Preferences.LOG_ATTACK_RATE_TO_FILE", Bool2Str(logAttackRateToFile));
+	write_config_value("Preferences.LOG_CRITS", Bool2Str(logCrits));
+	write_config_value("Preferences.ALLIES_LIST", Bool2Str(alliesList));
+	write_config_value("Preferences.FLOAT_CIRCLES", Bool2Str(floatCircles));
+	write_config_value("Preferences.FLOAT_TYPE", Bool2Str(floatType));
+	write_config_value("Preferences.FLOAT_ALLY_NPC", Bool2Str(floatAllyNpc));
+	write_config_value("Preferences.FLOAT_ENEMY_NPC", Bool2Str(floatEnemyNpc));
+	write_config_value("Preferences.FLOAT_ALLY_PLAYER", Bool2Str(floatAllyPlayer));
+	write_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF", Bool2Str(floatAllyPlayerProf));
+	write_config_value("Preferences.FLOAT_ENEMY_PLAYER", Bool2Str(floatEnemyPlayer));
+	write_config_value("Preferences.FLOAT_SIEGE", Bool2Str(floatSiege));
+	write_config_value("Preferences.LOG_SPEEDOMETER", Bool2Str(logSpeedometer));
+	write_config_value("Preferences.LOG_SPEEDOMETER_ENEMY", Bool2Str(logSpeedometerEnemy));
+	write_config_value("Preferences.LOG_DISPLACEMENT", Bool2Str(logDisplacement));
+	write_config_value("Preferences.LOG_DISPLACEMENT_ENEMY", Bool2Str(logDisplacementEnemy));
+	write_config_value("Preferences.FLOAT_RADIUS", Int2Str(floatRadius));
+	write_config_value("Preferences.WVW_BONUS", Int2Str(wvwBonus));
+	write_config_value("Preferences.ATTACKRATE_CHAIN_HITS", Int2Str(AttackRateChainHits));
+	write_config_value("Preferences.LOG_CRITS_SAMPLE", Int2Str(logCritsSample));
+	save_config();
+}
+
 void GW2LIB::gw2lib_main()
 {
 	locale::global(locale("en-US"));
 
 	init_keymap();
 	init_config();
+	load_preferences();
 
 	EnableEsp(ESP);
 	thread t1(&threadHotKeys);

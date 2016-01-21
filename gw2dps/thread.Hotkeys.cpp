@@ -1,5 +1,6 @@
 #include "config.h"
 #include "hotkey.h"
+#include "preferences.h"
 
 #define KILL_APP 999
 
@@ -190,6 +191,8 @@ void threadHotKeys()
 			if (msg.wParam == LOG_DISPLACEMENT) logDisplacement = !logDisplacement;
 			if (msg.wParam == LOG_DISPLACEMENT_ENEMY) logDisplacementEnemy = !logDisplacementEnemy;
 		}
+
+		save_preferences();
 	}
 }
 

@@ -48,7 +48,7 @@ void MainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 		"\n"
 		"Other contributors: \n"
 		"cubimon - GUI\n"
-		"hairys - 64-bit, patches",
+		"hairys  - 64-bit, patches",
 		"About GW2DPS",
 		wxOK | wxICON_INFORMATION,
 		this);
