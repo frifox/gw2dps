@@ -132,61 +132,6 @@ void ESP()
 	aBottom.y = round(GetWindowHeight() - float(85));
 
 
-	if (help)
-	{
-		stringstream ss;
-
-		//ss << format("[%i] Exp Mode Crosshair (Alt H)\n") % expMode;
-		//ss << format("\n");
-		ss << format("[%i] Self Health Percent (%s)\n") % selfHealthPercent % get_key_description("Hotkeys.SELF_HEALTH_PERCENT");
-		ss << format("\n");
-		ss << format("[%i] Selected/Locked Target HP (%s)\n") % targetSelected % get_key_description("Hotkeys.TARGET_SELECTED");
-		ss << format("[%i] Selected Target Details (%s)\n") % targetInfo % get_key_description("Hotkeys.TARGET_INFO");
-		ss << format("[%i] Lock On Target (%s)\n") % targetLock % get_key_description("Hotkeys.TARGET_LOCK");
-		ss << format("[%i] Allow Negative DPS (%s)\n") % dpsAllowNegative % get_key_description("Hotkeys.DPS_ALLOW_NEGATIVE");
-		ss << format("\n");
-		ss << format("[%i] DPS Meter (%s)\n") % logDps % get_key_description("Hotkeys.LOG_DPS");
-		ss << format("[%i] DPS Meter History (%s)\n") % logDpsDetails % get_key_description("Hotkeys.LOG_DPS_DETAILS");
-		ss << format("\n");
-		ss << format("[%i] Kill Timer (%s)\n") % logKillTimer % get_key_description("Hotkeys.LOG_KILL_TIMER");
-		ss << format("[%i] Kill Timer Details (%s)\n") % logKillTimerDetails % get_key_description("Hotkeys.LOG_KILL_TIMER_DETAILS");
-		//ss << format("[%i] Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;
-		ss << format("\n");
-		ss << format("[%i] Monitor Hits (%s)\n") % logHits % get_key_description("Hotkeys.LOG_HITS");
-		ss << format("[%i] Show Hits History (%s)\n") % logHitsDetails % get_key_description("Hotkeys.LOG_HITS_DETAILS");
-		ss << format("[%i] Record Hits to File (%s)\n") % logHitsToFile % get_key_description("Hotkeys.LOG_HITS_TO_FILE");
-		ss << format("\n");
-		ss << format("[%i] Monitor Attack Rate (%s)\n") % logAttackRate % get_key_description("Hotkeys.LOG_ATTACK_RATE");
-		ss << format("[%i] Show Attack Rate History (%s)\n") % logAttackRateDetails % get_key_description("Hotkeys.LOG_ATTACK_RATE_DETAILS");
-		ss << format("[%i] Record Attack Rate to File (%s)\n") % logAttackRateToFile % get_key_description("Hotkeys.LOG_ATTACK_RATE_TO_FILE");
-		ss << format("[%i] Adjust Attack Rate Threshold +(%s) and -(%s)\n") % AttackRateChainHits % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE") % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS");
-		ss << format("\n");
-		ss << format("[%i] Nearby Ally Players List (%s)\n") % alliesList % get_key_description("Hotkeys.ALLIES_LIST");
-		ss << format("[%i] Adjust WvW HP Bonus +(%s) and -(%s)\n") % wvwBonus % get_key_description("Hotkeys.WVW_BONUS_MORE") % get_key_description("Hotkeys.WVW_BONUS_LESS");
-		ss << format("\n");
-		ss << format("[%i] Count Ally NPCs (%s)\n") % floatAllyNpc % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
-		ss << format("[%i] Count Enemy NPCs (%s)\n") % floatEnemyNpc % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");
-		ss << format("[%i] Count Ally Players (%s)\n") % floatAllyPlayer % get_key_description("Hotkeys.FLOAT_ALLY_PLAYER");
-		ss << format("[%i] Count Enemy Players (%s)\n") % floatEnemyPlayer % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
-		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
-		ss << format("[%i] Show/Hide Floaters below counted (%s)\n") % floatCircles % get_key_description("Hotkeys.FLOAT_CIRCLES");
-		ss << format("[%i] Floaters show Max HP / Distance (%s)\n") % floatType % get_key_description("Hotkeys.FLOAT_TYPE");
-		ss << format("\n");
-		ss << format("[%i] Speedometer (%s)\n") % logSpeedometer % get_key_description("Hotkeys.LOG_SPEEDOMETER");
-		ss << format("[%i] Speedometer for Self/Enemy (%s)\n") % logSpeedometerEnemy % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
-		ss << format("[%i] Measure Distance (%s)\n") % logDisplacement % get_key_description("Hotkeys.LOG_DISPLACEMENT");
-		ss << format("[%i] Distance for Self/Enemy (%s)\n") % logDisplacementEnemy % get_key_description("Hotkeys.LOG_DISPLACEMENT_ENEMY");
-
-		StrInfo strInfo;
-		strInfo = StringInfo(ss.str());
-		float x = round(aCenter.x - strInfo.x / 2);
-		float y = round(aCenter.y - strInfo.y / 2);
-
-		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
-		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-		font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
-	}
-
 	// JP Skills
 	if (expMode)
 	{
@@ -623,6 +568,167 @@ void ESP()
 		}
 	}
 
+	// floaters //
+
+	if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
+	{
+		stringstream ss;
+		StrInfo strInfo;
+
+		if (floatCircles)
+		{
+			float x, y;
+			if (floatAllyNpc && floaters.allyNpc.size() > 0)
+			{
+				for (auto & floater : floaters.allyNpc) {
+					if (WorldToScreen(floater.pos, &x, &y))
+					{
+						stringstream fs;
+						if (floatType)
+							fs << format("%i") % int(Dist(self.pos, floater.pos));
+						else
+							fs << format("%i") % floater.mHealth;
+
+						StrInfo fsInfo = StringInfo(fs.str());
+						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+						DWORD color = 0x4433ff00;
+						DrawCircleProjected(floater.pos, 20.0f, color);
+						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+					}
+				}
+			}
+
+			if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
+			{
+				for (auto & floater : floaters.enemyNpc) {
+					if (WorldToScreen(floater.pos, &x, &y))
+					{
+						stringstream fs;
+						if (floatType)
+							fs << format("%i") % int(Dist(self.pos, floater.pos));
+						else
+							fs << format("%i") % floater.mHealth;
+
+						StrInfo fsInfo = StringInfo(fs.str());
+						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+						DWORD color = 0x44ff3300;
+						DrawCircleProjected(floater.pos, 20.0f, color);
+						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+					}
+				}
+			}
+
+			if (floatAllyPlayer && floaters.allyPlayer.size() > 0)
+			{
+				for (auto & floater : floaters.allyPlayer) {
+					if (WorldToScreen(floater.pos, &x, &y))
+					{
+						stringstream fs;
+						if (floatType)
+							fs << format("%i") % int(Dist(self.pos, floater.pos));
+						else
+							fs << format("%i") % floater.mHealth;
+
+						StrInfo fsInfo = StringInfo(fs.str());
+						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+						DWORD color = 0x4433ff00;
+						DrawCircleProjected(floater.pos, 20.0f, color);
+						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+					}
+				}
+			}
+
+			if (floatEnemyPlayer && floaters.enemyPlayer.size() > 0)
+			{
+				for (auto & floater : floaters.enemyPlayer) {
+					if (WorldToScreen(floater.pos, &x, &y))
+					{
+						stringstream fs;
+						if (floatType)
+							fs << format("%i") % int(Dist(self.pos, floater.pos));
+						else
+							fs << format("%i") % floater.mHealth;
+
+						StrInfo fsInfo = StringInfo(fs.str());
+						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+						DWORD color = 0x44ff3300;
+						DrawCircleProjected(floater.pos, 20.0f, color);
+						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+					}
+				}
+			}
+
+			if (floatSiege && floaters.siege.size() > 0)
+			{
+				for (auto & floater : floaters.siege) {
+					//DWORD color = 0x44ff3300;
+					//DrawCircleProjected(floater.pos, 20.0f, color);
+					//DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
+				}
+			}
+		}
+
+		ss << format("R: %i") % floatRadius;
+
+		if (floatAllyNpc)
+			ss << format(" | AllyNPCs: %i") % floaters.allyNpc.size();
+
+		if (floatEnemyNpc)
+			ss << format(" | FoeNPCs: %i") % floaters.enemyNpc.size();
+
+		if (floatAllyPlayer)
+			ss << format(" | Allies: %i") % floaters.allyPlayer.size();
+
+		if (floatEnemyPlayer)
+			ss << format(" | Foes: %i") % floaters.enemyPlayer.size();
+
+		if (floatSiege)
+			ss << format(" | Siege: %i") % floaters.siege.size();
+
+		strInfo = StringInfo(ss.str());
+		float x = round(aTop.x - strInfo.x / 2);
+		float y = round(aTop.y);
+
+		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+		font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
+
+		aTop.y += strInfo.y + padY * 2;
+
+		if (floatAllyPlayerProf)
+		{
+			int prof[10] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+			for (auto & ally : floaters.allyPlayer) {
+				prof[ally.prof]++;
+			}
+
+			ss.str("");
+			ss << format("War: %i") % prof[2];
+			ss << format(" | Guard: %i") % prof[1];
+			ss << format(" | Ele: %i") % prof[6];
+			ss << format(" | Thief: %i") % prof[5];
+			ss << format(" | Mes: %i") % prof[7];
+			ss << format(" | Engi: %i") % prof[3];
+			ss << format(" | Ranger: %i") % prof[4];
+			ss << format(" | Necro: %i") % prof[8];
+			ss << format(" | Rev: %i") % prof[9];
+
+			strInfo = StringInfo(ss.str());
+			float x = round(aTop.x - strInfo.x / 2);
+			float y = round(aTop.y);
+
+			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+			font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
+
+			aTop.y += strInfo.y + padY * 2;
+		}
+	}
+
 	// Bottom Element //
 	{
 		stringstream ss;
@@ -905,167 +1011,8 @@ void ESP()
 		}
 	}
 
-	// Top Elements (and floaters) //
+	// Top Elements //
 	{
-		if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
-		{
-			stringstream ss;
-			StrInfo strInfo;
-
-			ss << format("R: %i") % floatRadius;
-
-			if (floatAllyNpc)
-				ss << format(" | AllyNPCs: %i") % floaters.allyNpc.size();
-
-			if (floatEnemyNpc)
-				ss << format(" | FoeNPCs: %i") % floaters.enemyNpc.size();
-
-			if (floatAllyPlayer)
-				ss << format(" | Allies: %i") % floaters.allyPlayer.size();
-
-			if (floatEnemyPlayer)
-				ss << format(" | Foes: %i") % floaters.enemyPlayer.size();
-
-			if (floatSiege)
-				ss << format(" | Siege: %i") % floaters.siege.size();
-
-			strInfo = StringInfo(ss.str());
-			float x = round(aTop.x - strInfo.x / 2);
-			float y = round(aTop.y);
-
-			DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
-			DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-			font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
-
-			aTop.y += strInfo.y + padY * 2;
-
-			if (floatAllyPlayerProf)
-			{
-				int prof[10] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-				for (auto & ally : floaters.allyPlayer) {
-					prof[ally.prof]++;
-				}
-
-				ss.str("");
-				ss << format("War: %i") % prof[2];
-				ss << format(" | Guard: %i") % prof[1];
-				ss << format(" | Ele: %i") % prof[6];
-				ss << format(" | Thief: %i") % prof[5];
-				ss << format(" | Mes: %i") % prof[7];
-				ss << format(" | Engi: %i") % prof[3];
-				ss << format(" | Ranger: %i") % prof[4];
-				ss << format(" | Necro: %i") % prof[8];
-				ss << format(" | Rev: %i") % prof[9];
-
-				strInfo = StringInfo(ss.str());
-				float x = round(aTop.x - strInfo.x / 2);
-				float y = round(aTop.y);
-
-				DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
-				DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-				font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
-
-				aTop.y += strInfo.y + padY * 2;
-			}
-
-
-			if (floatCircles)
-			{
-				float x, y;
-				if (floatAllyNpc && floaters.allyNpc.size() > 0)
-				{
-					for (auto & floater : floaters.allyNpc) {
-						if (WorldToScreen(floater.pos, &x, &y))
-						{
-							stringstream fs;
-							if (floatType)
-								fs << format("%i") % int(Dist(self.pos, floater.pos));
-							else
-								fs << format("%i") % floater.mHealth;
-
-							StrInfo fsInfo = StringInfo(fs.str());
-							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
-
-							DWORD color = 0x4433ff00;
-							DrawCircleProjected(floater.pos, 20.0f, color);
-							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
-						}
-					}
-				}
-
-				if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
-				{
-					for (auto & floater : floaters.enemyNpc) {
-						if (WorldToScreen(floater.pos, &x, &y))
-						{
-							stringstream fs;
-							if (floatType)
-								fs << format("%i") % int(Dist(self.pos, floater.pos));
-							else
-								fs << format("%i") % floater.mHealth;
-
-							StrInfo fsInfo = StringInfo(fs.str());
-							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
-
-							DWORD color = 0x44ff3300;
-							DrawCircleProjected(floater.pos, 20.0f, color);
-							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
-						}
-					}
-				}
-
-				if (floatAllyPlayer && floaters.allyPlayer.size() > 0)
-				{
-					for (auto & floater : floaters.allyPlayer) {
-						if (WorldToScreen(floater.pos, &x, &y))
-						{
-							stringstream fs;
-							if (floatType)
-								fs << format("%i") % int(Dist(self.pos, floater.pos));
-							else
-								fs << format("%i") % floater.mHealth;
-
-							StrInfo fsInfo = StringInfo(fs.str());
-							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
-
-							DWORD color = 0x4433ff00;
-							DrawCircleProjected(floater.pos, 20.0f, color);
-							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
-						}
-					}
-				}
-
-				if (floatEnemyPlayer && floaters.enemyPlayer.size() > 0)
-				{
-					for (auto & floater : floaters.enemyPlayer) {
-						if (WorldToScreen(floater.pos, &x, &y))
-						{
-							stringstream fs;
-							if (floatType)
-								fs << format("%i") % int(Dist(self.pos, floater.pos));
-							else
-								fs << format("%i") % floater.mHealth;
-
-							StrInfo fsInfo = StringInfo(fs.str());
-							font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
-
-							DWORD color = 0x44ff3300;
-							DrawCircleProjected(floater.pos, 20.0f, color);
-							DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
-						}
-					}
-				}
-
-				if (floatSiege && floaters.siege.size() > 0)
-				{
-					for (auto & floater : floaters.siege) {
-						//DWORD color = 0x44ff3300;
-						//DrawCircleProjected(floater.pos, 20.0f, color);
-						//DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
-					}
-				}
-			}
-		}
 
 		// World Boss
 		if (woldBosses)
@@ -1493,7 +1440,60 @@ void ESP()
 		}
 	}
 
+	if (help)
+	{
+		stringstream ss;
 
+		//ss << format("[%i] Exp Mode Crosshair (Alt H)\n") % expMode;
+		//ss << format("\n");
+		ss << format("[%i] Self Health Percent (%s)\n") % selfHealthPercent % get_key_description("Hotkeys.SELF_HEALTH_PERCENT");
+		ss << format("\n");
+		ss << format("[%i] Selected/Locked Target HP (%s)\n") % targetSelected % get_key_description("Hotkeys.TARGET_SELECTED");
+		ss << format("[%i] Selected Target Details (%s)\n") % targetInfo % get_key_description("Hotkeys.TARGET_INFO");
+		ss << format("[%i] Lock On Target (%s)\n") % targetLock % get_key_description("Hotkeys.TARGET_LOCK");
+		ss << format("[%i] Allow Negative DPS (%s)\n") % dpsAllowNegative % get_key_description("Hotkeys.DPS_ALLOW_NEGATIVE");
+		ss << format("\n");
+		ss << format("[%i] DPS Meter (%s)\n") % logDps % get_key_description("Hotkeys.LOG_DPS");
+		ss << format("[%i] DPS Meter History (%s)\n") % logDpsDetails % get_key_description("Hotkeys.LOG_DPS_DETAILS");
+		ss << format("\n");
+		ss << format("[%i] Kill Timer (%s)\n") % logKillTimer % get_key_description("Hotkeys.LOG_KILL_TIMER");
+		ss << format("[%i] Kill Timer Details (%s)\n") % logKillTimerDetails % get_key_description("Hotkeys.LOG_KILL_TIMER_DETAILS");
+		//ss << format("[%i] Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;
+		ss << format("\n");
+		ss << format("[%i] Monitor Hits (%s)\n") % logHits % get_key_description("Hotkeys.LOG_HITS");
+		ss << format("[%i] Show Hits History (%s)\n") % logHitsDetails % get_key_description("Hotkeys.LOG_HITS_DETAILS");
+		ss << format("[%i] Record Hits to File (%s)\n") % logHitsToFile % get_key_description("Hotkeys.LOG_HITS_TO_FILE");
+		ss << format("\n");
+		ss << format("[%i] Monitor Attack Rate (%s)\n") % logAttackRate % get_key_description("Hotkeys.LOG_ATTACK_RATE");
+		ss << format("[%i] Show Attack Rate History (%s)\n") % logAttackRateDetails % get_key_description("Hotkeys.LOG_ATTACK_RATE_DETAILS");
+		ss << format("[%i] Record Attack Rate to File (%s)\n") % logAttackRateToFile % get_key_description("Hotkeys.LOG_ATTACK_RATE_TO_FILE");
+		ss << format("[%i] Adjust Attack Rate Threshold +(%s) and -(%s)\n") % AttackRateChainHits % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE") % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS");
+		ss << format("\n");
+		ss << format("[%i] Nearby Ally Players List (%s)\n") % alliesList % get_key_description("Hotkeys.ALLIES_LIST");
+		ss << format("[%i] Adjust WvW HP Bonus +(%s) and -(%s)\n") % wvwBonus % get_key_description("Hotkeys.WVW_BONUS_MORE") % get_key_description("Hotkeys.WVW_BONUS_LESS");
+		ss << format("\n");
+		ss << format("[%i] Count Ally NPCs (%s)\n") % floatAllyNpc % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
+		ss << format("[%i] Count Enemy NPCs (%s)\n") % floatEnemyNpc % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");
+		ss << format("[%i] Count Ally Players (%s)\n") % floatAllyPlayer % get_key_description("Hotkeys.FLOAT_ALLY_PLAYER");
+		ss << format("[%i] Count Enemy Players (%s)\n") % floatEnemyPlayer % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
+		//ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
+		ss << format("[%i] Show/Hide Floaters below counted (%s)\n") % floatCircles % get_key_description("Hotkeys.FLOAT_CIRCLES");
+		ss << format("[%i] Floaters show Max HP / Distance (%s)\n") % floatType % get_key_description("Hotkeys.FLOAT_TYPE");
+		ss << format("\n");
+		ss << format("[%i] Speedometer (%s)\n") % logSpeedometer % get_key_description("Hotkeys.LOG_SPEEDOMETER");
+		ss << format("[%i] Speedometer for Self/Enemy (%s)\n") % logSpeedometerEnemy % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
+		ss << format("[%i] Measure Distance (%s)\n") % logDisplacement % get_key_description("Hotkeys.LOG_DISPLACEMENT");
+		ss << format("[%i] Distance for Self/Enemy (%s)\n") % logDisplacementEnemy % get_key_description("Hotkeys.LOG_DISPLACEMENT_ENEMY");
+
+		StrInfo strInfo;
+		strInfo = StringInfo(ss.str());
+		float x = round(aCenter.x - strInfo.x / 2);
+		float y = round(aCenter.y - strInfo.y / 2);
+
+		DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+		font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
+	}
 }
 
 
