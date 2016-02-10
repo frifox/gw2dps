@@ -1582,6 +1582,20 @@ void save_preferences() {
 	save_config();
 }
 
+
+void chat_log(wchar_t *wtxt) {
+    size_t len = wcslen(wtxt) + 1;
+
+    char *txt = new char[len];
+    memset(txt, 0, len);
+    wcstombs(txt, wtxt, len);
+
+    //font.Draw(10, 10, 0xffffffff, "%s", txt);
+
+    delete txt;
+}
+
+
 void GW2LIB::gw2lib_main()
 {
 	locale::global(locale("en-US"));
@@ -1591,6 +1605,8 @@ void GW2LIB::gw2lib_main()
 	load_preferences();
 
 	EnableEsp(ESP);
+    SetGameHook(ChatHook, chat_log);
+
 	thread t1(&threadHotKeys);
 	thread t2(&threadDps);
 	thread t3(&threadKillTimer);
