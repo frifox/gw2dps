@@ -1623,7 +1623,7 @@ void GW2LIB::gw2lib_main()
 
 	// wait for exit hotkey
 	while (GetAsyncKeyState(VK_F12) >= 0)
-		;
+		Sleep(1);
 
 	close_config();
 
