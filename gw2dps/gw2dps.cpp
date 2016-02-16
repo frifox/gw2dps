@@ -5,6 +5,9 @@
 #include "hotkey.h"
 #include "preferences.h"
 
+#include "hacklib/Main.h"
+#include "hacklib/Logging.h"
+
 // Settings //
 bool killApp = false;
 
@@ -74,6 +77,11 @@ bool logDisplacement = false;
 bool logDisplacementEnemy = false;
 Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
+bool mouse_down=false;
+int mouse_delta=0, mouse_btn=0, mouse_x=0, mouse_y=0, mouse_keys=0;
+string chat;
+timer::cpu_timer timer2;
+
 #ifdef ARCH_64BIT
 uintptr_t hp_shift1 = 0x58;
 uintptr_t hp_shift2 = 0x1c0;
@@ -131,6 +139,7 @@ void ESP()
 	aBottom.x = round(GetWindowWidth() * float(0.5));
 	aBottom.y = round(GetWindowHeight() - float(85));
 
+    font.Draw(10, 10, 0xffffffff, "delta: %i  down: %i  keys: %i  x: %i  y: %i  btn: %i\n%s", mouse_delta, mouse_down, mouse_keys, mouse_x, mouse_y, mouse_btn, chat.c_str());
 
 	// JP Skills
 	if (expMode)
@@ -146,13 +155,6 @@ void ESP()
 
 		DrawRectFilled(x - box, y - box, box * 2, box * 2, 0xccFF0000);
 		DrawRect(x - box, y - box, box * 2, box * 2, borderColor);
-	}
-
-	if (selfFloat)
-	{
-		DWORD color = 0x4433ff00;
-		DrawCircleProjected(self.pos, 20.0f, color);
-		DrawCircleFilledProjected(self.pos, 20.0f, color - 0x30000000);
 	}
 
 	// Font Draw Debug
@@ -191,6 +193,29 @@ void ESP()
 		self.lvlActual = me.GetLevel();
 		self.alive = me.IsAlive();
 	}
+
+    if (selfFloat && GetOwnAgent().IsValid())
+    {
+        Vector3 rotArrow = {
+            self.pos.x + cos(GetOwnAgent().GetRot()) * 50.0f,
+            self.pos.y + sin(GetOwnAgent().GetRot()) * 50.0f,
+            self.pos.z
+        };
+
+        DWORD color = 0x4433ff00;
+        DrawCircleProjected(self.pos, 20.0f, color);
+        DrawRectFilledProjected(rotArrow, 20, 5, GetOwnAgent().GetRot(), color);
+        DrawCircleFilledProjected(self.pos, 20.0f, color - 0x30000000);
+        
+        /*float x, y;
+        if (WorldToScreen(self.pos, &x, &y)) {
+            stringstream fs;
+            fs << format("%.4f") % GetOwnAgent().GetRot();
+            StrInfo fsInfo = StringInfo(fs.str());
+            font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+        }*/
+    }
+
 	Agent agLocked = GetLockedSelection();
 	if (agLocked.IsValid())
 	{
@@ -413,6 +438,7 @@ void ESP()
 
 				// gather data
 				Vector3 pos = ag.GetPos();
+                float rot = ag.GetRot();
 				float cHealth = ch.GetCurrentHealth();
 				float mHealth = ch.GetMaxHealth();
 				int attitude = ch.GetAttitude();
@@ -426,6 +452,7 @@ void ESP()
 					{
 						Float floater;
 						floater.pos = pos;
+                        floater.rot = rot;
 						floater.mHealth = mHealth;
 						floater.prof = prof;
 
@@ -592,8 +619,15 @@ void ESP()
 						StrInfo fsInfo = StringInfo(fs.str());
 						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
 
+                        Vector3 rotArrow = {
+                            floater.pos.x + cos(floater.rot) * 50.0f,
+                            floater.pos.y + sin(floater.rot) * 50.0f,
+                            floater.pos.z
+                        };
+
 						DWORD color = 0x4433ff00;
 						DrawCircleProjected(floater.pos, 20.0f, color);
+                        DrawRectFilledProjected(rotArrow, 20, 5, floater.rot, color);
 						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
 					}
 				}
@@ -613,8 +647,15 @@ void ESP()
 						StrInfo fsInfo = StringInfo(fs.str());
 						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
 
+                        Vector3 rotArrow = {
+                            floater.pos.x + cos(floater.rot) * 50.0f,
+                            floater.pos.y + sin(floater.rot) * 50.0f,
+                            floater.pos.z
+                        };
+
 						DWORD color = 0x44ff3300;
 						DrawCircleProjected(floater.pos, 20.0f, color);
+                        DrawRectFilledProjected(rotArrow, 20, 5, floater.rot, color);
 						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
 					}
 				}
@@ -634,8 +675,15 @@ void ESP()
 						StrInfo fsInfo = StringInfo(fs.str());
 						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
 
+                        Vector3 rotArrow = {
+                            floater.pos.x + cos(floater.rot) * 50.0f,
+                            floater.pos.y + sin(floater.rot) * 50.0f,
+                            floater.pos.z
+                        };
+
 						DWORD color = 0x4433ff00;
 						DrawCircleProjected(floater.pos, 20.0f, color);
+                        DrawRectFilledProjected(rotArrow, 20, 5, floater.rot, color);
 						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
 					}
 				}
@@ -655,8 +703,15 @@ void ESP()
 						StrInfo fsInfo = StringInfo(fs.str());
 						font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
 
+                        Vector3 rotArrow = {
+                            floater.pos.x + cos(floater.rot) * 50.0f,
+                            floater.pos.y + sin(floater.rot) * 50.0f,
+                            floater.pos.z
+                        };
+
 						DWORD color = 0x44ff3300;
 						DrawCircleProjected(floater.pos, 20.0f, color);
+                        DrawRectFilledProjected(rotArrow, 20, 5, floater.rot, color);
 						DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
 					}
 				}
@@ -1494,6 +1549,14 @@ void ESP()
 		DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
 		font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
 	}
+
+    stringstream timer_ss;
+    timer::cpu_times elapsed2 = timer2.elapsed();
+    double elapsedMs = elapsed2.wall / 1e6;
+    timer_ss << format("time: %f") % elapsedMs;
+    font.Draw(30, 30, fontColor, timer_ss.str());
+
+    //icon.Draw(30, 30, 20, 20);
 }
 
 
@@ -1583,6 +1646,29 @@ void save_preferences() {
 }
 
 
+/*
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    switch (fdwReason) {
+    case DLL_PROCESS_ATTACH:
+        break;
+    case DLL_PROCESS_DETACH:
+        break;
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
+#ifdef STATIC_BUILD
+        FreeLibrary(hl::GetCurrentModule());
+        FreeLibrary(hl::GetCurrentModule());
+        FreeLibrary(hl::GetCurrentModule());
+#endif
+        break;
+    }
+    return true;
+}
+*/
+
+
+
 void chat_log(wchar_t *wtxt) {
     size_t len = wcslen(wtxt) + 1;
 
@@ -1591,10 +1677,50 @@ void chat_log(wchar_t *wtxt) {
     wcstombs(txt, wtxt, len);
 
     //font.Draw(10, 10, 0xffffffff, "%s", txt);
-
+    //HL_LOG_DBG("%s\n", txt);
+    chat = txt;
     delete txt;
 }
 
+
+bool mouse_move(int x, int y, int modkeys) {
+    mouse_x = x;
+    mouse_y = y;
+    mouse_keys = modkeys;
+    return true;
+}
+
+bool mouse_click(bool down, int button, int x, int y, int modkeys) {
+    mouse_down = down;
+    mouse_btn = button;
+    mouse_x = x;
+    mouse_y = y;
+    mouse_keys = modkeys;
+    return true;
+}
+
+bool mouse_wheel(int delta, int modkeys) {
+    mouse_delta = delta;
+    mouse_keys = modkeys;
+    return true;
+}
+
+void dmg_log(uintptr_t* src, uintptr_t* tgt, int hit) {
+    //HL_LOG_DBG("hit: %i\n", hit);
+}
+
+void combat_log(CombatLogType type, int hit) {
+    int dmg = 0;
+    switch (type) {
+    case CL_CONDI_DMG_OUT:
+    case CL_CRIT_DMG_OUT:
+    case CL_GLANCE_DMG_OUT:
+    case CL_PHYS_DMG_OUT:
+        dmg = hit;
+        break;
+    }
+    HL_LOG_DBG("type: %i - hit: %i\n", type, hit);
+}
 
 void GW2LIB::gw2lib_main()
 {
@@ -1606,6 +1732,11 @@ void GW2LIB::gw2lib_main()
 
 	EnableEsp(ESP);
     SetGameHook(ChatHook, chat_log);
+    SetGameHook(MouseMoveHook, mouse_move);
+    SetGameHook(MouseButtonHook, mouse_click);
+    SetGameHook(MouseWheelHook, mouse_wheel);
+    SetGameHook(DamageLogHook, dmg_log);
+    SetGameHook(CombatLogHook, combat_log);
 
 	thread t1(&threadHotKeys);
 	thread t2(&threadDps);
@@ -1621,9 +1752,29 @@ void GW2LIB::gw2lib_main()
 		return;
 	}
 
+    /*HMODULE dll = hl::GetCurrentModule();
+    HRSRC ires = FindResourceA(dll, MAKEINTRESOURCEA(IDB_PNG1), "PNG");
+    if (ires) {
+        HL_LOG_DBG("ires: %p\n", ires);
+        if (!icon.Init(LockResource(LoadResource(dll, ires)), SizeofResource(dll, ires))){
+            return;
+        }
+    }
+    else {
+        HL_LOG_DBG("ires err: %s\n", std::to_string(GetLastError()));
+    }*/
+
+    if (timer2.is_stopped()) {
+        timer2.start();
+    }
+
 	// wait for exit hotkey
 	while (GetAsyncKeyState(VK_F12) >= 0)
-		;
+		Sleep(1);
+
+    if (!timer2.is_stopped()) {
+        timer2.stop();
+    }
 
 	close_config();
 
