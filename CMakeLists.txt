@@ -30,6 +30,8 @@ ADD_LIBRARY(${PROJ_NAME}_dll SHARED
 	gw2dps/keymap.cpp
 	gw2dps/hotkey.h
 	gw2dps/hotkey.cpp
+	gw2dps/preferences.h
+	gw2dps/preferences.cpp
 	gw2dps/gw2dps.h
 	gw2dps/gw2dps.cpp)
 
