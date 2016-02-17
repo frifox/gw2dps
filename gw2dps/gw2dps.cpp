@@ -81,6 +81,8 @@ bool mouse_down=false;
 int mouse_delta=0, mouse_btn=0, mouse_x=0, mouse_y=0, mouse_keys=0;
 string chat;
 timer::cpu_timer timer2;
+uint64_t totaldmg = 0;
+int pAgentId2 = 0;
 
 #ifdef ARCH_64BIT
 uintptr_t hp_shift1 = 0x58;
@@ -1550,11 +1552,16 @@ void ESP()
 		font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
 	}
 
+    if (!(locked.valid && locked.id == pAgentId2)) {
+        pAgentId2 = 0;
+        if (!timer2.is_stopped()) timer2.stop();
+    }
+
     stringstream timer_ss;
     timer::cpu_times elapsed2 = timer2.elapsed();
-    double elapsedMs = elapsed2.wall / 1e6;
-    timer_ss << format("time: %f") % elapsedMs;
-    font.Draw(30, 30, fontColor, timer_ss.str());
+    double elapsedMs = elapsed2.wall / 1e9;
+    if (elapsedMs) timer_ss << format("dps: %i") % int(totaldmg / elapsedMs);
+    font.Draw(10, 45, fontColor, timer_ss.str());
 
     //icon.Draw(30, 30, 20, 20);
 }
@@ -1716,9 +1723,16 @@ void combat_log(CombatLogType type, int hit) {
     case CL_CRIT_DMG_OUT:
     case CL_GLANCE_DMG_OUT:
     case CL_PHYS_DMG_OUT:
-        dmg = hit;
+        if (locked.valid && !pAgentId2) {
+            pAgentId2 = locked.id;
+            totaldmg = 0;
+            if (timer2.is_stopped()) timer2.start();
+        }
+
+        totaldmg += hit;
         break;
     }
+
     HL_LOG_DBG("type: %i - hit: %i\n", type, hit);
 }
 
@@ -1762,11 +1776,11 @@ void GW2LIB::gw2lib_main()
     }
     else {
         HL_LOG_DBG("ires err: %s\n", std::to_string(GetLastError()));
-    }*/
+    }
 
     if (timer2.is_stopped()) {
         timer2.start();
-    }
+    }*/
 
 	// wait for exit hotkey
 	while (GetAsyncKeyState(VK_F12) >= 0)
