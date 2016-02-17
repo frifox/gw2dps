@@ -60,6 +60,8 @@ Build it yourself
 	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
 	- ```nmake -f makefile.vc BUILD=release TARGET_CPU=x64```
 4. Build gw2dps 64-bit
+	- NOTE: these instructions are incomplete
+	- TODO: add rest of build instructions after sorting out cmake/build dirs
 	- open cli and run,
 	- ```cd c:\hacklib```
 	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
