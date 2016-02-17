@@ -12,6 +12,9 @@ Download
 
 Build it yourself
 =======
+
+Note: if Git or CMake asks if you want to add to your PATH environment variable, say yes.
+
 1. Install [Git](https://git-scm.com/download/win)
 2. Install [Visual Studio 2013](https://www.visualstudio.com/downloads/download-visual-studio-vs#d-community-2013)
 3. Install [CMake](https://cmake.org/files/v3.4/cmake-3.4.3-win32-x86.exe)
