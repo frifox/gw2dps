@@ -13,7 +13,9 @@ Download
 Build it yourself
 =======
 
-Note: if Git or CMake asks if you want to add to your PATH environment variable, say yes.
+Note: If Git or CMake asks if you want to add to your PATH environment variable, say yes.
+
+Note2: These instructions have been tested with Visual Studio Community Edition 2013 Update 5 (on Win 7 x64).
 
 1. Install [Git](https://git-scm.com/download/win)
 2. Install [Visual Studio 2013](https://www.visualstudio.com/downloads/download-visual-studio-vs#d-community-2013)
@@ -44,9 +46,11 @@ Note: if Git or CMake asks if you want to add to your PATH environment variable,
 	- ```git clone https://bitbucket.org/rafzi/hacklib.git .```
 	- ```git clone https://bitbucket.org/rafzi/hacklib_gw2.git ./src/hacklib_gw2```
 	- ```git clone https://github.com/frifox/gw2dps.git ./src/gw2dps```
-	- ```rd /s /q src\disableGfx src\injector src\veh_benchmark```
-	- ```cmake .```
+	- ```rd /s /q src\disableGfx src\injector src\veh_benchmark src\example src\overlay```
+	- ```mkdir build && cd build```
+	- ```cmake ..```
 	- ```msbuild hacklib_project.sln /p:Configuration=Release /p:Platform=Win32```
+		- to enable parallel build, add **/m:2** to the above command (change 2 to however many cpu cores you have).
 	- compiled binaries will be found in c:\hacklib\bin folder
 
 ### 64-bit build
@@ -63,11 +67,14 @@ Note: if Git or CMake asks if you want to add to your PATH environment variable,
 	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
 	- ```nmake -f makefile.vc BUILD=release TARGET_CPU=x64```
 4. Build gw2dps 64-bit
-	- NOTE: these instructions are incomplete
-	- TODO: add rest of build instructions after sorting out cmake/build dirs
 	- open cli and run,
 	- ```cd c:\hacklib```
-	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
+	- ```mkdir build64 && cd build64```
+	- ```cmake -G"Visual Studio 12 2013 Win64" ..```
+	- ```msbuild hacklib_project.sln /p:Configuration=Release /p:Platform=x64 /m:2```
+		- to enable parallel build, add **/m:2** to the above command (change 2 to however many cpu cores you have).
+	- ```move ..\bin64\proxy64.exe ..\bin && move ..\bin64\gw2dps64.dll ..\bin```
+	- compiled binaries will be found in c:\hacklib\bin folder
 
 Notes
 =======
