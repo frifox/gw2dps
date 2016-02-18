@@ -48,6 +48,7 @@ Note2: These instructions have been tested with Visual Studio Community Edition 
 	- ```git clone https://github.com/frifox/gw2dps.git ./src/gw2dps```
 	- ```rd /s /q src\disableGfx src\injector src\veh_benchmark src\example src\overlay```
 	- ```mkdir build && cd build```
+	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"```
 	- ```cmake ..```
 	- ```msbuild hacklib_project.sln /p:Configuration=Release /p:Platform=Win32```
 		- to enable parallel build, add **/m:2** to the above command (change 2 to however many cpu cores you have).
@@ -70,8 +71,9 @@ Note2: These instructions have been tested with Visual Studio Community Edition 
 	- open cli and run,
 	- ```cd c:\hacklib```
 	- ```mkdir build64 && cd build64```
+	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
 	- ```cmake -G"Visual Studio 12 2013 Win64" ..```
-	- ```msbuild hacklib_project.sln /p:Configuration=Release /p:Platform=x64 /m:2```
+	- ```msbuild hacklib_project.sln /p:Configuration=Release /p:Platform=x64```
 		- to enable parallel build, add **/m:2** to the above command (change 2 to however many cpu cores you have).
 	- ```move ..\bin64\proxy64.exe ..\bin && move ..\bin64\gw2dps64.dll ..\bin```
 	- compiled binaries will be found in c:\hacklib\bin folder
