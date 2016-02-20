@@ -15,13 +15,13 @@ public:
     void OnInject(wxCommandEvent& event);
 
 private:
-	MainPane* pane;
+    MainPane* pane;
 
     wxDECLARE_EVENT_TABLE();
 };
 
 enum
 {
-	INJECT_ID = 1,
+    INJECT_ID = 1,
 };
 #endif

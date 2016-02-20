@@ -11,17 +11,17 @@ class HotKeyChangeButton : public wxButton
 {
 public:
     HotKeyChangeButton(MainPane* parent, wxString label, string config_key);
-	
-	void OnButtonPress(wxCommandEvent& WXUNUSED(event));
+
+    void OnButtonPress(wxCommandEvent& WXUNUSED(event));
 
 private:
-	string config_key;
-	MainPane* parent;
+    string config_key;
+    MainPane* parent;
     wxDECLARE_EVENT_TABLE();
 };
 
 enum
 {
-	CHANGE_KEY_ID,
+    CHANGE_KEY_ID,
 };
 #endif

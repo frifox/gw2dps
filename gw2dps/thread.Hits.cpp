@@ -1,134 +1,134 @@
 void threadHits() {
-	int pAgentId = 0;
-	float pHealth = 0;
-	bool logFileInit = false;
-	bool logFileEmpty = false;
+    int pAgentId = 0;
+    float pHealth = 0;
+    bool logFileInit = false;
+    bool logFileEmpty = false;
 
-	int dmg = 0;
-	timer::cpu_timer timer;
-	timer.stop();
+    int dmg = 0;
+    timer::cpu_timer timer;
+    timer.stop();
 
-	while (true)
-	{
-		this_thread::interruption_point();
-		
-		if (!logHitsToFile && logFileInit)
-			logFileInit = false;
+    while (true)
+    {
+        this_thread::interruption_point();
 
-		if (logHits && locked.valid)
-		{
-			if (locked.id == pAgentId)
-			{
-				float cHealth = locked.cHealth;
+        if (!logHitsToFile && logFileInit)
+            logFileInit = false;
 
-				if (cHealth == pHealth)
-					continue;
-				else
-				{
-					if (cHealth < pHealth && cHealth != 0)
-					{
-						int hit = int(pHealth - cHealth);
-						bufferHits.push_front(hit);
-						threadHitsCounter++;
+        if (logHits && locked.valid)
+        {
+            if (locked.id == pAgentId)
+            {
+                float cHealth = locked.cHealth;
 
-						// LOG TO FILE start //
-						if (logHitsToFile)
-						{
-							ofstream file;
+                if (cHealth == pHealth)
+                    continue;
+                else
+                {
+                    if (cHealth < pHealth && cHealth != 0)
+                    {
+                        int hit = int(pHealth - cHealth);
+                        bufferHits.push_front(hit);
+                        threadHitsCounter++;
 
-							file.precision(6);
-							file << fixed;
+                        // LOG TO FILE start //
+                        if (logHitsToFile)
+                        {
+                            ofstream file;
 
-							if (!logFileInit){
-								file.open(logHitsFile);
-								file.close();
-								logFileInit = true;
-								logFileEmpty = true;
-							}
+                            file.precision(6);
+                            file << fixed;
 
-							file.open(logHitsFile, ios::app);
-							if (file.is_open())
-							{
-								// log as "time \t hit"
-								bool logDamageOverTime = false;
+                            if (!logFileInit){
+                                file.open(logHitsFile);
+                                file.close();
+                                logFileInit = true;
+                                logFileEmpty = true;
+                            }
 
-								if (logFileEmpty)
-								{
-									if (logDamageOverTime) {
-										timer.start();
-										dmg += hit;
-										file << "0.000000" << "\t" << dmg;
-										logFileEmpty = false;
-									}
-									else
-									{
-										file << hit; logFileEmpty = false;
-									}
-								}
-								else
-								{
-									if (logDamageOverTime) {
-										timer::cpu_times elapsed = timer.elapsed();
-										double elapsedTime = elapsed.wall / 1e9;
-										dmg += hit;
+                            file.open(logHitsFile, ios::app);
+                            if (file.is_open())
+                            {
+                                // log as "time \t hit"
+                                bool logDamageOverTime = false;
 
-										file << endl << elapsedTime << "\t" << dmg;
-									}
-									else
-									{
-										file << endl << hit;
-									}
-									
-								}
+                                if (logFileEmpty)
+                                {
+                                    if (logDamageOverTime) {
+                                        timer.start();
+                                        dmg += hit;
+                                        file << "0.000000" << "\t" << dmg;
+                                        logFileEmpty = false;
+                                    }
+                                    else
+                                    {
+                                        file << hit; logFileEmpty = false;
+                                    }
+                                }
+                                else
+                                {
+                                    if (logDamageOverTime) {
+                                        timer::cpu_times elapsed = timer.elapsed();
+                                        double elapsedTime = elapsed.wall / 1e9;
+                                        dmg += hit;
 
-								//if (file.bad())
-									//DbgOut("Failed writing log file (hits)\n");
-							}
-							//else DbgOut("Failed opening log file (hits)\n");
-							file.close();
-						}
+                                        file << endl << elapsedTime << "\t" << dmg;
+                                    }
+                                    else
+                                    {
+                                        file << endl << hit;
+                                    }
 
-						// LOG TO FILE end //
-					}
-					pHealth = cHealth;
-				}
-			}
-			else
-			{
-				pAgentId = locked.id;
-				pHealth = locked.cHealth;
+                                }
 
-				if (!bufferHits.empty())
-				{
-					bufferHits.clear();
-					threadHitsCounter = 0;
+                                //if (file.bad())
+                                    //DbgOut("Failed writing log file (hits)\n");
+                            }
+                            //else DbgOut("Failed opening log file (hits)\n");
+                            file.close();
+                        }
 
-					dmg = 0;
-				}
-			}
-		}
-		else
-		{
-			pHealth = 0;
-			pAgentId = 0;
+                        // LOG TO FILE end //
+                    }
+                    pHealth = cHealth;
+                }
+            }
+            else
+            {
+                pAgentId = locked.id;
+                pHealth = locked.cHealth;
 
-			if (!bufferHits.empty())
-			{
-				bufferHits.clear();
-				threadHitsCounter = 0;
+                if (!bufferHits.empty())
+                {
+                    bufferHits.clear();
+                    threadHitsCounter = 0;
 
-				dmg = 0;
-			}
+                    dmg = 0;
+                }
+            }
+        }
+        else
+        {
+            pHealth = 0;
+            pAgentId = 0;
 
-			if (logFileInit)
-				logFileInit = false;
+            if (!bufferHits.empty())
+            {
+                bufferHits.clear();
+                threadHitsCounter = 0;
 
-			if (!logHits)
-				Sleep(100); // Thread not needed, sleep
-		}
+                dmg = 0;
+            }
 
-		// go easy on the cpu
-		if (loopLimiter)
-			Sleep(1);
-	}
+            if (logFileInit)
+                logFileInit = false;
+
+            if (!logHits)
+                Sleep(100); // Thread not needed, sleep
+        }
+
+        // go easy on the cpu
+        if (loopLimiter)
+            Sleep(1);
+    }
 }

@@ -11,15 +11,15 @@ wxBEGIN_EVENT_TABLE(HotKeyChangeButton, wxButton)
 wxEND_EVENT_TABLE()
 
 HotKeyChangeButton::HotKeyChangeButton(MainPane* parent, wxString label, string config_key) 
-	: wxButton((wxWindow*) parent, CHANGE_KEY_ID, label)
+    : wxButton((wxWindow*) parent, CHANGE_KEY_ID, label)
 {
-	this->config_key = config_key;
-	this->parent = parent;
+    this->config_key = config_key;
+    this->parent = parent;
 }
 
 void HotKeyChangeButton::OnButtonPress(wxCommandEvent& WXUNUSED(event))
 {
-	parent->OnChangeKey(this->config_key);
+    parent->OnChangeKey(this->config_key);
 }
 
 #endif
