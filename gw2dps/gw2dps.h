@@ -31,6 +31,7 @@ int padY = 2;
 static const DWORD fontColor = 0xffffffff;
 static const DWORD backColor = 0xff000000;
 static const DWORD borderColor = 0xff444444;
+static const DWORD floatMask = 0x30000000;
 
 // THREADS //
 int targetLockID;
@@ -87,6 +88,7 @@ struct Allies {
 struct Float {
     Vector3 pos;
     float rot = 0;
+    float cHealth;
     float mHealth;
     int prof;
 };
