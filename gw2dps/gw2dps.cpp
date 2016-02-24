@@ -16,8 +16,8 @@ bool selfFloat = false;
 bool selfHealthPercent = true;
 bool loopLimiter = true;
 
+bool showPing = false;
 bool woldBosses = false;
-
 bool compDotsFade = false;
 bool compDots = false;
 bool targetSelected = true;
@@ -758,7 +758,7 @@ void ESP()
         float x = round(aTop.x - strInfo.x / 2);
         float y = round(aTop.y);
 
-        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
         font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
 
@@ -786,7 +786,7 @@ void ESP()
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
 
@@ -796,6 +796,26 @@ void ESP()
 
     if (compDots) {
         compOverlay->RenderOverlay();
+    }
+
+    if (showPing) {
+        float ww = GetWindowWidth();
+        float wh = GetWindowHeight();
+        int ping = GetPing();
+        int fps = GetFPS();
+        int glide = (int)(me.GetGliderPercent()*100.0f);
+        int rows = 3;
+
+        stringstream ss;
+        StrInfo strInfo;
+        ss << format("%i\n%i\n%i") % fps % ping % glide;
+
+        strInfo = StringInfo(ss.str());
+        float x = round(ww - strInfo.x - 2);
+        float y = round(wh - lineHeight * rows - 4);
+        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
+        DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
+        font.Draw(x, y, 0xffffffff, ss.str());
     }
 
     // Bottom Element //
@@ -811,7 +831,7 @@ void ESP()
             float x = round(aBottom.x - strInfo.x / 2);
             float y = round(aBottom.y - lineHeight);
 
-            //DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            //DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             //DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor, ss.str());
         }
@@ -954,7 +974,7 @@ void ESP()
             int lineCount = int(strInfo.lineCount) + 2;
 
             // render the list
-            DrawRectFilled(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, borderColor);
 
             int lineShiftY = 2;
@@ -985,7 +1005,7 @@ void ESP()
                 float x = round(aTopLeft.x - strInfo.x / 2);
                 float y = round(aTopLeft.y);
 
-                DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                 DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                 font.Draw(x, y, fontColor, ss.str());
 
@@ -1005,7 +1025,7 @@ void ESP()
                     float x = round(aTopLeft.x - strInfo.x / 2);
                     float y = round(aTopLeft.y);
 
-                    DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                    DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                     DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                     font.Draw(x, y, fontColor, ss.str());
 
@@ -1024,7 +1044,7 @@ void ESP()
                     float x = round(aTopLeft.x - strInfo.x / 2);
                     float y = round(aTopLeft.y);
 
-                    DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                    DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                     DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                     font.Draw(x, y, fontColor, ss.str());
 
@@ -1069,7 +1089,7 @@ void ESP()
                 float x = round(aTopLeft.x - strInfo.x / 2);
                 float y = round(aTopLeft.y);
 
-                DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                 DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                 font.Draw(x, y, fontColor, ss.str());
 
@@ -1093,7 +1113,7 @@ void ESP()
             float lx = 12;
             float ly = 32;
 
-            DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(lx, ly, fontColor, fs.str());
 
@@ -1113,7 +1133,7 @@ void ESP()
                         fx = round(fx - strInfo.x / 2);
                         fy = round(fy - 15);
 
-                        DrawRectFilled(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                        DrawRectFilled(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                         DrawRect(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                         font.Draw(fx, fy, fontColor, fs.str());
                     }
@@ -1126,7 +1146,7 @@ void ESP()
                         StrInfo strInfo = StringInfo(fs.str());
                         ly = round(ly + strInfo.y + padY);
 
-                        DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+                        DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                         DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
                         font.Draw(lx, ly, fontColor, fs.str());
                     }
@@ -1175,7 +1195,7 @@ void ESP()
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (logSpeedometerEnemy ? 0x00aa0000 : 0), ss.str());
 
@@ -1193,7 +1213,7 @@ void ESP()
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (logDisplacementEnemy ? 0x00aa0000 : 0), ss.str());
 
@@ -1262,7 +1282,7 @@ void ESP()
             float y = round(aTopRight.y);
 
             // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor, ss.str());
 
@@ -1302,7 +1322,7 @@ void ESP()
 
 
             // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor, ss.str());
 
@@ -1376,7 +1396,7 @@ void ESP()
             float y = round(aRight.y);
 
             // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (logAttackRateToFile ? 0x00aa0000 : 0), ss.str());
 
@@ -1442,7 +1462,7 @@ void ESP()
             float y = round(aRight.y);
 
             // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (logHitsToFile ? 0x00aa0000 : 0), ss.str());
 
@@ -1498,7 +1518,7 @@ void ESP()
             float y = round(aRight.y);
 
             // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
             font.Draw(x, y, fontColor - (logCritsToFile ? 0x00aa0000 : 0), ss.str());
 
@@ -1559,14 +1579,9 @@ void ESP()
         float x = round(aCenter.x - strInfo.x / 2);
         float y = round(aCenter.y - strInfo.y / 2);
 
-        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - 0x22000000);
+        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
-    }
-
-    if (!(locked.valid && locked.id == pAgentId2)) {
-        pAgentId2 = 0;
-        if (!timer2.is_stopped()) timer2.stop();
     }
 }
 
@@ -1613,6 +1628,7 @@ void load_preferences() {
     logCritsSample = Str2Int(read_config_value("Preferences.LOG_CRITS_SAMPLE"));
     compDotsFade = Str2Bool(read_config_value("Preferences.COMP_OVERLAY_ZFADE"));
     compDots = Str2Bool(read_config_value("Preferences.COMP_OVERLAY"));
+    showPing = Str2Bool(read_config_value("Preferences.SHOW_PING"));
 }
 
 void save_preferences() {
@@ -1657,6 +1673,7 @@ void save_preferences() {
     write_config_value("Preferences.LOG_CRITS_SAMPLE", Int2Str(logCritsSample));
     write_config_value("Preferences.COMP_OVERLAY_ZFADE", Bool2Str(compDotsFade));
     write_config_value("Preferences.COMP_OVERLAY", Bool2Str(compDots));
+    write_config_value("Preferences.SHOW_PING", Bool2Str(showPing));
     save_config();
 }
 
@@ -1921,10 +1938,6 @@ void GW2LIB::gw2lib_main()
     // wait for exit hotkey
     while (GetAsyncKeyState(VK_F12) >= 0)
         Sleep(1);
-
-    if (!timer2.is_stopped()) {
-        timer2.stop();
-    }
 
     close_config();
 
