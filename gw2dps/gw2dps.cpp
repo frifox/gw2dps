@@ -443,6 +443,7 @@ void ESP()
                 float mHealth = ch.GetMaxHealth();
                 int attitude = ch.GetAttitude();
                 int prof = ch.GetProfession();
+                string name = ch.GetName();
 
                 // Filter the dead
                 if (cHealth > 0 && mHealth > 1)
@@ -456,6 +457,7 @@ void ESP()
                         floater.mHealth = mHealth;
                         floater.cHealth = cHealth;
                         floater.prof = prof;
+                        floater.name = name;
 
                         // player vs npc
                         if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
@@ -612,6 +614,7 @@ void ESP()
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
                         stringstream fs;
+                        //fs << floater.name << "\n";
                         if (floatType)
                             fs << format("%i") % int(Dist(self.pos, floater.pos));
                         else
@@ -642,6 +645,7 @@ void ESP()
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
                         stringstream fs;
+                        //fs << floater.name << "\n";
                         if (floatType)
                             fs << format("%i") % int(Dist(self.pos, floater.pos));
                         else
@@ -671,7 +675,16 @@ void ESP()
                 for (auto & floater : floaters.allyPlayer) {
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
+                        float ww = GetWindowWidth() - 25;
+                        float wh = GetWindowHeight() - 10;
+
+                        if (x < 50) x = 50;
+                        if (x > ww) x = ww;
+                        if (y < 20) y = 20;
+                        if (y > wh) y = wh;
+
                         stringstream fs;
+                        //fs << floater.name << "\n";
                         if (floatType)
                             fs << format("%i") % int(Dist(self.pos, floater.pos));
                         else
@@ -703,6 +716,7 @@ void ESP()
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
                         stringstream fs;
+                        //fs << floater.name << "\n";
                         if (floatType)
                             fs << format("%i") % int(Dist(self.pos, floater.pos));
                         else
@@ -1583,6 +1597,20 @@ void ESP()
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
     }
+
+    if (!(locked.valid && locked.id == pAgentId2)) {
+        pAgentId2 = 0;
+        if (!timer2.is_stopped()) timer2.stop();
+    }
+
+    Compass comp = GetCompass();
+
+    stringstream ss;
+    timer::cpu_times elapsed2 = timer2.elapsed();
+    double elapsedMs = elapsed2.wall / 1e9;
+    if (elapsedMs) ss << format("dps: %i") % int(totaldmg / elapsedMs);
+    font.Draw(10, 25, fontColor, ss.str());
+
 }
 
 
@@ -1923,21 +1951,22 @@ void GW2LIB::gw2lib_main()
 
     HMODULE dll = hl::GetCurrentModule();
 
-    int i = 1;
-    for (; i < GW2::PROFESSION_NONE; i++) {
+    for (int i = 1; i < GW2::PROFESSION_NONE; i++) {
         stringstream res_id;
         res_id << "IDB_PNG" << i;
         HRSRC ires = FindResourceA(dll, res_id.str().c_str(), "PNG");
-        if (ires) {
-            if (!profIcon[i].Init(LockResource(LoadResource(dll, ires)), SizeofResource(dll, ires))){
-                HL_LOG_DBG("unable to locate prof icon: %i\n", res_id);
-            }
+        if (ires && !profIcon[i].Init(LockResource(LoadResource(dll, ires)), SizeofResource(dll, ires))) {
+            HL_LOG_ERR("Unable to load profession icon: %i\n", res_id);
         }
     }
 
     // wait for exit hotkey
     while (GetAsyncKeyState(VK_F12) >= 0)
-        Sleep(1);
+        Sleep(25);
+
+    if (!timer2.is_stopped()) {
+        timer2.stop();
+    }
 
     close_config();
 
