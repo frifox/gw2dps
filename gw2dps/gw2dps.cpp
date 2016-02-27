@@ -85,22 +85,6 @@ timer::cpu_timer timer2;
 uint64_t totaldmg = 0;
 int pAgentId2 = 0;
 
-#ifdef ARCH_64BIT
-uintptr_t hp_shift1 = 0x58;
-uintptr_t hp_shift2 = 0x1c0;
-uintptr_t hp_shift3 = 0x50;
-uintptr_t hp_shift4 = 0x1e8;
-uintptr_t hp_shift_cur = 0xc;
-uintptr_t hp_shift_max = 0x10;
-#else
-uintptr_t hp_shift1 = 0x34;
-uintptr_t hp_shift2 = 0x178;
-uintptr_t hp_shift3 = 0x2c;
-uintptr_t hp_shift4 = 0x18c;
-uintptr_t hp_shift_cur = 0x8;
-uintptr_t hp_shift_max = 0xc;
-#endif
-
 DWORD thread_id_hotkey = 0;
 
 // Threads //
@@ -250,14 +234,9 @@ void ESP()
 
             selected.pos = agLocked.GetPos();
 
-            unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-            shift = *(unsigned long*)(shift + hp_shift1);
-            shift = *(unsigned long*)(shift + hp_shift2);
-            if (shift)
-            {
-                selected.cHealth = *(float*)(shift + hp_shift_cur);
-                selected.mHealth = *(float*)(shift + hp_shift_max);
-            }
+            Gadget gd = agLocked.GetGadget();
+            selected.cHealth = gd.GetCurrentHealth();
+            selected.mHealth = gd.GetMaxHealth();
             if (selected.mHealth > 0)
                 selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
             else
@@ -273,15 +252,9 @@ void ESP()
 
             selected.pos = agLocked.GetPos();
 
-            unsigned long shift = *(unsigned long*)agLocked.m_ptr;
-            shift = *(unsigned long*)(shift + hp_shift1);
-            shift = *(unsigned long*)(shift + hp_shift3);
-            shift = *(unsigned long*)(shift + hp_shift4);
-            if (shift)
-            {
-                selected.cHealth = *(float*)(shift + hp_shift_cur);
-                selected.mHealth = *(float*)(shift + hp_shift_max);
-            }
+            AttackTarget tgt = agLocked.GetAttackTarget();
+            selected.cHealth = tgt.GetCurrentHealth();
+            selected.mHealth = tgt.GetMaxHealth();
             if (selected.mHealth > 0)
                 selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
             else
@@ -353,14 +326,10 @@ void ESP()
 
                 locked.pos = ag.GetPos();
 
-                unsigned long shift = *(unsigned long*)ag.m_ptr;
-                shift = *(unsigned long*)(shift + hp_shift1);
-                shift = *(unsigned long*)(shift + hp_shift2);
-                if (shift)
-                {
-                    locked.cHealth = *(float*)(shift + hp_shift_cur);
-                    locked.mHealth = *(float*)(shift + hp_shift_max);
-                }
+                Gadget gd = ag.GetGadget();
+                locked.cHealth = gd.GetCurrentHealth();
+                locked.mHealth = gd.GetMaxHealth();
+
                 if (locked.mHealth > 0)
                     locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
                 else
@@ -376,15 +345,10 @@ void ESP()
 
                 locked.pos = ag.GetPos();
 
-                unsigned long shift = *(unsigned long*)ag.m_ptr;
-                shift = *(unsigned long*)(shift + hp_shift1);
-                shift = *(unsigned long*)(shift + hp_shift3);
-                shift = *(unsigned long*)(shift + hp_shift4);
-                if (shift)
-                {
-                    locked.cHealth = *(float*)(shift + hp_shift_cur);
-                    locked.mHealth = *(float*)(shift + hp_shift_max);
-                }
+                AttackTarget tgt = ag.GetAttackTarget();
+                locked.cHealth = tgt.GetCurrentHealth();
+                locked.mHealth = tgt.GetMaxHealth();
+
                 if (locked.mHealth > 0)
                     locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
                 else
@@ -409,15 +373,10 @@ void ESP()
             wboss.id = ag.GetAgentId();
             wboss.pos = ag.GetPos();
 
-            unsigned long shift = *(unsigned long*)ag.m_ptr;
-            shift = *(unsigned long*)(shift + hp_shift1);
-            shift = *(unsigned long*)(shift + hp_shift3);
-            shift = *(unsigned long*)(shift + hp_shift4);
-            if (shift)
-            {
-                wboss.cHealth = *(float*)(shift + hp_shift_cur);
-                wboss.mHealth = *(float*)(shift + hp_shift_max);
-            }
+            AttackTarget tgt = ag.GetAttackTarget();
+            wboss.cHealth = tgt.GetCurrentHealth();
+            wboss.mHealth = tgt.GetMaxHealth();
+
             if (wboss.mHealth > 0)
                 wboss.pHealth = 100.f * (wboss.cHealth / wboss.mHealth);
             else
