@@ -776,12 +776,11 @@ void ESP()
         float wh = GetWindowHeight();
         int ping = GetPing();
         int fps = GetFPS();
-        int glide = (int)(me.GetGliderPercent()*100.0f);
-        int rows = 3;
+        int rows = 2;
 
         stringstream ss;
         StrInfo strInfo;
-        ss << format("%i\n%i\n%i") % fps % ping % glide;
+        ss << format("%i\n%i") % fps % ping;
 
         strInfo = StringInfo(ss.str());
         float x = round(ww - strInfo.x - 2);

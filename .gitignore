@@ -14,3 +14,4 @@ Debug/
 *.suo
 *.aps
 proxy64/gw2dps_exe.dir/*
+gw2offset.cpp
