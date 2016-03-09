@@ -18,12 +18,14 @@ void threadSpeedometer() {
             {
                 if (locked.valid)
                 {
+                    speedometer = locked.speed;
                     cId = locked.id;
                     cPos = locked.pos;
                 }
             }
             else
             {
+                speedometer = self.speed;
                 cId = self.id;
                 cPos = self.pos;
             }

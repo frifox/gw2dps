@@ -169,6 +169,7 @@ void ESP()
     if (me.IsValid()){
         self.id = GetOwnAgent().GetAgentId();
         self.pos = GetOwnAgent().GetPos();
+        self.speed = GetOwnAgent().GetSpeed();
 
         self.cHealth = me.GetCurrentHealth();
         self.mHealth = me.GetMaxHealth();
@@ -192,7 +193,7 @@ void ESP()
             self.pos.z
         };
 
-        DWORD color = 0x4433ff00;
+        DWORD color = 0x440000ff;
         float w = Char.GetCurrentHealth() / Char.GetMaxHealth() * 20;
         DrawCircleProjected(self.pos, 20.0f, color);
         DrawRectProjected(rotArrow, 20, 5, rot, color);
@@ -305,6 +306,7 @@ void ESP()
                 locked.valid = true;
                 locked.id = ag.GetAgentId();
                 locked.type = agType;
+                locked.speed = ag.GetSpeed();
 
                 locked.pos = ag.GetPos();
 
@@ -403,6 +405,7 @@ void ESP()
                 int attitude = ch.GetAttitude();
                 int prof = ch.GetProfession();
                 string name = ch.GetName();
+                GW2::Attitude att = ch.GetAttitude();
 
                 // Filter the dead
                 if (cHealth > 0 && mHealth > 1)
@@ -417,6 +420,7 @@ void ESP()
                         floater.cHealth = cHealth;
                         floater.prof = prof;
                         floater.name = name;
+                        floater.att = att;
 
                         // player vs npc
                         if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
@@ -588,7 +592,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x4433ff00;
+                        DWORD color = floater.att == GW2::ATTITUDE_NEUTRAL ? 0x44dddddd : 0x4433ff00;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -619,7 +623,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x44ff3300;
+                        DWORD color = floater.att == GW2::ATTITUDE_INDIFFERENT ? 0x44dddd00 : 0x44e76d00;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -658,7 +662,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x4433ff00;
+                        DWORD color = 0x440000ff;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -1130,7 +1134,7 @@ void ESP()
             stringstream ss;
             StrInfo strInfo;
 
-            ss << format("Speed: ");
+            /*ss << format("Speed: ");
 
             if (!bufferSpeedometer.empty())
             {
@@ -1161,7 +1165,9 @@ void ESP()
             else
             {
                 ss << format("0 in/s, 0 in/s");
-            }
+            }*/
+
+            ss << format("Speed: %0.5f, Boost: %0.0f%s") % speedometer % (((speedometer / 9.1875) - 1) * 100) % "%%";
 
             strInfo = StringInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
@@ -1909,7 +1915,7 @@ void GW2LIB::gw2lib_main()
 
     HMODULE dll = hl::GetCurrentModule();
 
-    for (int i = 1; i < GW2::PROFESSION_NONE; i++) {
+    for (int i = 1; i < GW2::PROFESSION_END; i++) {
         stringstream res_id;
         res_id << "IDB_PNG" << i;
         HRSRC ires = FindResourceA(dll, res_id.str().c_str(), "PNG");

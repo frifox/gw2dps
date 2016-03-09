@@ -22,7 +22,7 @@ using namespace std;
 
 // Font Settings
 Font font;
-Texture profIcon[GW2::PROFESSION_NONE];
+Texture profIcon[GW2::PROFESSION_END];
 float icon_w = 20;
 float icon_h = 20;
 int lineHeight = 16;
@@ -37,7 +37,7 @@ static const DWORD bgColorMask = 0x33000000;
 // THREADS //
 int targetLockID;
 struct Target {
-    Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(0), rot(0) {}
+    Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0), lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(0), rot(0), speed(0) {}
 
     bool valid;
     bool alive;
@@ -49,6 +49,7 @@ struct Target {
     int lvl;
     int lvlActual;
     float breakbar;
+    float speed;
 
     Vector3 pos;
     float rot;
@@ -93,6 +94,7 @@ struct Float {
     float mHealth;
     int prof;
     string name;
+    GW2::Attitude att;
 };
 struct Siege {
     int type;
@@ -139,6 +141,7 @@ boost::circular_buffer<float> bufferDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
 boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRate,3s worth
+float speedometer = 0;
 
 // Layout Anchors
 struct Anchor {
