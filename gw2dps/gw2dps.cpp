@@ -1167,7 +1167,7 @@ void ESP()
                 ss << format("0 in/s, 0 in/s");
             }*/
 
-            ss << format("Speed: %0.5f, Boost: %0.0f%s") % speedometer % (((speedometer / 9.1875) - 1) * 100) % "%%";
+            ss << format("Speed: %0.0f in/s - Boost: %0.0f%s") % (speedometer * 32) % (((speedometer / 9.1875) - 1) * 100) % "%%";
 
             strInfo = StringInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
