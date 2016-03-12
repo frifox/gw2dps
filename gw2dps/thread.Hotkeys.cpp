@@ -97,12 +97,12 @@ void threadHotKeys()
     registerHotKeyWrapper(LOG_ATTACK_RATE, read_config_value("Hotkeys.LOG_ATTACK_RATE")); // logAttackRate
     registerHotKeyWrapper(LOG_ATTACK_RATE_DETAILS, read_config_value("Hotkeys.LOG_ATTACK_RATE_DETAILS")); // logAttackRateDetails
     registerHotKeyWrapper(LOG_ATTACK_RATE_TO_FILE, read_config_value("Hotkeys.LOG_ATTACK_RATE_TO_FILE")); // logAttackRateToFile
-    registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_MORE, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE")); // AttackRateChainHits +
-    registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_LESS, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS")); // AttackRateChainHits -
+    registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_MORE, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE"), true); // AttackRateChainHits +
+    registerHotKeyWrapper(ATTACKRATE_CHAIN_HITS_LESS, read_config_value("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS"), true); // AttackRateChainHits -
 
     registerHotKeyWrapper(LOG_CRITS, read_config_value("Hotkeys.LOG_CRITS")); // logCrits
-    registerHotKeyWrapper(LOG_CRITS_SAMPLE_MORE, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_MORE")); // logCritsSample +
-    registerHotKeyWrapper(LOG_CRITS_SAMPLE_LESS, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_LESS")); // logCritsSample -
+    registerHotKeyWrapper(LOG_CRITS_SAMPLE_MORE, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_MORE"), true); // logCritsSample +
+    registerHotKeyWrapper(LOG_CRITS_SAMPLE_LESS, read_config_value("Hotkeys.LOG_CRITS_SAMPLE_LESS"), true); // logCritsSample -
 
     registerHotKeyWrapper(ALLIES_LIST, read_config_value("Hotkeys.ALLIES_LIST")); // alliesList
     registerHotKeyWrapper(WVW_BONUS_MORE, read_config_value("Hotkeys.WVW_BONUS_MORE")); // wvwBonus +

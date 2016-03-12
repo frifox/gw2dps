@@ -103,7 +103,7 @@ CompassOverlay *compOverlay = new CompassOverlay();
 
 void ESP()
 {
-    if (IsInterfaceHidden()) return;
+    if (IsInterfaceHidden() || IsMapOpen()) return;
 
     // Element Anchors
     Anchor aLeft, aTopLeft, aTop, aTopRight, aRight, aCenter, aBottom;
@@ -193,7 +193,7 @@ void ESP()
             self.pos.z
         };
 
-        DWORD color = 0x440000ff;
+        DWORD color = 0x4455FFFF;
         float w = Char.GetCurrentHealth() / Char.GetMaxHealth() * 20;
         DrawCircleProjected(self.pos, 20.0f, color);
         DrawRectProjected(rotArrow, 20, 5, rot, color);
@@ -662,7 +662,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x440000ff;
+                        DWORD color = 0x4455FFFF;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
