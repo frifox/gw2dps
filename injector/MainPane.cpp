@@ -137,6 +137,7 @@ string MainPane::getDescriptionTextBlock()
     //ss << format("Count Siege (Alt 5)\n") % floatSiege;
     ss << format("Show/Hide Floaters below counted (%s)\n") % get_key_description("Hotkeys.FLOAT_CIRCLES");
     ss << format("Floaters show Max HP / Distance (%s)\n") % get_key_description("Hotkeys.FLOAT_TYPE");
+    ss << format("Floaters snap to screen edge (%s)\n") % get_key_description("Hotkeys.FLOAT_SNAP");
     ss << format("Speedometer (%s)\n") % get_key_description("Hotkeys.LOG_SPEEDOMETER");
     ss << format("Speedometer for Self/Enemy (%s)\n") % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
     ss << format("Measure Distance (%s)\n") % get_key_description("Hotkeys.LOG_DISPLACEMENT");

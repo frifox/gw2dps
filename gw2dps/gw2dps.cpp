@@ -70,6 +70,7 @@ bool floatSiege = false;
 int floatRadius = 10000;
 bool floatCircles = false;
 bool floatType = true; // false = HP; true = Dist;
+bool floatSnap = false;
 
 bool logSpeedometer = false;
 bool logSpeedometerEnemy = false;
@@ -638,13 +639,14 @@ void ESP()
                 for (auto & floater : floaters.allyPlayer) {
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
-                        float ww = GetWindowWidth() - 25;
-                        float wh = GetWindowHeight() - 10;
-
-                        if (x < 50) x = 50;
-                        if (x > ww) x = ww;
-                        if (y < 20) y = 20;
-                        if (y > wh) y = wh;
+                        if (floatSnap) {
+                            float ww = GetWindowWidth() - 25;
+                            float wh = GetWindowHeight() - 10;
+                            if (x < 50) x = 50;
+                            if (x > ww) x = ww;
+                            if (y < 20) y = 20;
+                            if (y > wh) y = wh;
+                        }
 
                         stringstream fs;
                         //fs << floater.name << "\n";
@@ -678,6 +680,15 @@ void ESP()
                 for (auto & floater : floaters.enemyPlayer) {
                     if (WorldToScreen(floater.pos, &x, &y))
                     {
+                        if (floatSnap) {
+                            float ww = GetWindowWidth() - 25;
+                            float wh = GetWindowHeight() - 10;
+                            if (x < 50) x = 50;
+                            if (x > ww) x = ww;
+                            if (y < 20) y = 20;
+                            if (y > wh) y = wh;
+                        }
+
                         stringstream fs;
                         //fs << floater.name << "\n";
                         if (floatType)
@@ -700,6 +711,7 @@ void ESP()
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
                         DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
                         DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
+                        profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - 17, icon_w, icon_h);
                     }
                 }
             }
@@ -1621,6 +1633,7 @@ void load_preferences() {
     compDotsFade = Str2Bool(read_config_value("Preferences.COMP_OVERLAY_ZFADE"));
     compDots = Str2Bool(read_config_value("Preferences.COMP_OVERLAY"));
     showPing = Str2Bool(read_config_value("Preferences.SHOW_PING"));
+    floatSnap = Str2Bool(read_config_value("Preferences.FLOAT_SNAP"));
 }
 
 void save_preferences() {
@@ -1666,6 +1679,7 @@ void save_preferences() {
     write_config_value("Preferences.COMP_OVERLAY_ZFADE", Bool2Str(compDotsFade));
     write_config_value("Preferences.COMP_OVERLAY", Bool2Str(compDots));
     write_config_value("Preferences.SHOW_PING", Bool2Str(showPing));
+    write_config_value("Preferences.FLOAT_SNAP", Bool2Str(floatSnap));
     save_config();
 }
 

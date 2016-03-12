@@ -62,6 +62,7 @@
 #define COMP_OVERLAY 94
 #define COMP_OVERLAY_ZFADE 95
 #define SHOW_PING 96
+#define FLOAT_SNAP 97
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -127,6 +128,7 @@ void threadHotKeys()
     registerHotKeyWrapper(COMP_OVERLAY, read_config_value("Hotkeys.COMP_OVERLAY"));
     registerHotKeyWrapper(COMP_OVERLAY_ZFADE, read_config_value("Hotkeys.COMP_OVERLAY_ZFADE"));
     registerHotKeyWrapper(SHOW_PING, read_config_value("Hotkeys.SHOW_PING"));
+    registerHotKeyWrapper(FLOAT_SNAP, read_config_value("Hotkeys.FLOAT_SNAP"));
 
     // special
     registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
@@ -202,6 +204,7 @@ void threadHotKeys()
             if (msg.wParam == COMP_OVERLAY) compDots = !compDots;
             if (msg.wParam == COMP_OVERLAY_ZFADE) compDotsFade = !compDotsFade;
             if (msg.wParam == SHOW_PING) showPing = !showPing;
+            if (msg.wParam == FLOAT_SNAP) floatSnap = !floatSnap;
         }
 
         save_preferences();
@@ -257,6 +260,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, COMP_OVERLAY);
     UnregisterHotKey(NULL, COMP_OVERLAY_ZFADE);
     UnregisterHotKey(NULL, SHOW_PING);
+    UnregisterHotKey(NULL, FLOAT_SNAP);
 }
 
 void registerHotKeyWrapper(int id, string key)

@@ -54,4 +54,5 @@
                             "LOG_DISPLACEMENT_ENEMY=ALT SHIFT 0x30\n" \
                             "COMP_OVERLAY=ALT 0x4F\n" \
                             "COMP_OVERLAY_ZFADE=ALT SHIFT 0x4F\n" \
-                            "SHOW_PING=ALT SHIFT 0x50\n"
+                            "SHOW_PING=ALT SHIFT 0x50\n" \
+                            "FLOAT_SNAP=ALT SHIFT 0x53\n"

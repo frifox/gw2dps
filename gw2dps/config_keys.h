@@ -29,6 +29,7 @@ std::list<string> get_help_config_keys()
     //ss << format("Count Siege (Alt 5)\n") % floatSiege;
     config_keys.push_back("Hotkeys.FLOAT_CIRCLES");
     config_keys.push_back("Hotkeys.FLOAT_TYPE");
+    config_keys.push_back("Hotkeys.FLOAT_SNAP");
     config_keys.push_back("Hotkeys.LOG_SPEEDOMETER");
     config_keys.push_back("Hotkeys.LOG_SPEEDOMETER_ENEMY");
     config_keys.push_back("Hotkeys.LOG_DISPLACEMENT");
