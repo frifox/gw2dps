@@ -104,7 +104,7 @@ CompassOverlay *compOverlay = new CompassOverlay();
 
 void ESP()
 {
-    if (IsInterfaceHidden() || IsMapOpen()) return;
+    if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene()) return;
 
     // Element Anchors
     Anchor aLeft, aTopLeft, aTop, aTopRight, aRight, aCenter, aBottom;
@@ -196,9 +196,9 @@ void ESP()
 
         DWORD color = 0x4455FFFF;
         float w = Char.GetCurrentHealth() / Char.GetMaxHealth() * 20;
-        DrawCircleProjected(self.pos, 20.0f, color);
         DrawRectProjected(rotArrow, 20, 5, rot, color);
         DrawRectFilledProjected(rotArrow, w, 5, rot, color);
+        DrawCircleProjected(self.pos, 20.0f, color);
         DrawCircleFilledProjected(self.pos, 20.0f, color - floatMask);
     }
 
@@ -452,6 +452,7 @@ void ESP()
         // Allies list
         if (alliesList) {
             Character ch = ag.GetCharacter();
+            Player player = ag.GetPlayer();
 
             // collect only valid allies (and yourself)
             bool chValid = true;
@@ -479,7 +480,7 @@ void ESP()
                 //ally.pHealth = 0;
                 ally.lvl = ch.GetScaledLevel();
                 ally.lvlActual = ch.GetLevel();
-                ally.name = ch.GetName();
+                ally.name = player.GetName();
 
                 baseHpReturn base = baseHp(ally.lvl, ally.profession);
                 ally.vitality = int(round((ally.mHealth - base.health) / 10));
