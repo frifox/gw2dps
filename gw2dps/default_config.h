@@ -47,6 +47,7 @@
                             "FLOAT_ALLY_PLAYER_PROF=ALT SHIFT 0x33\n" \
                             "FLOAT_ENEMY_PLAYER=ALT 0x34\n" \
                             "FLOAT_SIEGE=ALT 0x35\n" \
+                            "FLOAT_OBJECT=ALT 0x36\n" \
                             \
                             "LOG_SPEEDOMETER=ALT 0x39\n" \
                             "LOG_SPEEDOMETER_ENEMY=ALT SHIFT 0x39\n" \

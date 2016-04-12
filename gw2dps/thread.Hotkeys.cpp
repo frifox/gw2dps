@@ -63,6 +63,7 @@
 #define COMP_OVERLAY_ZFADE 95
 #define SHOW_PING 96
 #define FLOAT_SNAP 97
+#define FLOAT_OBJECT 98
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -119,6 +120,7 @@ void threadHotKeys()
     registerHotKeyWrapper(FLOAT_ALLY_PLAYER_PROF, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER_PROF")); // floatAllyPlayerProf
     registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, read_config_value("Hotkeys.FLOAT_ENEMY_PLAYER")); // floatEnemyPlayer
     registerHotKeyWrapper(FLOAT_SIEGE, read_config_value("Hotkeys.FLOAT_SIEGE")); // floatSiege
+    registerHotKeyWrapper(FLOAT_OBJECT, read_config_value("Hotkeys.FLOAT_OBJECT")); // floatObject
 
     registerHotKeyWrapper(LOG_SPEEDOMETER, read_config_value("Hotkeys.LOG_SPEEDOMETER")); // logSpeedometer
     registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, read_config_value("Hotkeys.LOG_SPEEDOMETER_ENEMY")); // logSpeedometerEnemy
@@ -195,6 +197,7 @@ void threadHotKeys()
             if (msg.wParam == FLOAT_ALLY_PLAYER_PROF) floatAllyPlayerProf = !floatAllyPlayerProf;
             if (msg.wParam == FLOAT_ENEMY_PLAYER) floatEnemyPlayer = !floatEnemyPlayer;
             if (msg.wParam == FLOAT_SIEGE) floatSiege = !floatSiege;
+            if (msg.wParam == FLOAT_OBJECT) floatObject = !floatObject;
 
             if (msg.wParam == LOG_SPEEDOMETER) logSpeedometer = !logSpeedometer;
             if (msg.wParam == LOG_SPEEDOMETER_ENEMY) logSpeedometerEnemy = !logSpeedometerEnemy;
@@ -253,6 +256,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, FLOAT_ALLY_PLAYER_PROF);
     UnregisterHotKey(NULL, FLOAT_ENEMY_PLAYER);
     UnregisterHotKey(NULL, FLOAT_SIEGE);
+    UnregisterHotKey(NULL, FLOAT_OBJECT);
     UnregisterHotKey(NULL, LOG_SPEEDOMETER);
     UnregisterHotKey(NULL, LOG_SPEEDOMETER_ENEMY);
     UnregisterHotKey(NULL, LOG_DISPLACEMENT);

@@ -102,12 +102,20 @@ struct Siege {
     float mHealth;
     float cHealth;
 };
+struct Object {
+    Vector3 pos;
+    float rot = 0;
+    float cHealth;
+    float mHealth;
+    string name;
+};
 struct Floaters {
     vector<Float> allyNpc;
     vector<Float> enemyNpc;
     vector<Float> allyPlayer;
     vector<Float> enemyPlayer;
     vector<Siege> siege;
+    vector<Object> object;
 };
 struct WBoss {
     int id;
@@ -285,6 +293,7 @@ class CompassOverlay {
     const DWORD Color_NEUTRAL = 0x665E5E;
     const DWORD Color_PLAYER = 0x0000FF; //0x60D7FE;
     const DWORD Color_NPC_FOE = 0xe76d00;
+    const DWORD Color_OBJECT = 0xffffff;
     const float fadeMark = 1800.0f;
     const int alphaMask = 0xFF000000;
 

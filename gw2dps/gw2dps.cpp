@@ -67,6 +67,7 @@ bool floatAllyPlayer = false;
 bool floatAllyPlayerProf = false;
 bool floatEnemyPlayer = false;
 bool floatSiege = false;
+bool floatObject = false;
 int floatRadius = 10000;
 bool floatCircles = false;
 bool floatType = true; // false = HP; true = Dist;
@@ -389,10 +390,32 @@ void ESP()
         }
 
         // Floaters
-        if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
+        if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject)
         {
             int agType = ag.GetType();
 
+            // object floaters
+            if (agType == GW2::AGENT_TYPE_GADGET) {
+                // gather data
+                Gadget gd = ag.GetGadget();
+                Vector3 pos = ag.GetPos();
+                float rot = ag.GetRot();
+                float cHealth = gd.GetCurrentHealth();
+                float mHealth = gd.GetMaxHealth();
+
+                // Filter those out of range
+                if (Dist(self.pos, pos) <= floatRadius)
+                {
+                    Object floater;
+                    floater.pos = pos;
+                    floater.rot = rot;
+                    floater.mHealth = mHealth;
+                    floater.cHealth = cHealth;
+
+                    floaters.object.push_back(floater);
+                }
+
+            } else 
             // NPC & Player
             if (agType == GW2::AGENT_TYPE_CHAR)
             {
@@ -565,7 +588,7 @@ void ESP()
 
     // floaters //
 
-    if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege)
+    if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject)
     {
         stringstream ss;
         StrInfo strInfo;
@@ -725,6 +748,37 @@ void ESP()
                     //DrawCircleFilledProjected(floater.pos, 20.0f, color - 0x30000000);
                 }
             }
+
+            if (floatObject && floaters.object.size() > 0)
+            {
+                for (auto & floater : floaters.object) {
+                    if (WorldToScreen(floater.pos, &x, &y))
+                    {
+
+                        stringstream fs;
+                        if (floatType)
+                            fs << format("%i") % int(Dist(self.pos, floater.pos));
+                        else
+                            fs << format("%i") % floater.mHealth;
+
+                        StrInfo fsInfo = StringInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+
+                        Vector3 rotArrow = {
+                            floater.pos.x + cos(floater.rot) * 50.0f,
+                            floater.pos.y + sin(floater.rot) * 50.0f,
+                            floater.pos.z
+                        };
+
+                        DWORD color = 0x44ffffff;
+                        float w = floater.cHealth / floater.mHealth * 20;
+                        DrawCircleProjected(floater.pos, 20.0f, color);
+                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
+                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
+                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
+                    }
+                }
+            }
         }
 
         ss << format("R: %i") % floatRadius;
@@ -743,6 +797,9 @@ void ESP()
 
         if (floatSiege)
             ss << format(" | Siege: %i") % floaters.siege.size();
+
+        if (floatObject)
+            ss << format(" | Objects: %i") % floaters.object.size();
 
         strInfo = StringInfo(ss.str());
         float x = round(aTop.x - strInfo.x / 2);
@@ -1623,6 +1680,7 @@ void load_preferences() {
     floatAllyPlayerProf = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF"));
     floatEnemyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_PLAYER"));
     floatSiege = Str2Bool(read_config_value("Preferences.FLOAT_SIEGE"));
+    floatObject = Str2Bool(read_config_value("Preferences.FLOAT_OBJECT"));
     logSpeedometer = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER"));
     logSpeedometerEnemy = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER_ENEMY"));
     logDisplacement = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT"));
@@ -1669,6 +1727,7 @@ void save_preferences() {
     write_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF", Bool2Str(floatAllyPlayerProf));
     write_config_value("Preferences.FLOAT_ENEMY_PLAYER", Bool2Str(floatEnemyPlayer));
     write_config_value("Preferences.FLOAT_SIEGE", Bool2Str(floatSiege));
+    write_config_value("Preferences.FLOAT_OBJECT", Bool2Str(floatObject));
     write_config_value("Preferences.LOG_SPEEDOMETER", Bool2Str(logSpeedometer));
     write_config_value("Preferences.LOG_SPEEDOMETER_ENEMY", Bool2Str(logSpeedometerEnemy));
     write_config_value("Preferences.LOG_DISPLACEMENT", Bool2Str(logDisplacement));
@@ -1759,15 +1818,15 @@ void CompassOverlay::RenderOverlay() {
     DrawCircleFilled(CenterX, CenterY, 2, SelfDotColor);
 
     while (curAg.BeNext()){
-
-        if (curAg.GetType() != GW2::AGENT_TYPE_CHAR) continue;
+        GW2::AgentType type = curAg.GetType();
+        if (type != GW2::AGENT_TYPE_CHAR && type != GW2::AGENT_TYPE_GADGET) continue;
         if (curAg.GetAgentId() == GetOwnAgent().GetAgentId()) continue;
         if (!curAg.IsValid()) continue;
 
         curChar = curAg.GetCharacter();
-        if (!curChar.IsAlive() && !curChar.IsDowned()) continue;
-
-        if (FilterDot(curAg)) continue;
+        if (type == GW2::AGENT_TYPE_CHAR && !curChar.IsAlive() && !curChar.IsDowned()) continue;
+        if (type == GW2::AGENT_TYPE_GADGET && !floatObject) continue;
+        if (type == GW2::AGENT_TYPE_CHAR && FilterDot(curAg)) continue;
         agPos = curAg.GetPos();
         curDist = dist2D(agSelfPos, agPos);
         if (curDist > (float)floatRadius) continue;
@@ -1786,7 +1845,7 @@ void CompassOverlay::RenderOverlay() {
         if (CoordY < CenterY - map_height) CoordY = CenterY - map_height;
 
         DWORD alpha = CalcFade(agSelfPos, agPos);
-        DWORD color = GetColor(curChar, alpha);
+        DWORD color = type == GW2::AGENT_TYPE_GADGET ? (alpha | Color_OBJECT) : GetColor(curChar, alpha);
 
         DrawCircleFilled(CoordX, CoordY, 4.0f, alpha);
         DrawCircleFilled(CoordX, CoordY, 3.0f, color);
@@ -1878,7 +1937,7 @@ void dmg_log(uintptr_t* src, uintptr_t* tgt, int hit) {
     //HL_LOG_DBG("hit: %i\n", hit);
 }
 
-void combat_log(CombatLogType type, int hit) {
+void combat_log(CombatLogType type, int hit, Agent tgt) {
     int dmg = 0;
     switch (type) {
     case CL_CONDI_DMG_OUT:
@@ -1891,11 +1950,13 @@ void combat_log(CombatLogType type, int hit) {
             if (timer2.is_stopped()) timer2.start();
         }
 
-        totaldmg += hit;
+        if (locked.valid && locked.id == tgt.GetAgentId())
+            totaldmg += hit;
         break;
     }
 
-    //HL_LOG_DBG("type: %i - hit: %i\n", type, hit);
+    //Character ch = tgt.GetCharacter();
+    //HL_LOG_DBG("target: %.0f - type: %i - hit: %i\n", ch.GetCurrentHealth(), type, hit);
 }
 
 void GW2LIB::gw2lib_main()
@@ -1907,12 +1968,12 @@ void GW2LIB::gw2lib_main()
     load_preferences();
 
     EnableEsp(ESP);
-    SetGameHook(ChatHook, chat_log);
-    SetGameHook(MouseMoveHook, mouse_move);
-    SetGameHook(MouseButtonHook, mouse_click);
-    SetGameHook(MouseWheelHook, mouse_wheel);
-    SetGameHook(DamageLogHook, dmg_log);
-    SetGameHook(CombatLogHook, combat_log);
+    SetGameHook(HOOK_CHAT, chat_log);
+    SetGameHook(HOOK_MOUSE_MOVE, mouse_move);
+    SetGameHook(HOOK_MOUSE_BUTTON, mouse_click);
+    SetGameHook(HOOK_MOUSE_WHEEL, mouse_wheel);
+    SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
+    SetGameHook(HOOK_COMBAT_LOG, combat_log);
 
     thread t1(&threadHotKeys);
     thread t2(&threadDps);
