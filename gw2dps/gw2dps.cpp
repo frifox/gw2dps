@@ -59,6 +59,7 @@ bool logCritsToFile = false;
 string logCritsFile = "gw2dpsLog-Crits.txt";
 
 bool alliesList = false;
+int playerListFilter = 0;
 int wvwBonus = 0;
 
 bool floatAllyNpc = false;
@@ -892,103 +893,116 @@ void ESP()
             stringstream sn;
             stringstream sh;
             stringstream sv;
+            stringstream sl;
 
-            ss << format("Nearby Ally Players (WvW HP Bonus: %i%s)") % wvwBonus % "%%";
+            const char *prof = profFilterName[playerListFilter];
+
+            ss << format("Nearby Players (%s) (WvW HP Bonus: %i%s)") % prof % wvwBonus % "%%";
             sp << format("Class");
             sn << format("Name");
             sh << format("Health");
             sv << format("Vitality");
+            sl << format("Level");
 
             bool listEmpty = true;
-            if (!allies.war.empty())
+            if (!allies.war.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_WARRIOR))
             {
                 for (auto & ally : allies.war) {
                     sp << format("\nWar:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.guard.empty())
+            if (!allies.guard.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_GUARDIAN))
             {
                 for (auto & ally : allies.guard) {
                     sp << format("\nGuard:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
 
-            if (!allies.ele.empty())
+            if (!allies.ele.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ELEMENTALIST))
             {
                 for (auto & ally : allies.ele) {
                     sp << format("\nEle:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.mes.empty())
+            if (!allies.mes.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_MESMER))
             {
                 for (auto & ally : allies.mes) {
                     sp << format("\nMes:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
 
-            if (!allies.thief.empty())
+            if (!allies.thief.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_THIEF))
             {
                 for (auto & ally : allies.thief) {
                     sp << format("\nThief:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.ranger.empty())
+            if (!allies.ranger.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_RANGER))
             {
                 for (auto & ally : allies.ranger) {
                     sp << format("\nRanger:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.engi.empty())
+            if (!allies.engi.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ENGINEER))
             {
                 for (auto & ally : allies.engi) {
                     sp << format("\nEngi:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.necro.empty())
+            if (!allies.necro.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_NECROMANCER))
             {
                 for (auto & ally : allies.necro) {
                     sp << format("\nNecro:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
-            if (!allies.rev.empty())
+            if (!allies.rev.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_REVENANT))
             {
                 for (auto & ally : allies.rev) {
                     sp << format("\nRev:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
                 }
                 listEmpty = false;
             }
@@ -998,6 +1012,7 @@ void ESP()
                 sn << format("\n...");
                 sh << format("\n...");
                 sv << format("\n...");
+                sl << format("\n...");
             }
 
 
@@ -1011,7 +1026,8 @@ void ESP()
             float snOffset = spOffset + 65;
             float shOffset = snOffset + strInfo.x;
             float svOffset = shOffset + 85;
-            float sxOffset = svOffset + 60;
+            float slOffset = svOffset + 70;
+            float sxOffset = slOffset + 60;
 
             float x = round(aLeft.x);
             float y = round(aLeft.y);
@@ -1032,6 +1048,7 @@ void ESP()
             font.Draw(x + snOffset, y, fontColor, sn.str());
             font.Draw(x + shOffset, y, fontColor, sh.str());
             font.Draw(x + svOffset, y, fontColor, sv.str());
+            font.Draw(x + slOffset, y, fontColor, sl.str());
         }
     }
 
@@ -1693,6 +1710,7 @@ void load_preferences() {
     compDots = Str2Bool(read_config_value("Preferences.COMP_OVERLAY"));
     showPing = Str2Bool(read_config_value("Preferences.SHOW_PING"));
     floatSnap = Str2Bool(read_config_value("Preferences.FLOAT_SNAP"));
+    playerListFilter = Str2Int(read_config_value("Preferences.PLAYER_LIST_FILTER"));
 }
 
 void save_preferences() {
@@ -1740,6 +1758,7 @@ void save_preferences() {
     write_config_value("Preferences.COMP_OVERLAY", Bool2Str(compDots));
     write_config_value("Preferences.SHOW_PING", Bool2Str(showPing));
     write_config_value("Preferences.FLOAT_SNAP", Bool2Str(floatSnap));
+    write_config_value("Preferences.PLAYER_LIST_FILTER", Int2Str(playerListFilter));
     save_config();
 }
 

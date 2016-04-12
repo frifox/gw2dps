@@ -128,7 +128,8 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Show Attack Rate History (%s)\n") % get_key_description("Hotkeys.LOG_ATTACK_RATE_DETAILS");
     ss << format("Record Attack Rate to File (%s)\n") % get_key_description("Hotkeys.LOG_ATTACK_RATE_TO_FILE");
     ss << format("Adjust Attack Rate Threshold +(%s) and -(%s)\n") % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE") % get_key_description("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS");
-    ss << format("Nearby Ally Players List (%s)\n") % get_key_description("Hotkeys.ALLIES_LIST");
+    ss << format("Nearby Player Players List (%s)\n") % get_key_description("Hotkeys.ALLIES_LIST");
+    ss << format("Nearby Player List filter (%s)\n") % get_key_description("Hotkeys.PLAYER_LIST_FILTER");
     ss << format("Adjust WvW HP Bonus +(%s) and -(%s)\n") % get_key_description("Hotkeys.WVW_BONUS_MORE") % get_key_description("Hotkeys.WVW_BONUS_LESS");
     ss << format("Count Ally NPCs (%s)\n") % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
     ss << format("Count Enemy NPCs (%s)\n") % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");

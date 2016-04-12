@@ -23,6 +23,7 @@ using namespace std;
 // Font Settings
 Font font;
 Texture profIcon[GW2::PROFESSION_END];
+const char *profFilterName[] = { "ALL", "Guard", "War", "Engi", "Ranger", "Thief", "Ele", "Mes", "Necro", "Rev" };
 float icon_w = 20;
 float icon_h = 20;
 int lineHeight = 16;

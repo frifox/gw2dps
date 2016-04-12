@@ -64,6 +64,7 @@
 #define SHOW_PING 96
 #define FLOAT_SNAP 97
 #define FLOAT_OBJECT 98
+#define PLAYER_LIST_FILTER 99
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -131,6 +132,7 @@ void threadHotKeys()
     registerHotKeyWrapper(COMP_OVERLAY_ZFADE, read_config_value("Hotkeys.COMP_OVERLAY_ZFADE"));
     registerHotKeyWrapper(SHOW_PING, read_config_value("Hotkeys.SHOW_PING"));
     registerHotKeyWrapper(FLOAT_SNAP, read_config_value("Hotkeys.FLOAT_SNAP"));
+    registerHotKeyWrapper(PLAYER_LIST_FILTER, read_config_value("Hotkeys.PLAYER_LIST_FILTER"));
 
     // special
     registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
@@ -208,6 +210,10 @@ void threadHotKeys()
             if (msg.wParam == COMP_OVERLAY_ZFADE) compDotsFade = !compDotsFade;
             if (msg.wParam == SHOW_PING) showPing = !showPing;
             if (msg.wParam == FLOAT_SNAP) floatSnap = !floatSnap;
+            if (msg.wParam == PLAYER_LIST_FILTER && alliesList) {
+                playerListFilter = (playerListFilter >= GW2::PROFESSION_END - 1) ? 0 : playerListFilter + 1;
+            }
+
         }
 
         save_preferences();
@@ -265,6 +271,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, COMP_OVERLAY_ZFADE);
     UnregisterHotKey(NULL, SHOW_PING);
     UnregisterHotKey(NULL, FLOAT_SNAP);
+    UnregisterHotKey(NULL, PLAYER_LIST_FILTER);
 }
 
 void registerHotKeyWrapper(int id, string key)

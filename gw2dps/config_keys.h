@@ -20,6 +20,7 @@ std::list<string> get_help_config_keys()
     config_keys.push_back("Hotkeys.ATTACKRATE_CHAIN_HITS_MORE");
     config_keys.push_back("Hotkeys.ATTACKRATE_CHAIN_HITS_LESS");
     config_keys.push_back("Hotkeys.ALLIES_LIST");
+    config_keys.push_back("Hotkeys.PLAYER_LIST_FILTER");
     config_keys.push_back("Hotkeys.WVW_BONUS_MORE");
     config_keys.push_back("Hotkeys.WVW_BONUS_LESS");
     config_keys.push_back("Hotkeys.FLOAT_ALLY_NPC");
