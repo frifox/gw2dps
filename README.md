@@ -13,7 +13,7 @@ Download
 Build it yourself
 =======
 
-Note: If Git or CMake asks if you want to add to your PATH environment variable, say yes.
+Note: If Git or CMake asks if they want to add themselves to your PATH environment variable, say yes.
 
 Note2: These instructions have been tested with Visual Studio Community Edition 2013 Update 5 (on Win 7 x64).
 
