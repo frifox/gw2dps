@@ -905,17 +905,6 @@ void ESP()
             sl << format("Level");
 
             bool listEmpty = true;
-            if (!allies.war.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_WARRIOR))
-            {
-                for (auto & ally : allies.war) {
-                    sp << format("\nWar:");
-                    sn << format("\n%s") % ally.name;
-                    sh << format("\n%i hp") % ally.mHealth;
-                    sv << format("\n%+i") % ally.vitality;
-                    sl << format("\n%i") % ally.lvlActual;
-                }
-                listEmpty = false;
-            }
             if (!allies.guard.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_GUARDIAN))
             {
                 for (auto & ally : allies.guard) {
@@ -928,10 +917,10 @@ void ESP()
                 listEmpty = false;
             }
 
-            if (!allies.ele.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ELEMENTALIST))
+            if (!allies.war.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_WARRIOR))
             {
-                for (auto & ally : allies.ele) {
-                    sp << format("\nEle:");
+                for (auto & ally : allies.war) {
+                    sp << format("\nWar:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -939,10 +928,23 @@ void ESP()
                 }
                 listEmpty = false;
             }
-            if (!allies.mes.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_MESMER))
+
+            if (!allies.engi.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ENGINEER))
             {
-                for (auto & ally : allies.mes) {
-                    sp << format("\nMes:");
+                for (auto & ally : allies.engi) {
+                    sp << format("\nEngi:");
+                    sn << format("\n%s") % ally.name;
+                    sh << format("\n%i hp") % ally.mHealth;
+                    sv << format("\n%+i") % ally.vitality;
+                    sl << format("\n%i") % ally.lvlActual;
+                }
+                listEmpty = false;
+            }
+
+            if (!allies.ranger.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_RANGER))
+            {
+                for (auto & ally : allies.ranger) {
+                    sp << format("\nRanger:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -962,10 +964,11 @@ void ESP()
                 }
                 listEmpty = false;
             }
-            if (!allies.ranger.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_RANGER))
+
+            if (!allies.ele.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ELEMENTALIST))
             {
-                for (auto & ally : allies.ranger) {
-                    sp << format("\nRanger:");
+                for (auto & ally : allies.ele) {
+                    sp << format("\nEle:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -973,10 +976,11 @@ void ESP()
                 }
                 listEmpty = false;
             }
-            if (!allies.engi.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_ENGINEER))
+
+            if (!allies.mes.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_MESMER))
             {
-                for (auto & ally : allies.engi) {
-                    sp << format("\nEngi:");
+                for (auto & ally : allies.mes) {
+                    sp << format("\nMes:");
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -984,6 +988,7 @@ void ESP()
                 }
                 listEmpty = false;
             }
+
             if (!allies.necro.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_NECROMANCER))
             {
                 for (auto & ally : allies.necro) {
@@ -995,6 +1000,7 @@ void ESP()
                 }
                 listEmpty = false;
             }
+
             if (!allies.rev.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_REVENANT))
             {
                 for (auto & ally : allies.rev) {
@@ -1006,6 +1012,7 @@ void ESP()
                 }
                 listEmpty = false;
             }
+
             if (listEmpty)
             {
                 sp << format("\n...");
