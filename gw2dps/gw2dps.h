@@ -21,7 +21,8 @@ using namespace boost;
 using namespace std;
 
 // Font Settings
-Font font;
+const char *fontFamily = "Verdana";
+Font font, font2;
 Texture profIcon[GW2::PROFESSION_END];
 const char *profFilterName[] = { "ALL", "Guard", "War", "Engi", "Ranger", "Thief", "Ele", "Mes", "Necro", "Rev" };
 float icon_w = 20;
@@ -202,7 +203,7 @@ inline wstring convert(const string& as)
     return rval;
 }
 HWND hwnd = FindWindowEx(NULL, NULL, L"Guild Wars 2", NULL);
-StrInfo StringInfo(string str)
+StrInfo StringInfo(string str, bool bold = true)
 {
     StrInfo strInfo;
 
@@ -222,60 +223,25 @@ StrInfo StringInfo(string str)
 
     // Width
     {
-        typedef vector<string> split_vector_type;
-        split_vector_type lines; // #2: Search for tokens
-        split(lines, str, is_any_of("\n"), token_compress_on);
 
         HDC hdc = GetDC(hwnd);
-        HFONT hFont = CreateFont(lineHeight, 0, 0, 0, 600, FALSE, FALSE, FALSE,
+        HFONT hFont = CreateFontA(lineHeight, 0, 0, 0, (bold ? FW_BOLD : FW_NORMAL), FALSE, FALSE, FALSE,
             DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_TT_ALWAYS, ANTIALIASED_QUALITY,
-            DEFAULT_PITCH, L"Verdana");
+            DEFAULT_PITCH, fontFamily);
         HFONT hFontOld = (HFONT)SelectObject(hdc, hFont);
 
-        // Sanitize
-        //replace_all(str, "%%", "");
-        //replace_all(str, "&&", "&");
+        size_t width = 0, height = 0;
+        RECT r = { 0, 0, 0, 0, };
+        DrawText(hdc, convert(str.c_str()).c_str(), -1, &r, DT_CALCRECT);
 
-        // find longest line
-        size_t width = 0;
-        string longLine;
-        for (auto & line : lines) {
-            RECT r = { 0, 0, 0, 0 };
-            DrawText(hdc, convert(line.c_str()).c_str(), -1, &r, DT_CALCRECT);
-            size_t w = abs(r.right - r.left);
+        width = r.right;
+        height = r.bottom;
 
-            // refine the width
-            size_t i;
-            i = count(line.begin(), line.end(), ':'); w -= i * 2;
-            i = count(line.begin(), line.end(), ','); w -= i * 1;
-            i = count(line.begin(), line.end(), ' '); w -= i * 2;
-            i = count(line.begin(), line.end(), '['); w -= i * 1;
-            i = count(line.begin(), line.end(), ']'); w -= i * 1;
-            i = count(line.begin(), line.end(), 'T'); w -= i * 2;
-            i = count(line.begin(), line.end(), 't'); w -= i * 1;
-            //i = count(line.begin(), line.end(), '%'); w -= i * 6;
-
-            i = count(line.begin(), line.end(), 'm'); w += i * 1;
-            i = count(line.begin(), line.end(), 'o'); w += i * 1;
-
-            if (w > width) {
-                width = w;
-                longLine = line;
-            }
-        }
-
-        if (0) { // Test Draw
-            //DbgOut("%s\n", longLine.c_str());
-
-            RECT r = { 0, 0, 0, 0 };
-            DrawText(hdc, convert(longLine.c_str()).c_str(), -1, &r, DT_CALCRECT);
-            DrawText(hdc, convert(longLine.c_str()).c_str(), -1, &r, NULL);
-        }
         DeleteObject(hFont);
         ReleaseDC(hwnd, hdc);
 
         strInfo.x = float(width);
-        strInfo.y = float(strInfo.lineCount * lineHeight);
+        strInfo.y = float(height);
     }
 
     return strInfo;
