@@ -180,72 +180,7 @@ string SecondsToString(double input)
 
     return ss.str();
 }
-struct StrInfo {
-    StrInfo() : lineCount(0), x(0), y(0) {}
 
-    size_t lineCount;
-    float x;
-    float y;
-};
-
-inline wstring convert(const string& as)
-{
-    wstring ws = wstring(as.begin(), as.end());
-    replace_all(ws, "%%", "%");
-    replace_all(ws, "&", "&&");
-    wstring rval = ws;
-
-    //wchar_t* buf = new wchar_t[as.size() * 2 + 2];
-    //swprintf(buf, L"%S", as.c_str());
-    //wstring rval = buf;
-    //delete[] buf;
-
-    return rval;
-}
-HWND hwnd = FindWindowEx(NULL, NULL, L"Guild Wars 2", NULL);
-StrInfo StringInfo(string str, bool bold = true)
-{
-    StrInfo strInfo;
-
-    // Line Count
-    {
-        size_t lineCount = 0;
-        regex token("\n");
-        sregex_token_iterator i(str.begin(), str.end(), token, -1);
-        sregex_token_iterator j;
-        while (i != j)
-        {
-            cout << *i++ << endl;
-            lineCount++;
-        }
-        strInfo.lineCount = lineCount;
-    }
-
-    // Width
-    {
-
-        HDC hdc = GetDC(hwnd);
-        HFONT hFont = CreateFontA(lineHeight, 0, 0, 0, (bold ? FW_BOLD : FW_NORMAL), FALSE, FALSE, FALSE,
-            DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_TT_ALWAYS, ANTIALIASED_QUALITY,
-            DEFAULT_PITCH, fontFamily);
-        HFONT hFontOld = (HFONT)SelectObject(hdc, hFont);
-
-        size_t width = 0, height = 0;
-        RECT r = { 0, 0, 0, 0, };
-        DrawText(hdc, convert(str.c_str()).c_str(), -1, &r, DT_CALCRECT);
-
-        width = r.right;
-        height = r.bottom;
-
-        DeleteObject(hFont);
-        ReleaseDC(hwnd, hdc);
-
-        strInfo.x = float(width);
-        strInfo.y = float(height);
-    }
-
-    return strInfo;
-}
 
 class CompassOverlay {
     const float PI = 3.141592653f;

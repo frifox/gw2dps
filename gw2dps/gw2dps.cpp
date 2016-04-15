@@ -151,18 +151,18 @@ void ESP()
     // Font Draw Debug
     if (0) {
         stringstream ss;
-        ss << format("Selected: 18,140 / 18,140 [100%s]") % "%%";
-        ss << format("Locked: 18,140 / 18,140 [100%s]") % "%%";
+        ss << format("Selected: 18,140 / 18,140 [100%%]");
+        ss << format("Locked: 18,140 / 18,140 [100%%]");
 
-        StrInfo strInfo;
-        strInfo = StringInfo(ss.str());
+        Vector2 strInfo;
+        strInfo = font.TextInfo(ss.str());
         float x = 0;
-        float y = float(strInfo.lineCount * lineHeight + 1);
+        float y = float(strInfo.y + 1);
         padX = 0;
         padY = 0;
 
         DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, 0xffffffff);
-        font.Draw(x, y, 0xff000000, ss.str());
+        font.Draw(x, y, 0xff000000, "%s", ss.str().c_str());
 
         return;
     }
@@ -593,7 +593,7 @@ void ESP()
     if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject)
     {
         stringstream ss;
-        StrInfo strInfo;
+        Vector2 strInfo;
 
         if (floatCircles)
         {
@@ -610,8 +610,8 @@ void ESP()
                         else
                             fs << format("%i") % floater.mHealth;
 
-                        StrInfo fsInfo = StringInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+                        Vector2 fsInfo = font.TextInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
                         Vector3 rotArrow = {
                             floater.pos.x + cos(floater.rot) * 50.0f,
@@ -641,8 +641,8 @@ void ESP()
                         else
                             fs << format("%i") % floater.mHealth;
 
-                        StrInfo fsInfo = StringInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+                        Vector2 fsInfo = font.TextInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
                         Vector3 rotArrow = {
                             floater.pos.x + cos(floater.rot) * 50.0f,
@@ -681,10 +681,10 @@ void ESP()
                         else
                             fs << format("%i") % floater.mHealth;
 
-                        StrInfo fsInfo = StringInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+                        Vector2 fsInfo = font.TextInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
-                        StrInfo fsInfo2 = StringInfo(floater.name, false);
+                        Vector2 fsInfo2 = font2.TextInfo(floater.name);
                         font2.Draw(x - fsInfo2.x / 2, y - 30, fontColor, "%s", floater.name.c_str());
 
                         Vector3 rotArrow = {
@@ -725,8 +725,8 @@ void ESP()
                         else
                             fs << format("%i") % floater.mHealth;
 
-                        StrInfo fsInfo = StringInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+                        Vector2 fsInfo = font.TextInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
                         Vector3 rotArrow = {
                             floater.pos.x + cos(floater.rot) * 50.0f,
@@ -766,8 +766,8 @@ void ESP()
                         else
                             fs << format("%i") % floater.mHealth;
 
-                        StrInfo fsInfo = StringInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, fs.str());
+                        Vector2 fsInfo = font.TextInfo(fs.str());
+                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
                         Vector3 rotArrow = {
                             floater.pos.x + cos(floater.rot) * 50.0f,
@@ -806,13 +806,13 @@ void ESP()
         if (floatObject)
             ss << format(" | Objects: %i") % floaters.object.size();
 
-        strInfo = StringInfo(ss.str());
+        strInfo = font.TextInfo(ss.str());
         float x = round(aTop.x - strInfo.x / 2);
         float y = round(aTop.y);
 
         DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-        font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
+        font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
         aTop.y += strInfo.y + padY * 2;
 
@@ -834,13 +834,13 @@ void ESP()
             ss << format(" | Necro: %i") % prof[8];
             ss << format(" | Rev: %i") % prof[9];
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (floatCircles ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             aTop.y += strInfo.y + padY * 2;
         }
@@ -858,33 +858,33 @@ void ESP()
         int rows = 2;
 
         stringstream ss;
-        StrInfo strInfo;
+        Vector2 strInfo;
         ss << format("%i\n%i") % fps % ping;
 
-        strInfo = StringInfo(ss.str());
+        strInfo = font.TextInfo(ss.str());
         float x = round(ww - strInfo.x - 2);
         float y = round(wh - lineHeight * rows - 4);
         DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-        font.Draw(x, y, 0xffffffff, ss.str());
+        font.Draw(x, y, 0xffffffff, "%s", ss.str().c_str());
     }
 
     // Bottom Element //
     {
         stringstream ss;
-        StrInfo strInfo;
+        Vector2 strInfo;
 
         if (selfHealthPercent && self.alive)
         {
             ss << format("%i") % (int)self.pHealth;
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             float x = round(aBottom.x - strInfo.x / 2);
             float y = round(aBottom.y - lineHeight);
 
             //DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             //DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor, ss.str());
+            font.Draw(x, y, fontColor, "%s", ss.str().c_str());
         }
     }
 
@@ -902,7 +902,7 @@ void ESP()
 
             const char *prof = profFilterName[playerListFilter];
 
-            ss << format("Nearby Players (%s) (WvW HP Bonus: %i%s)") % prof % wvwBonus % "%%";
+            ss << format("Nearby Players (%s) (WvW HP Bonus: %i%%)") % prof % wvwBonus;
             sp << format("Class");
             sn << format("Name");
             sh << format("Health");
@@ -1051,8 +1051,8 @@ void ESP()
             // CharName max width
             stringstream sx;
             sx << "WWWWWWWWWWWWWWWWWWW";
-            StrInfo strInfo;
-            strInfo = StringInfo(sx.str());
+            Vector2 strInfo;
+            strInfo = font.TextInfo(sx.str());
 
             float spOffset = 0;
             float snOffset = spOffset + 65;
@@ -1065,8 +1065,8 @@ void ESP()
             float x = round(aLeft.x);
             float y = round(aLeft.y);
 
-            strInfo = StringInfo(sp.str());
-            int lineCount = int(strInfo.lineCount) + 2;
+            strInfo = font.TextInfo(sp.str());
+            int lineCount = int(strInfo.y)/lineHeight + 2;
 
             // render the list
             DrawRectFilled(x - padX, y - padY, sxOffset + padX * 2, float(lineCount * lineHeight) + padY * 2, backColor - bgColorMask);
@@ -1076,13 +1076,13 @@ void ESP()
             for (int i = 3; i < lineCount; i++) {
                 DrawLine(x - padX, y - padY + i * lineHeight + lineShiftY, x + sxOffset + padX, y - padY + i * lineHeight + lineShiftY, borderColor);
             }
-            font.Draw(x + spOffset, y, fontColor, ss.str()); y += 2 * lineHeight;
-            font.Draw(x + spOffset, y, fontColor, sp.str());
-            font.Draw(x + snOffset, y, fontColor, sn.str());
-            font.Draw(x + shOffset, y, fontColor, sh.str());
-            font.Draw(x + svOffset, y, fontColor, sv.str());
-            font.Draw(x + slOffset, y, fontColor, sl.str());
-            font.Draw(x + sdOffset, y, fontColor, sd.str());
+            font.Draw(x + spOffset, y, fontColor, "%s", ss.str().c_str()); y += 2 * lineHeight;
+            font.Draw(x + spOffset, y, fontColor, "%s", sp.str().c_str());
+            font.Draw(x + snOffset, y, fontColor, "%s", sn.str().c_str());
+            font.Draw(x + shOffset, y, fontColor, "%s", sh.str().c_str());
+            font.Draw(x + svOffset, y, fontColor, "%s", sv.str().c_str());
+            font.Draw(x + slOffset, y, fontColor, "%s", sl.str().c_str());
+            font.Draw(x + sdOffset, y, fontColor, "%s", sd.str().c_str());
         }
     }
 
@@ -1094,59 +1094,59 @@ void ESP()
             {
 
                 stringstream ss;
-                StrInfo strInfo;
+                Vector2 strInfo;
 
-                ss << format("Selected & Locked: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
+                ss << format("Selected & Locked: %i / %i [%i%%]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth;
 
-                strInfo = StringInfo(ss.str());
+                strInfo = font.TextInfo(ss.str());
                 float x = round(aTopLeft.x - strInfo.x / 2);
                 float y = round(aTopLeft.y);
 
                 DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                 DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                font.Draw(x, y, fontColor, ss.str());
+                font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
                 // Prepare for Next Element
-                aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+                aTopLeft.y += strInfo.y + padY * 2;
             }
             else
             {
                 if (selected.valid)
                 {
                     stringstream ss;
-                    StrInfo strInfo;
+                    Vector2 strInfo;
 
-                    ss << format("Selected: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
+                    ss << format("Selected: %i / %i [%i%%]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth;
 
-                    strInfo = StringInfo(ss.str());
+                    strInfo = font.TextInfo(ss.str());
                     float x = round(aTopLeft.x - strInfo.x / 2);
                     float y = round(aTopLeft.y);
 
                     DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                     DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                    font.Draw(x, y, fontColor, ss.str());
+                    font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
                     // Prepare for Next Element
-                    aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+                    aTopLeft.y += strInfo.y + padY * 2;
                 }
 
                 if (targetLock && locked.valid)
                 {
                     stringstream ss;
-                    StrInfo strInfo;
+                    Vector2 strInfo;
 
-                    ss << format("Selected & Locked: %i / %i [%i%s]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth % "%%";
+                    ss << format("Selected & Locked: %i / %i [%i%%]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth;
 
-                    strInfo = StringInfo(ss.str());
+                    strInfo = font.TextInfo(ss.str());
                     float x = round(aTopLeft.x - strInfo.x / 2);
                     float y = round(aTopLeft.y);
 
                     DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                     DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                    font.Draw(x, y, fontColor, ss.str());
+                    font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
                     // Prepare for Next Element
-                    aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+                    aTopLeft.y += strInfo.y + padY * 2;
                 }
             }
 
@@ -1155,7 +1155,7 @@ void ESP()
                 //aTopLeft.y += lineHeight;
 
                 stringstream ss;
-                StrInfo strInfo;
+                Vector2 strInfo;
 
                 if (targetInfoAlt)
                 {
@@ -1179,20 +1179,20 @@ void ESP()
                 {
                     ss << format("Distance: %i") % int(Dist(self.pos, selected.pos));
                     if (agLocked.GetCharacter().GetBreakbarState() != GW2::BREAKBAR_STATE_NONE)
-                        ss << format("\nBB: %3.05f%s") % selected.breakbar % "%%";
+                        ss << format("\nBB: %3.05f%%") % selected.breakbar;
                 }
 
-                strInfo = StringInfo(ss.str());
+                strInfo = font.TextInfo(ss.str());
                 float x = round(aTopLeft.x - strInfo.x / 2);
                 float y = round(aTopLeft.y);
 
                 DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                 DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                font.Draw(x, y, fontColor, ss.str());
+                font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
                 // Prepare for Next Element
                 ss.str("");
-                aTopLeft.y += strInfo.lineCount * lineHeight + padY * 2;
+                aTopLeft.y += strInfo.y + padY * 2;
             }
         }
     }
@@ -1206,13 +1206,13 @@ void ESP()
             stringstream fs;
             fs << format("Wold Bosses: %i") % wbosses.list.size();
 
-            StrInfo strInfo = StringInfo(fs.str());
+            Vector2 strInfo = font.TextInfo(fs.str());
             float lx = 12;
             float ly = 32;
 
             DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(lx, ly, fontColor, fs.str());
+            font.Draw(lx, ly, fontColor, "%s", fs.str().c_str());
 
             ly = ly + 12;
 
@@ -1226,13 +1226,13 @@ void ESP()
                         //fs << format("%i / %i") % wboss.cHealth % wboss.mHealth;
                         fs << format("[%i] %i") % wboss.id % int(Dist(self.pos, wboss.pos));
 
-                        StrInfo strInfo = StringInfo(fs.str());
+                        Vector2 strInfo = font.TextInfo(fs.str());
                         fx = round(fx - strInfo.x / 2);
                         fy = round(fy - 15);
 
                         DrawRectFilled(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                         DrawRect(fx - padX, fy - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                        font.Draw(fx, fy, fontColor, fs.str());
+                        font.Draw(fx, fy, fontColor, "%s", fs.str().c_str());
                     }
 
                     // list
@@ -1240,12 +1240,12 @@ void ESP()
                         stringstream fs;
                         fs << format("[%i] %i / %i (%i)") % wboss.id % (int)wboss.cHealth % (int)wboss.mHealth % int(Dist(self.pos, wboss.pos));
 
-                        StrInfo strInfo = StringInfo(fs.str());
+                        Vector2 strInfo = font.TextInfo(fs.str());
                         ly = round(ly + strInfo.y + padY);
 
                         DrawRectFilled(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
                         DrawRect(lx - padX, ly - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-                        font.Draw(lx, ly, fontColor, fs.str());
+                        font.Draw(lx, ly, fontColor, "%s", fs.str().c_str());
                     }
                 }
             }
@@ -1253,7 +1253,7 @@ void ESP()
 
         if (logSpeedometer) {
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             /*ss << format("Speed: ");
 
@@ -1288,15 +1288,15 @@ void ESP()
                 ss << format("0 in/s, 0 in/s");
             }*/
 
-            ss << format("Speed: %0.0f in/s - Boost: %0.0f%s") % (speedometer * 32) % (((speedometer / 9.1875) - 1) * 100) % "%%";
+            ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometer * 32) % (((speedometer / 9.1875) - 1) * 100);
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (logSpeedometerEnemy ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (logSpeedometerEnemy ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             aTop.y += strInfo.y + padY * 2;
         }
@@ -1304,17 +1304,17 @@ void ESP()
         if (logDisplacement)
         {
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             ss << format("Distance: %i") % bufferDisplacement.dist;
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
             float y = round(aTop.y);
 
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (logDisplacementEnemy ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (logDisplacementEnemy ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             aTop.y += strInfo.y + padY * 2;
 
@@ -1332,7 +1332,7 @@ void ESP()
         {
             // separate ss vars
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             float aAdjustX = 120; // adjust anchor -120
 
@@ -1375,7 +1375,7 @@ void ESP()
                 ss << format("DP5s: ...");
             }
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             if (logDpsDetails && !bufferDps.empty() && strInfo.x < aAdjustX)
                 strInfo.x = aAdjustX; // box min-width with history stream
             float x = round(aTopRight.x - aAdjustX / 2); // perma anchor offset
@@ -1384,7 +1384,7 @@ void ESP()
             // Draw
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor, ss.str());
+            font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
             // Prepare for Next Element
             //ss.str("");
@@ -1396,7 +1396,7 @@ void ESP()
         {
             // separate ss vars
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             // Prepare String
             if (bufferKillTimer.time > 0)
@@ -1412,7 +1412,7 @@ void ESP()
                     ss << format("\nDPS: 0.0");
             }
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
             float x = 0;
             float y = round(aTopRight.y);
             if (logDps)
@@ -1424,11 +1424,11 @@ void ESP()
             // Draw
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor, ss.str());
+            font.Draw(x, y, fontColor, "%s", ss.str().c_str());
 
             // Prepare for Next Element
             //ss.str("");
-            aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
+            aTopRight.y += strInfo.y + padY * 2;
             //aTopRight.x -= 0;
         }
 
@@ -1439,7 +1439,7 @@ void ESP()
         if (logAttackRate)
         {
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             if (logAttackRateToFile)
                 ss << format(".: Recording :.\n");
@@ -1487,18 +1487,15 @@ void ESP()
             ss << format("\n");
             ss << format("Threshold: %i hits") % AttackRateChainHits;
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
 
-            float aAdjustX = 120; // adjust anchor -120
-            if (strInfo.x < aAdjustX)
-                strInfo.x = aAdjustX; // perma box min-width
             float x = round(aRight.x - strInfo.x);
             float y = round(aRight.y);
 
             // Draw
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (logAttackRateToFile ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (logAttackRateToFile ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             // Prepare for Next Element
             //ss.str("");
@@ -1509,7 +1506,7 @@ void ESP()
         if (logHits)
         {
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             if (logHitsToFile)
                 ss << format(".: Recording :.\n");
@@ -1552,19 +1549,15 @@ void ESP()
                 }
             }
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
 
-
-            float aAdjustX = 120; // adjust anchor -120
-            if (strInfo.x < aAdjustX)
-                strInfo.x = aAdjustX; // perma box min-width
             float x = round(aRight.x - strInfo.x);
             float y = round(aRight.y);
 
             // Draw
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (logHitsToFile ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (logHitsToFile ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             // Prepare for Next Element
             //ss.str("");
@@ -1575,7 +1568,7 @@ void ESP()
         if (logCrits)
         {
             stringstream ss;
-            StrInfo strInfo;
+            Vector2 strInfo;
 
             if (logCritsToFile)
                 ss << format(".: Recording :.\n");
@@ -1608,19 +1601,15 @@ void ESP()
             ss << format("Sample Hit: %i") % logCritsSample;
 
 
-            strInfo = StringInfo(ss.str());
+            strInfo = font.TextInfo(ss.str());
 
-
-            float aAdjustX = 120; // adjust anchor -120
-            if (strInfo.x < aAdjustX)
-                strInfo.x = aAdjustX; // perma box min-width
             float x = round(aRight.x - strInfo.x);
             float y = round(aRight.y);
 
             // Draw
             DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
             DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor - (logCritsToFile ? 0x00aa0000 : 0), ss.str());
+            font.Draw(x, y, fontColor - (logCritsToFile ? 0x00aa0000 : 0), "%s", ss.str().c_str());
 
             // Prepare for Next Element
             //ss.str("");
@@ -1674,14 +1663,14 @@ void ESP()
         ss << format("\n[%i] Measure Distance (%s)") % logDisplacement % get_key_description("Hotkeys.LOG_DISPLACEMENT");
         ss << format("\n[%i] Distance for Self/Enemy (%s)") % logDisplacementEnemy % get_key_description("Hotkeys.LOG_DISPLACEMENT_ENEMY");
 
-        StrInfo strInfo;
-        strInfo = StringInfo(ss.str());
+        Vector2 strInfo;
+        strInfo = font.TextInfo(ss.str());
         float x = round(aCenter.x - strInfo.x / 2);
         float y = round(aCenter.y - strInfo.y / 2);
 
         DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
         DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-        font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), ss.str());
+        font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), "%s", ss.str().c_str());
     }
 
     if (!(locked.valid && locked.id == pAgentId2)) {
@@ -1695,7 +1684,7 @@ void ESP()
     timer::cpu_times elapsed2 = timer2.elapsed();
     double elapsedMs = elapsed2.wall / 1e9;
     if (elapsedMs) ss << format("dps: %i") % int(totaldmg / elapsedMs);
-    font.Draw(10, 25, fontColor, ss.str());
+    font.Draw(10, 25, fontColor, "%s", ss.str().c_str());
 
 }
 
