@@ -13,9 +13,9 @@ Download
 Build it yourself
 =======
 
-Note: If Git or CMake asks if they want to add themselves to your PATH environment variable, say yes.
+Note: If Git or CMake asks if they want to add themselves to your PATH environment variable, allow it.
 
-Note2: These instructions have been tested with Visual Studio Community Edition 2013 Update 5 (on Win 7 x64).
+Note2: These instructions have been tested with Visual Studio Community 2013 Update 5 (on Win 7 x64).
 
 1. Install [Git](https://git-scm.com/download/win)
 2. Install [Visual Studio 2013](https://www.visualstudio.com/downloads/download-visual-studio-vs#d-community-2013)
@@ -62,7 +62,7 @@ Note2: These instructions have been tested with Visual Studio Community Edition 
 	- ```cd %BOOST_ROOT%```
 	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
 	- ```b2 --stagedir=stage64 variant=release address-model=64```
-3. Build wxWidgets 64-bit
+3. Build wxWidgets 64-bit (optional)
 	- open cli and run,
 	- ```cd %WXWIDGET_ROOT%\build\msw```
 	- ```"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64```
@@ -80,7 +80,6 @@ Note2: These instructions have been tested with Visual Studio Community Edition 
 
 Notes
 =======
-- Before launching GW2DPS switch GW2 to "Windowed"/"Windowed Fullscreen" mode (Options->Graphics->Resolution). Once GW2DPS is running, feel free to switch back to Fullscreen. 
 - Some reported SweetFX caususing compatiblity issues. If it's causing crashes, switch it off.
 - If app is complaining about missing MSVCP120d.dll, install vsredist_x86.exe.
 - If app is complaining about missing dx3dx9_43.dll, install dxwebsetup.exe.
