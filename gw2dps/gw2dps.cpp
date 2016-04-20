@@ -1135,7 +1135,7 @@ void ESP()
                     stringstream ss;
                     Vector2 strInfo;
 
-                    ss << format("Selected & Locked: %i / %i [%i%%]") % (int)selected.cHealth % (int)selected.mHealth % (int)selected.pHealth;
+                    ss << format("Locked: %i / %i [%i%%]") % (int)locked.cHealth % (int)locked.mHealth % (int)locked.pHealth;
 
                     strInfo = font.TextInfo(ss.str());
                     float x = round(aTopLeft.x - strInfo.x / 2);
