@@ -155,10 +155,10 @@ boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRa
 float speedometer = 0;
 
 struct Dmg {
-	Dmg() : total(0), snapshot(0) {}
-	
-	float total;
-	float snapshot;
+    Dmg() : total(0), snapshot(0) {}
+    
+    float total;
+    float snapshot;
 };
 Dmg selfDmg;
 
@@ -320,21 +320,21 @@ baseHpReturn baseHp(int lvl, int profession)
 }
 
 string dpsBufferToString(boost::circular_buffer<float> buffer, size_t samples) {
-	if (samples > bufferDps.size())
-		samples = bufferDps.size();
-	
-	double avg = 0;
-	for (size_t i = 0; i < samples; i++)
-		avg += buffer[i];
-	if(samples > 0)
-		avg = avg / samples * (1000 / 250);
-	
-	stringstream dps;
-	if (samples > 0)
-		dps << format("%0.0f") % avg;
-	else
-		dps << format("%s") % (string) "...";
-	
-	return dps.str();
+    if (samples > bufferDps.size())
+        samples = bufferDps.size();
+    
+    double avg = 0;
+    for (size_t i = 0; i < samples; i++)
+        avg += buffer[i];
+    if(samples > 0)
+        avg = avg / samples * (1000 / 250);
+    
+    stringstream dps;
+    if (samples > 0)
+        dps << format("%0.0f") % avg;
+    else
+        dps << format("%s") % (string) "...";
+    
+    return dps.str();
 }
 #endif

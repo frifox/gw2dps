@@ -13,13 +13,13 @@ void threadDps() {
             {
                 timer.start();
                 
-				// reset party dps
-				bufferDps.push_front(0);
-				pHealth = locked.cHealth;
+                // reset party dps
+                bufferDps.push_front(0);
+                pHealth = locked.cHealth;
 
-				// reset self dps
-				bufferSelfDps.push_front(0);
-				selfDmg = Dmg();
+                // reset self dps
+                bufferSelfDps.push_front(0);
+                selfDmg = Dmg();
 
                 continue;
             }
@@ -30,24 +30,24 @@ void threadDps() {
             {
                 timer.start();
 
-				// party dps
+                // party dps
                 float cHealth = locked.cHealth;
                 if (pHealth == 0)
                     pHealth = cHealth;
-				
-				float partyDps = pHealth - cHealth;
-				if (!dpsAllowNegative && partyDps < 0)
-					partyDps = 0;
-
-				pHealth = cHealth;
-
-				// self dps
-				float selfDps = selfDmg.total - selfDmg.snapshot; // probably should leave as float...
-				selfDmg.snapshot = selfDmg.total;
                 
-				// push dps values to the buffer
+                float partyDps = pHealth - cHealth;
+                if (!dpsAllowNegative && partyDps < 0)
+                    partyDps = 0;
+
+                pHealth = cHealth;
+
+                // self dps
+                float selfDps = selfDmg.total - selfDmg.snapshot; // probably should leave as float...
+                selfDmg.snapshot = selfDmg.total;
+                
+                // push dps values to the buffer
                 bufferDps.push_front(partyDps);
-				bufferSelfDps.push_front(selfDps);
+                bufferSelfDps.push_front(selfDps);
             }
         }
         else
@@ -60,9 +60,9 @@ void threadDps() {
 
             if (!bufferDps.empty())
                 bufferDps.clear();
-			if (!bufferSelfDps.empty()) {
-				bufferSelfDps.clear();
-			}
+            if (!bufferSelfDps.empty()) {
+                bufferSelfDps.clear();
+            }
 
             if (locked.valid && locked.id != pAgentId)
                 pAgentId = locked.id;
