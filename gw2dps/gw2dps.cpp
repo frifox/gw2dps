@@ -84,10 +84,8 @@ Vector3 logDisplacementStart = Vector3(0, 0, 0);
 bool mouse_down=false;
 int mouse_delta=0, mouse_btn=0, mouse_x=0, mouse_y=0, mouse_keys=0;
 string chat;
-timer::cpu_timer timer2;
 uint64_t totaldmg = 0;
 uint64_t avgdmg = 0;
-int pAgentId2 = 0;
 
 DWORD thread_id_hotkey = 0;
 
@@ -1700,19 +1698,6 @@ void ESP()
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), "%s", ss.str().c_str());
     }
 
-    if (!(locked.valid && locked.id == pAgentId2)) {
-        pAgentId2 = 0;
-        if (!timer2.is_stopped()) timer2.stop();
-    }
-
-    Compass comp = GetCompass();
-
-    stringstream ss;
-    timer::cpu_times elapsed2 = timer2.elapsed();
-    double elapsedMs = elapsed2.wall / 1e9;
-    if (elapsedMs) ss << format("dps: %i") % int(totaldmg / elapsedMs);
-    font.Draw(10, 25, fontColor, "%s", ss.str().c_str());
-
 }
 
 
@@ -2008,20 +1993,15 @@ void dmg_log(uintptr_t* src, uintptr_t* tgt, int hit) {
 }
 
 void combat_log(CombatLogType type, int hit, Agent tgt) {
-    int dmg = 0;
     switch (type) {
     case CL_CONDI_DMG_OUT:
     case CL_CRIT_DMG_OUT:
     case CL_GLANCE_DMG_OUT:
     case CL_PHYS_DMG_OUT:
-        if (locked.valid && !pAgentId2) {
-            pAgentId2 = locked.id;
+        if (locked.valid && locked.id != tgt.GetAgentId()) {
             totaldmg = 0;
             selfDmg.total = 0;
             selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
-
-            if (timer2.is_stopped())
-                timer2.start();
         }
 
         if (locked.valid && locked.id == tgt.GetAgentId()) {
@@ -2030,9 +2010,6 @@ void combat_log(CombatLogType type, int hit, Agent tgt) {
         }
         break;
     }
-
-    //Character ch = tgt.GetCharacter();
-    //HL_LOG_DBG("target: %.0f - type: %i - hit: %i\n", ch.GetCurrentHealth(), type, hit);
 }
 
 void GW2LIB::gw2lib_main()
@@ -2079,10 +2056,6 @@ void GW2LIB::gw2lib_main()
     // wait for exit hotkey
     while (GetAsyncKeyState(VK_F12) >= 0)
         Sleep(25);
-
-    if (!timer2.is_stopped()) {
-        timer2.stop();
-    }
 
     close_config();
 
