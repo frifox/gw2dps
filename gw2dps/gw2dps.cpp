@@ -1333,89 +1333,89 @@ void ESP()
         {
             // separate ss vars
             stringstream ssSelf;
-			stringstream ssParty;
+            stringstream ssParty;
             Vector2 strInfoSelf;
-			Vector2 strInfoParty;
+            Vector2 strInfoParty;
 
             float aAdjustX = 120; // adjust anchor -120
 
             //  4 samples = 1s / 250ms
-			// 20 samples = 5s / 250ms
+            // 20 samples = 5s / 250ms
 
-				
-			string selfHeader = "Personal";
-			string self1s = dpsBufferToString(bufferSelfDps, 4);
-			string self5s = dpsBufferToString(bufferSelfDps, 20);
+                
+            string selfHeader = "Personal";
+            string self1s = dpsBufferToString(bufferSelfDps, 4);
+            string self5s = dpsBufferToString(bufferSelfDps, 20);
 
-			string partyHeader = "Combined";
-			string party1s = dpsBufferToString(bufferDps, 4);
-			string party5s = dpsBufferToString(bufferDps, 20);
-			
-			Vector2 leftHeader = font.TextInfo(selfHeader);
-			Vector2 rightHeader = font.TextInfo(partyHeader);
+            string partyHeader = "Combined";
+            string party1s = dpsBufferToString(bufferDps, 4);
+            string party5s = dpsBufferToString(bufferDps, 20);
+            
+            Vector2 leftHeader = font.TextInfo(selfHeader);
+            Vector2 rightHeader = font.TextInfo(partyHeader);
 
-			Vector2 left1s = font.TextInfo(self1s);
-			Vector2 right1s = font.TextInfo(party1s);
-			
-			Vector2 left5s = font.TextInfo(self5s);
-			Vector2 right5s = font.TextInfo(party5s);
-			
-			// calc column widths
-			float leftWidth = 50;  // min-width
-			float rightWidth = 50; // min-width
+            Vector2 left1s = font.TextInfo(self1s);
+            Vector2 right1s = font.TextInfo(party1s);
+            
+            Vector2 left5s = font.TextInfo(self5s);
+            Vector2 right5s = font.TextInfo(party5s);
+            
+            // calc column widths
+            float leftWidth = 50;  // min-width
+            float rightWidth = 50; // min-width
 
-			float leftElements[3] = { leftHeader.x, left1s.x, left5s.x };
-			float rightElements[3] = { rightHeader.x, right1s.x, right5s.x };
+            float leftElements[3] = { leftHeader.x, left1s.x, left5s.x };
+            float rightElements[3] = { rightHeader.x, right1s.x, right5s.x };
 
-			if (*max_element(leftElements, leftElements + 3) > leftWidth)
-				leftWidth = *max_element(leftElements, leftElements + 3);
-			if (*max_element(rightElements, rightElements + 3) > rightWidth)
-				rightWidth = *max_element(rightElements, rightElements + 3);
-			
-			// compensate for inner gutter + line
-			leftWidth += padX + 1;
-			rightWidth += padX + 1;
+            if (*max_element(leftElements, leftElements + 3) > leftWidth)
+                leftWidth = *max_element(leftElements, leftElements + 3);
+            if (*max_element(rightElements, rightElements + 3) > rightWidth)
+                rightWidth = *max_element(rightElements, rightElements + 3);
+            
+            // compensate for inner gutter + line
+            leftWidth += padX + 1;
+            rightWidth += padX + 1;
 
-			// prepare container
-			Vector2 boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
-			Vector2 boxAnchor = {aTopRight.x - leftWidth, aTopRight.y}; // left column's top/right = anchor
-			
-			DrawRectFilled(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, backColor - bgColorMask);
-			DrawRect(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, borderColor);
-			DrawLine(boxAnchor.x + leftWidth, boxAnchor.y, boxAnchor.x + leftWidth, boxAnchor.y + lineHeight * 3, borderColor);
+            // prepare container
+            Vector2 boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
+            Vector2 boxAnchor = {aTopRight.x - leftWidth, aTopRight.y}; // left column's top/right = anchor
+            
+            DrawRectFilled(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, backColor - bgColorMask);
+            DrawRect(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, borderColor);
+            DrawLine(boxAnchor.x + leftWidth, boxAnchor.y, boxAnchor.x + leftWidth, boxAnchor.y + lineHeight * 3, borderColor);
 
-			// left self column (right aligned)
-			font.Draw(boxAnchor.x + leftWidth - leftHeader.x - padX, boxAnchor.y, fontColor, "%s", selfHeader.c_str());
-			font.Draw(boxAnchor.x + leftWidth - left1s.x - padX, boxAnchor.y + lineHeight * 1, fontColor, "%s", self1s.c_str());
-			font.Draw(boxAnchor.x + leftWidth - left5s.x - padX, boxAnchor.y + lineHeight * 2, fontColor, "%s", self5s.c_str());
-			
-			// right party column (left aligned)
-			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y, fontColor, "%s", partyHeader.c_str());
-			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 1, fontColor, "%s", party1s.c_str());
-			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 2, fontColor, "%s", party5s.c_str());
+            // left self column (right aligned)
+            font.Draw(boxAnchor.x + leftWidth - leftHeader.x - padX, boxAnchor.y, fontColor, "%s", selfHeader.c_str());
+            font.Draw(boxAnchor.x + leftWidth - left1s.x - padX, boxAnchor.y + lineHeight * 1, fontColor, "%s", self1s.c_str());
+            font.Draw(boxAnchor.x + leftWidth - left5s.x - padX, boxAnchor.y + lineHeight * 2, fontColor, "%s", self5s.c_str());
+            
+            // right party column (left aligned)
+            font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y, fontColor, "%s", partyHeader.c_str());
+            font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 1, fontColor, "%s", party1s.c_str());
+            font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 2, fontColor, "%s", party5s.c_str());
 
 
-			/*
-			if (logDpsDetails) {
-				float sliceParty = 0;
-				float sliceSelf = 0;
+            /*
+            if (logDpsDetails) {
+                float sliceParty = 0;
+                float sliceSelf = 0;
 
-				ssSelf << format("\n");
-				for (size_t i = 0; i < bufferSelfDps.size(); i++) {
-					ssSelf << format("\n%i") % bufferSelfDps[i];
-				}
+                ssSelf << format("\n");
+                for (size_t i = 0; i < bufferSelfDps.size(); i++) {
+                    ssSelf << format("\n%i") % bufferSelfDps[i];
+                }
 
-				ssParty << format("\n");
-				for (size_t i = 0; i < bufferDps.size(); i++) {
-					ssSelf << format("\n%i") % bufferDps[i];
-				}
-			}
-			*/
+                ssParty << format("\n");
+                for (size_t i = 0; i < bufferDps.size(); i++) {
+                    ssSelf << format("\n%i") % bufferDps[i];
+                }
+            }
+            */
 
-			// Prepare for Next Element
+            // Prepare for Next Element
             //aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
 
-			// TODO fix dis
+            // TODO fix dis
             aTopRight.x = boxAnchor.x - padX;
         }
 
@@ -2017,17 +2017,17 @@ void combat_log(CombatLogType type, int hit, Agent tgt) {
         if (locked.valid && !pAgentId2) {
             pAgentId2 = locked.id;
             totaldmg = 0;
-			selfDmg.total = 0;
-			selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
+            selfDmg.total = 0;
+            selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
 
             if (timer2.is_stopped())
-				timer2.start();
+                timer2.start();
         }
 
-		if (locked.valid && locked.id == tgt.GetAgentId()) {
-			selfDmg.total += float(hit);
-			totaldmg += hit;
-		}
+        if (locked.valid && locked.id == tgt.GetAgentId()) {
+            selfDmg.total += float(hit);
+            totaldmg += hit;
+        }
         break;
     }
 
