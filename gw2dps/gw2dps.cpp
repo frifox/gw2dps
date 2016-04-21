@@ -86,6 +86,7 @@ int mouse_delta=0, mouse_btn=0, mouse_x=0, mouse_y=0, mouse_keys=0;
 string chat;
 timer::cpu_timer timer2;
 uint64_t totaldmg = 0;
+uint64_t avgdmg = 0;
 int pAgentId2 = 0;
 
 DWORD thread_id_hotkey = 0;
@@ -1331,65 +1332,91 @@ void ESP()
         if (logDps)
         {
             // separate ss vars
-            stringstream ss;
-            Vector2 strInfo;
+            stringstream ssSelf;
+			stringstream ssParty;
+            Vector2 strInfoSelf;
+			Vector2 strInfoParty;
 
             float aAdjustX = 120; // adjust anchor -120
 
-            if (!bufferDps.empty())
-            {
-                double average[6] {}; // for 1s & 5s
-                size_t samples = 0;
+            //  4 samples = 1s / 250ms
+			// 20 samples = 5s / 250ms
 
-                // DP1s
-                samples = 4; // 1s/250ms=4
-                if (samples > bufferDps.size())
-                    samples = bufferDps.size();
-                average[1] = 0;
-                for (size_t i = 0; i < samples; i++)
-                    average[1] += bufferDps[i];
-                average[1] = average[1] / samples * (1000 / 250);
+				
+			string selfHeader = "Personal";
+			string self1s = dpsBufferToString(bufferSelfDps, 4);
+			string self5s = dpsBufferToString(bufferSelfDps, 20);
 
-                // DP5s
-                samples = 20; // 5s/250ms=20
-                if (samples > bufferDps.size())
-                    samples = bufferDps.size();
-                average[5] = 0;
-                for (size_t i = 0; i < samples; i++)
-                    average[5] += bufferDps[i];
-                average[5] = average[5] / samples * (1000 / 250);
+			string partyHeader = "Combined";
+			string party1s = dpsBufferToString(bufferDps, 4);
+			string party5s = dpsBufferToString(bufferDps, 20);
+			
+			Vector2 leftHeader = font.TextInfo(selfHeader);
+			Vector2 rightHeader = font.TextInfo(partyHeader);
 
-                // Prepare String
-                ss << format("DP1s: %0.0f\n") % average[1];
-                ss << format("DP5s: %0.0f") % average[5];
-                if (logDpsDetails)
-                {
-                    ss << format("\n");
-                    for (size_t i = 0; i < bufferDps.size(); i++)
-                        ss << format("\nDP250ms: %i") % bufferDps[i];
-                }
-            }
-            else
-            {
-                ss << format("DP1s: ...\n");
-                ss << format("DP5s: ...");
-            }
+			Vector2 left1s = font.TextInfo(self1s);
+			Vector2 right1s = font.TextInfo(party1s);
+			
+			Vector2 left5s = font.TextInfo(self5s);
+			Vector2 right5s = font.TextInfo(party5s);
+			
+			// calc column widths
+			float leftWidth = 50;  // min-width
+			float rightWidth = 50; // min-width
 
-            strInfo = font.TextInfo(ss.str());
-            if (logDpsDetails && !bufferDps.empty() && strInfo.x < aAdjustX)
-                strInfo.x = aAdjustX; // box min-width with history stream
-            float x = round(aTopRight.x - aAdjustX / 2); // perma anchor offset
-            float y = round(aTopRight.y);
+			float leftElements[3] = { leftHeader.x, left1s.x, left5s.x };
+			float rightElements[3] = { rightHeader.x, right1s.x, right5s.x };
 
-            // Draw
-            DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, backColor - bgColorMask);
-            DrawRect(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, borderColor);
-            font.Draw(x, y, fontColor, "%s", ss.str().c_str());
+			if (*max_element(leftElements, leftElements + 3) > leftWidth)
+				leftWidth = *max_element(leftElements, leftElements + 3);
+			if (*max_element(rightElements, rightElements + 3) > rightWidth)
+				rightWidth = *max_element(rightElements, rightElements + 3);
+			
+			// compensate for inner gutter + line
+			leftWidth += padX + 1;
+			rightWidth += padX + 1;
 
-            // Prepare for Next Element
-            //ss.str("");
+			// prepare container
+			Vector2 boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
+			Vector2 boxAnchor = {aTopRight.x - leftWidth, aTopRight.y}; // left column's top/right = anchor
+			
+			DrawRectFilled(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, backColor - bgColorMask);
+			DrawRect(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, borderColor);
+			DrawLine(boxAnchor.x + leftWidth, boxAnchor.y, boxAnchor.x + leftWidth, boxAnchor.y + lineHeight * 3, borderColor);
+
+			// left self column (right aligned)
+			font.Draw(boxAnchor.x + leftWidth - leftHeader.x - padX, boxAnchor.y, fontColor, "%s", selfHeader.c_str());
+			font.Draw(boxAnchor.x + leftWidth - left1s.x - padX, boxAnchor.y + lineHeight * 1, fontColor, "%s", self1s.c_str());
+			font.Draw(boxAnchor.x + leftWidth - left5s.x - padX, boxAnchor.y + lineHeight * 2, fontColor, "%s", self5s.c_str());
+			
+			// right party column (left aligned)
+			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y, fontColor, "%s", partyHeader.c_str());
+			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 1, fontColor, "%s", party1s.c_str());
+			font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 2, fontColor, "%s", party5s.c_str());
+
+
+			/*
+			if (logDpsDetails) {
+				float sliceParty = 0;
+				float sliceSelf = 0;
+
+				ssSelf << format("\n");
+				for (size_t i = 0; i < bufferSelfDps.size(); i++) {
+					ssSelf << format("\n%i") % bufferSelfDps[i];
+				}
+
+				ssParty << format("\n");
+				for (size_t i = 0; i < bufferDps.size(); i++) {
+					ssSelf << format("\n%i") % bufferDps[i];
+				}
+			}
+			*/
+
+			// Prepare for Next Element
             //aTopRight.y += strInfo.lineCount * lineHeight + padY * 2;
-            aTopRight.x -= aAdjustX / 2 + padX + 2;
+
+			// TODO fix dis
+            aTopRight.x = boxAnchor.x - padX;
         }
 
         if (logKillTimer)
@@ -1990,11 +2017,17 @@ void combat_log(CombatLogType type, int hit, Agent tgt) {
         if (locked.valid && !pAgentId2) {
             pAgentId2 = locked.id;
             totaldmg = 0;
-            if (timer2.is_stopped()) timer2.start();
+			selfDmg.total = 0;
+			selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
+
+            if (timer2.is_stopped())
+				timer2.start();
         }
 
-        if (locked.valid && locked.id == tgt.GetAgentId())
-            totaldmg += hit;
+		if (locked.valid && locked.id == tgt.GetAgentId()) {
+			selfDmg.total += float(hit);
+			totaldmg += hit;
+		}
         break;
     }
 
@@ -2028,7 +2061,7 @@ void GW2LIB::gw2lib_main()
 
     if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
     {
-        //DbgOut("could not create font");
+        //DbgOut("could not create font");n
         return;
     }
 

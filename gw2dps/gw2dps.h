@@ -148,10 +148,19 @@ struct Displacement {
 };
 Displacement bufferDisplacement;
 boost::circular_buffer<float> bufferDps(20); // 5s of 250ms samples
+boost::circular_buffer<float> bufferSelfDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
 boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRate,3s worth
 float speedometer = 0;
+
+struct Dmg {
+	Dmg() : total(0), snapshot(0) {}
+	
+	float total;
+	float snapshot;
+};
+Dmg selfDmg;
 
 // Layout Anchors
 struct Anchor {
@@ -310,4 +319,22 @@ baseHpReturn baseHp(int lvl, int profession)
     return out;
 }
 
+string dpsBufferToString(boost::circular_buffer<float> buffer, size_t samples) {
+	if (samples > bufferDps.size())
+		samples = bufferDps.size();
+	
+	double avg = 0;
+	for (size_t i = 0; i < samples; i++)
+		avg += buffer[i];
+	if(samples > 0)
+		avg = avg / samples * (1000 / 250);
+	
+	stringstream dps;
+	if (samples > 0)
+		dps << format("%0.0f") % avg;
+	else
+		dps << format("%s") % (string) "...";
+	
+	return dps.str();
+}
 #endif

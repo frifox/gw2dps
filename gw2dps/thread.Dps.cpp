@@ -12,8 +12,15 @@ void threadDps() {
             if (timer.is_stopped())
             {
                 timer.start();
-                bufferDps.push_front(0);
-                pHealth = locked.cHealth;
+                
+				// reset party dps
+				bufferDps.push_front(0);
+				pHealth = locked.cHealth;
+
+				// reset self dps
+				bufferSelfDps.push_front(0);
+				selfDmg = Dmg();
+
                 continue;
             }
 
@@ -22,18 +29,25 @@ void threadDps() {
             if (elapsedMs > pollingRate)
             {
                 timer.start();
-                float cHealth = locked.cHealth;
 
+				// party dps
+                float cHealth = locked.cHealth;
                 if (pHealth == 0)
                     pHealth = cHealth;
+				
+				float partyDps = pHealth - cHealth;
+				if (!dpsAllowNegative && partyDps < 0)
+					partyDps = 0;
 
-                float dmg = pHealth - cHealth;
-                pHealth = cHealth;
+				pHealth = cHealth;
 
-                if (!dpsAllowNegative && dmg < 0)
-                    dmg = 0;
-
-                bufferDps.push_front(dmg);
+				// self dps
+				float selfDps = selfDmg.total - selfDmg.snapshot; // probably should leave as float...
+				selfDmg.snapshot = selfDmg.total;
+                
+				// push dps values to the buffer
+                bufferDps.push_front(partyDps);
+				bufferSelfDps.push_front(selfDps);
             }
         }
         else
@@ -46,6 +60,9 @@ void threadDps() {
 
             if (!bufferDps.empty())
                 bufferDps.clear();
+			if (!bufferSelfDps.empty()) {
+				bufferSelfDps.clear();
+			}
 
             if (locked.valid && locked.id != pAgentId)
                 pAgentId = locked.id;
