@@ -320,8 +320,8 @@ baseHpReturn baseHp(int lvl, int profession)
 }
 
 string dpsBufferToString(boost::circular_buffer<float> buffer, size_t samples) {
-    if (samples > bufferDps.size())
-        samples = bufferDps.size();
+    if (samples > buffer.size())
+        samples = buffer.size();
     
     double avg = 0;
     for (size_t i = 0; i < samples; i++)
@@ -333,7 +333,7 @@ string dpsBufferToString(boost::circular_buffer<float> buffer, size_t samples) {
     if (samples > 0)
         dps << format("%0.0f") % avg;
     else
-        dps << format("%s") % (string) "...";
+        dps << (string) "...";
     
     return dps.str();
 }
