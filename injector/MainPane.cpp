@@ -137,6 +137,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Count Enemy Players (%s)\n") % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
     //ss << format("Count Siege (Alt 5)\n") % floatSiege;
     ss << format("Count Objects (%s)\n") % get_key_description("Hotkeys.FLOAT_OBJECT");
+    ss << format("Mouse Measure Floater (%s)\n") % get_key_description("Hotkeys.FLOAT_MOUSE_MEASURE");
     ss << format("Show/Hide Floaters below counted (%s)\n") % get_key_description("Hotkeys.FLOAT_CIRCLES");
     ss << format("Floaters show Max HP / Distance (%s)\n") % get_key_description("Hotkeys.FLOAT_TYPE");
     ss << format("Floaters snap to screen edge (%s)\n") % get_key_description("Hotkeys.FLOAT_SNAP");

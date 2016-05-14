@@ -65,6 +65,7 @@
 #define FLOAT_SNAP 97
 #define FLOAT_OBJECT 98
 #define PLAYER_LIST_FILTER 99
+#define FLOAT_MOUSE_MEASURE 100
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -122,6 +123,7 @@ void threadHotKeys()
     registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, read_config_value("Hotkeys.FLOAT_ENEMY_PLAYER")); // floatEnemyPlayer
     registerHotKeyWrapper(FLOAT_SIEGE, read_config_value("Hotkeys.FLOAT_SIEGE")); // floatSiege
     registerHotKeyWrapper(FLOAT_OBJECT, read_config_value("Hotkeys.FLOAT_OBJECT")); // floatObject
+    registerHotKeyWrapper(FLOAT_MOUSE_MEASURE, read_config_value("Hotkeys.FLOAT_MOUSE_MEASURE")); // floatMouse
 
     registerHotKeyWrapper(LOG_SPEEDOMETER, read_config_value("Hotkeys.LOG_SPEEDOMETER")); // logSpeedometer
     registerHotKeyWrapper(LOG_SPEEDOMETER_ENEMY, read_config_value("Hotkeys.LOG_SPEEDOMETER_ENEMY")); // logSpeedometerEnemy
@@ -191,8 +193,8 @@ void threadHotKeys()
 
             if (msg.wParam == FLOAT_CIRCLES) floatCircles = !floatCircles;
             if (msg.wParam == FLOAT_TYPE) floatType = !floatType;
-            if (msg.wParam == FLOAT_RADIUS_MORE) if (floatRadius < 10000) floatRadius += 100;
-            if (msg.wParam == FLOAT_RADIUS_LESS) if (floatRadius > 100) floatRadius -= 100;
+            if (msg.wParam == FLOAT_RADIUS_MORE) if (floatRadius < floatRadiusMax) floatRadius += 1000;
+            if (msg.wParam == FLOAT_RADIUS_LESS) if (floatRadius > 1000) floatRadius -= 1000;
             if (msg.wParam == FLOAT_ALLY_NPC) floatAllyNpc = !floatAllyNpc;
             if (msg.wParam == FLOAT_ENEMY_NPC) floatEnemyNpc = !floatEnemyNpc;
             if (msg.wParam == FLOAT_ALLY_PLAYER) floatAllyPlayer = !floatAllyPlayer;
@@ -200,6 +202,7 @@ void threadHotKeys()
             if (msg.wParam == FLOAT_ENEMY_PLAYER) floatEnemyPlayer = !floatEnemyPlayer;
             if (msg.wParam == FLOAT_SIEGE) floatSiege = !floatSiege;
             if (msg.wParam == FLOAT_OBJECT) floatObject = !floatObject;
+            if (msg.wParam == FLOAT_MOUSE_MEASURE) floatMouse = !floatMouse;
 
             if (msg.wParam == LOG_SPEEDOMETER) logSpeedometer = !logSpeedometer;
             if (msg.wParam == LOG_SPEEDOMETER_ENEMY) logSpeedometerEnemy = !logSpeedometerEnemy;

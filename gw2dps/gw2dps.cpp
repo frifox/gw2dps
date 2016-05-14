@@ -7,88 +7,6 @@
 
 #include "hacklib/Main.h"
 
-// Settings //
-bool killApp = false;
-
-bool help = false;
-bool expMode = false;
-bool selfFloat = false;
-bool selfHealthPercent = true;
-bool loopLimiter = true;
-
-bool showPing = false;
-bool woldBosses = false;
-bool compDotsFade = false;
-bool compDots = false;
-bool targetSelected = true;
-bool targetInfo = false;
-bool targetInfoAlt = false;
-bool targetLock = false;
-
-bool dpsAllowNegative = false;
-
-bool logDps = true;
-bool logDpsDetails = false;
-string logDpsFile = "gw2dpsLog-Dps.txt";
-
-bool logKillTimer = false;
-bool logKillTimerDetails = false;
-bool logKillTimerToFile = false;
-
-bool logHits = false;
-bool logHitsDetails = false;
-bool logHitsToFile = false;
-string logHitsFile = "gw2dpsLog-Hits.txt";
-int threadHitsCounter = 0;
-
-bool logAttackRate = false;
-bool logAttackRateDetails = false;
-bool logAttackRateToFile = false;
-int AttackRateChainHits = 1;
-int AttackRateChainTime = 0; // not used atm
-string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
-int threadAttackRateCounter = 0;
-
-bool logCrits = false;
-bool logCritsDetails = true;
-int logCritsSample = 0;
-int logCritsGlances = 0;
-int logCritsNormals = 0;
-int logCritsCrits = 0;
-bool logCritsToFile = false;
-string logCritsFile = "gw2dpsLog-Crits.txt";
-
-bool alliesList = false;
-int playerListFilter = 0;
-int wvwBonus = 0;
-
-bool floatAllyNpc = false;
-bool floatEnemyNpc = false;
-bool floatAllyPlayer = false;
-bool floatAllyPlayerProf = false;
-bool floatEnemyPlayer = false;
-bool floatSiege = false;
-bool floatObject = false;
-int floatRadius = 10000;
-bool floatCircles = false;
-bool floatType = true; // false = HP; true = Dist;
-bool floatSnap = false;
-
-bool logSpeedometer = false;
-bool logSpeedometerEnemy = false;
-int logDisplacementValue = 0;
-bool logDisplacement = false;
-bool logDisplacementEnemy = false;
-Vector3 logDisplacementStart = Vector3(0, 0, 0);
-
-bool mouse_down=false;
-int mouse_delta=0, mouse_btn=0, mouse_x=0, mouse_y=0, mouse_keys=0;
-string chat;
-uint64_t totaldmg = 0;
-uint64_t avgdmg = 0;
-
-DWORD thread_id_hotkey = 0;
-
 // Threads //
 #include "thread.Hotkeys.cpp"
 #include "thread.Dps.cpp"
@@ -98,10 +16,6 @@ DWORD thread_id_hotkey = 0;
 #include "thread.Crits.cpp"
 #include "thread.Speedometer.cpp"
 
-// Self
-Character me;
-Agent meAg = me.GetAgent();
-CompassOverlay *compOverlay = new CompassOverlay();
 
 void ESP()
 {
@@ -291,6 +205,26 @@ void ESP()
         else
             targetLockID = selected.id;
     }
+
+    if (floatMouse) {
+        Vector3 mcoords = GetMouseInWorld();
+        if (!isinf(mcoords.x)) {
+            float x, y;
+            if (WorldToScreen(mcoords, &x, &y)) {
+                DWORD color = 0x44fca5f4;
+                DrawCircleProjected(mcoords, 30.0f, color);
+                DrawCircleFilledProjected(mcoords, 30.0f, color);
+                DrawLineProjected(mcoords, self.pos, color);
+
+                stringstream fs;
+                fs << format("%i") % int(Dist(self.pos, mcoords));
+
+                Vector2 fsInfo = font2.TextInfo(fs.str());
+                font2.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
+            }
+        }
+    }
+
 
     // compile all agent data
     Floaters floaters;
@@ -1734,11 +1668,12 @@ void load_preferences() {
     floatEnemyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_PLAYER"));
     floatSiege = Str2Bool(read_config_value("Preferences.FLOAT_SIEGE"));
     floatObject = Str2Bool(read_config_value("Preferences.FLOAT_OBJECT"));
+    floatMouse = Str2Bool(read_config_value("Preferences.FLOAT_MOUSE_MEASURE"));
     logSpeedometer = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER"));
     logSpeedometerEnemy = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER_ENEMY"));
     logDisplacement = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT"));
     logDisplacementEnemy = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT_ENEMY"));
-    floatRadius = Str2Int(read_config_value("Preferences.FLOAT_RADIUS"), 10000);
+    floatRadius = Str2Int(read_config_value("Preferences.FLOAT_RADIUS"), floatRadiusMax);
     wvwBonus = Str2Int(read_config_value("Preferences.WVW_BONUS"));
     AttackRateChainHits = Str2Int(read_config_value("Preferences.ATTACKRATE_CHAIN_HITS"), 1);
     logCritsSample = Str2Int(read_config_value("Preferences.LOG_CRITS_SAMPLE"));
@@ -1782,6 +1717,7 @@ void save_preferences() {
     write_config_value("Preferences.FLOAT_ENEMY_PLAYER", Bool2Str(floatEnemyPlayer));
     write_config_value("Preferences.FLOAT_SIEGE", Bool2Str(floatSiege));
     write_config_value("Preferences.FLOAT_OBJECT", Bool2Str(floatObject));
+    write_config_value("Preferences.FLOAT_MOUSE_MEASURE", Bool2Str(floatMouse));
     write_config_value("Preferences.LOG_SPEEDOMETER", Bool2Str(logSpeedometer));
     write_config_value("Preferences.LOG_SPEEDOMETER_ENEMY", Bool2Str(logSpeedometerEnemy));
     write_config_value("Preferences.LOG_DISPLACEMENT", Bool2Str(logDisplacement));
@@ -1988,11 +1924,12 @@ bool mouse_wheel(int delta, int modkeys) {
     return true;
 }
 
-void dmg_log(uintptr_t* src, uintptr_t* tgt, int hit) {
+void dmg_log(Agent src, Agent tgt, int hit) {
     //HL_LOG_DBG("hit: %i\n", hit);
 }
 
 void combat_log(CombatLogType type, int hit, Agent tgt) {
+    //HL_LOG_DBG("agent: %i - type: %i - hit: %i\n", tgt.GetAgentId(), type, hit);
     switch (type) {
     case CL_CONDI_DMG_OUT:
     case CL_CRIT_DMG_OUT:
@@ -2019,6 +1956,8 @@ void GW2LIB::gw2lib_main()
     init_keymap();
     init_config();
     load_preferences();
+
+    compOverlay = new CompassOverlay();
 
     EnableEsp(ESP);
     SetGameHook(HOOK_CHAT, chat_log);
@@ -2061,6 +2000,9 @@ void GW2LIB::gw2lib_main()
 
     // make threads clean-up first before interrupting
     PostThreadMessage(thread_id_hotkey, WM_USER, NULL, NULL);
+
+    delete compOverlay;
+    compOverlay = nullptr;
 
     // self destruct sequence
     t1.interrupt(); //t1.join();

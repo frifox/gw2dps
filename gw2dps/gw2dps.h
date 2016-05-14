@@ -22,19 +22,112 @@ using namespace std;
 
 // Font Settings
 const char *fontFamily = "Verdana";
+int lineHeight = 16;
 Font font, font2;
 Texture profIcon[GW2::PROFESSION_END];
 const char *profFilterName[] = { "ALL", "Guard", "War", "Engi", "Ranger", "Thief", "Ele", "Mes", "Necro", "Rev" };
 float icon_w = 20;
 float icon_h = 20;
-int lineHeight = 16;
 int padX = 5;
 int padY = 2;
+int floatRadiusMax = 60000;
 static const DWORD fontColor = 0xffffffff;
 static const DWORD backColor = 0xff000000;
 static const DWORD borderColor = 0xff444444;
 static const DWORD floatMask = 0x30000000;
 static const DWORD bgColorMask = 0x33000000;
+
+
+// Settings //
+bool killApp = false;
+
+bool help = false;
+bool expMode = false;
+bool selfFloat = false;
+bool selfHealthPercent = true;
+bool loopLimiter = true;
+
+bool showPing = false;
+bool woldBosses = false;
+bool compDotsFade = false;
+bool compDots = false;
+bool targetSelected = true;
+bool targetInfo = false;
+bool targetInfoAlt = false;
+bool targetLock = false;
+
+bool dpsAllowNegative = false;
+
+bool logDps = true;
+bool logDpsDetails = false;
+string logDpsFile = "gw2dpsLog-Dps.txt";
+
+bool logKillTimer = false;
+bool logKillTimerDetails = false;
+bool logKillTimerToFile = false;
+
+bool logHits = false;
+bool logHitsDetails = false;
+bool logHitsToFile = false;
+string logHitsFile = "gw2dpsLog-Hits.txt";
+int threadHitsCounter = 0;
+
+bool logAttackRate = false;
+bool logAttackRateDetails = false;
+bool logAttackRateToFile = false;
+int AttackRateChainHits = 1;
+int AttackRateChainTime = 0; // not used atm
+string logAttackRateFile = "gw2dpsLog-AttackRate.txt";
+int threadAttackRateCounter = 0;
+
+bool logCrits = false;
+bool logCritsDetails = true;
+int logCritsSample = 0;
+int logCritsGlances = 0;
+int logCritsNormals = 0;
+int logCritsCrits = 0;
+bool logCritsToFile = false;
+string logCritsFile = "gw2dpsLog-Crits.txt";
+
+bool alliesList = false;
+int playerListFilter = 0;
+int wvwBonus = 0;
+
+bool floatAllyNpc = false;
+bool floatEnemyNpc = false;
+bool floatAllyPlayer = false;
+bool floatAllyPlayerProf = false;
+bool floatEnemyPlayer = false;
+bool floatSiege = false;
+bool floatObject = false;
+bool floatCircles = false;
+bool floatType = true; // false = HP; true = Dist;
+bool floatSnap = false;
+bool floatMouse = false;
+int floatRadius = floatRadiusMax;
+
+bool logSpeedometer = false;
+bool logSpeedometerEnemy = false;
+int logDisplacementValue = 0;
+bool logDisplacement = false;
+bool logDisplacementEnemy = false;
+Vector3 logDisplacementStart = Vector3(0, 0, 0);
+
+bool mouse_down = false;
+int mouse_delta = 0, mouse_btn = 0, mouse_x = 0, mouse_y = 0, mouse_keys = 0;
+string chat;
+uint64_t totaldmg = 0;
+uint64_t avgdmg = 0;
+
+DWORD thread_id_hotkey = 0;
+
+class CompassOverlay;
+Character me;
+Agent meAg = me.GetAgent();
+CompassOverlay *compOverlay = nullptr;
+
+
+
 
 // THREADS //
 int targetLockID;
