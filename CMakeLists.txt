@@ -37,6 +37,7 @@ ADD_LIBRARY(${PROJ_NAME}_dll SHARED
 	gw2dps/hotkey.cpp
 	gw2dps/preferences.h
 	gw2dps/preferences.cpp
+	gw2dps/grapher.cpp
 	gw2dps/gw2dps.h
 	gw2dps/gw2dps.cpp
 	gw2dps/gw2dps_dll.rc)

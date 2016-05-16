@@ -17,6 +17,68 @@
 #include "thread.Speedometer.cpp"
 
 
+FloatColor GetFloatColor(const Agent &ag) {
+    FloatColor ret = COLOR_NONE;
+    if (!ag.IsValid()) return ret;
+
+    if (ag.GetCategory() == GW2::AGENT_CATEGORY_KEYFRAMED) {
+        ret = COLOR_OBJECT;
+    } else {
+        Character ch = ag.GetCharacter();
+        if (!ch.IsValid()) return ret;
+
+        GW2::Attitude att = ch.GetAttitude();
+
+        if (ch.IsPlayer()) {
+            switch (att) {
+            case GW2::ATTITUDE_FRIENDLY: ret = COLOR_PLAYER_ALLY; break;
+            case GW2::ATTITUDE_HOSTILE:  ret = COLOR_PLAYER_FOE; break;
+            }
+        } else {
+            switch (att) {
+            case GW2::ATTITUDE_FRIENDLY:    ret = COLOR_NPC_ALLY; break;
+            case GW2::ATTITUDE_HOSTILE:     ret = COLOR_NPC_FOE; break;
+            case GW2::ATTITUDE_INDIFFERENT: ret = COLOR_NPC_INDIFF; break;
+            case GW2::ATTITUDE_NEUTRAL:     ret = COLOR_NPC_NEUTRAL; break;
+            }
+        }
+    }
+
+    return ret;
+}
+
+void DrawAgentPath(const Agent &ag) {
+    GW2::AgentCategory agcat = ag.GetCategory();
+    if (agcat != GW2::AGENT_CATEGORY_CHAR) return;
+
+    Character ch = ag.GetCharacter();
+    if (!ch.IsValid() || !ch.IsAlive()) return;
+
+    int agid = ag.GetAgentId();
+    if (agPaths.find(agid) == agPaths.end()) {
+        agPaths[agid] = circular_buffer<Vector3>(150);
+    }
+
+    size_t pathSize = agPaths[agid].size();
+    Vector3 agpos = ag.GetPos();
+
+    if (pathSize >= 2) {
+        Vector3 prev = agPaths[agid][pathSize - 1];
+        if (prev != agpos) {
+            agPaths[agid].push_back(agpos);
+        }
+
+        for (size_t i = 0; i < pathSize - 1; i++) {
+            Vector3 pos1 = agPaths[agid][i];
+            Vector3 pos2 = agPaths[agid][i + 1];
+            FloatColor color = GetFloatColor(ag);
+            DrawLineProjected(pos1, pos2, color | 0xff000000);
+        }
+    } else {
+        agPaths[agid].push_front(agpos);
+    }
+}
+
 void ESP()
 {
     if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene()) return;
@@ -233,6 +295,12 @@ void ESP()
     WBosses wbosses;
     while (ag.BeNext())
     {
+        if (agentLines) {
+            DrawAgentPath(ag);
+        } else if (!agPaths.empty()) {
+            agPaths.clear();
+        }
+
         // Locked Target (Data)
         if (targetLockID == ag.GetAgentId())
         {
@@ -552,7 +620,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = floater.att == GW2::ATTITUDE_NEUTRAL ? 0x44dddddd : 0x4433ff00;
+                        DWORD color = floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -583,7 +651,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = floater.att == GW2::ATTITUDE_INDIFFERENT ? 0x44dddd00 : 0x44e76d00;
+                        DWORD color = floater.att == GW2::ATTITUDE_INDIFFERENT ? COLOR_NPC_INDIFF : COLOR_NPC_FOE;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -626,7 +694,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x4455FFFF;
+                        DWORD color = COLOR_PLAYER_ALLY;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -667,7 +735,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x44ff3300;
+                        DWORD color = COLOR_PLAYER_FOE;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -708,7 +776,7 @@ void ESP()
                             floater.pos.z
                         };
 
-                        DWORD color = 0x44ffffff;
+                        DWORD color = COLOR_OBJECT;
                         float w = floater.cHealth / floater.mHealth * 20;
                         DrawCircleProjected(floater.pos, 20.0f, color);
                         DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
@@ -779,7 +847,7 @@ void ESP()
         }
     }
 
-    if (compDots) {
+    if (compDots && compOverlay) {
         compOverlay->RenderOverlay();
     }
 
@@ -1682,6 +1750,7 @@ void load_preferences() {
     showPing = Str2Bool(read_config_value("Preferences.SHOW_PING"));
     floatSnap = Str2Bool(read_config_value("Preferences.FLOAT_SNAP"));
     playerListFilter = Str2Int(read_config_value("Preferences.PLAYER_LIST_FILTER"));
+    agentLines = Str2Bool(read_config_value("Preferences.AGENT_LINES"));
 }
 
 void save_preferences() {
@@ -1731,6 +1800,7 @@ void save_preferences() {
     write_config_value("Preferences.SHOW_PING", Bool2Str(showPing));
     write_config_value("Preferences.FLOAT_SNAP", Bool2Str(floatSnap));
     write_config_value("Preferences.PLAYER_LIST_FILTER", Int2Str(playerListFilter));
+    write_config_value("Preferences.AGENT_LINES", Bool2Str(agentLines));
     save_config();
 }
 

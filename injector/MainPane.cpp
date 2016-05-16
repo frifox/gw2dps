@@ -148,6 +148,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Toggle Compass Overlay (%s)\n") % get_key_description("Hotkeys.COMP_OVERLAY");
     ss << format("Toggle Compass Overlay Z Fade (%s)\n") % get_key_description("Hotkeys.COMP_OVERLAY_ZFADE");
     ss << format("Show Ping Meter (%s)\n") % get_key_description("Hotkeys.SHOW_PING");
+    ss << format("Draw Agent Paths (%s)\n") % get_key_description("Hotkeys.AGENT_LINES");
     return ss.str();
 }
 

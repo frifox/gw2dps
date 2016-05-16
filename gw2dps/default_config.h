@@ -58,4 +58,5 @@
                             "COMP_OVERLAY_ZFADE=ALT SHIFT 0x4F\n" \
                             "SHOW_PING=ALT SHIFT 0x50\n" \
                             "FLOAT_SNAP=ALT SHIFT 0x53\n" \
-                            "PLAYER_LIST_FILTER=ALT 0x56\n"
+                            "PLAYER_LIST_FILTER=ALT 0x56\n" \
+                            "AGENT_LINES=ALT SHIFT 0x4C\n"

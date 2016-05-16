@@ -66,6 +66,7 @@
 #define FLOAT_OBJECT 98
 #define PLAYER_LIST_FILTER 99
 #define FLOAT_MOUSE_MEASURE 100
+#define AGENT_LINES 101
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -135,6 +136,7 @@ void threadHotKeys()
     registerHotKeyWrapper(SHOW_PING, read_config_value("Hotkeys.SHOW_PING"));
     registerHotKeyWrapper(FLOAT_SNAP, read_config_value("Hotkeys.FLOAT_SNAP"));
     registerHotKeyWrapper(PLAYER_LIST_FILTER, read_config_value("Hotkeys.PLAYER_LIST_FILTER"));
+    registerHotKeyWrapper(AGENT_LINES, read_config_value("Hotkeys.AGENT_LINES"));
 
     // special
     registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
@@ -217,6 +219,8 @@ void threadHotKeys()
                 playerListFilter = (playerListFilter >= GW2::PROFESSION_END - 1) ? 0 : playerListFilter + 1;
             }
 
+            if (msg.wParam == AGENT_LINES) agentLines = !agentLines;
+
         }
 
         save_preferences();
@@ -275,6 +279,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, SHOW_PING);
     UnregisterHotKey(NULL, FLOAT_SNAP);
     UnregisterHotKey(NULL, PLAYER_LIST_FILTER);
+    UnregisterHotKey(NULL, AGENT_LINES);
 }
 
 void registerHotKeyWrapper(int id, string key)

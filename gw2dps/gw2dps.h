@@ -10,6 +10,7 @@
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
 
+#include <unordered_map>
 #include <sstream> // stringstream
 #include <algorithm> // min/max_element()
 #include <fstream> // ofstream / file
@@ -55,6 +56,7 @@ bool targetSelected = true;
 bool targetInfo = false;
 bool targetInfoAlt = false;
 bool targetLock = false;
+bool agentLines = false;
 
 bool dpsAllowNegative = false;
 
@@ -113,6 +115,17 @@ bool logDisplacement = false;
 bool logDisplacementEnemy = false;
 Vector3 logDisplacementStart = Vector3(0, 0, 0);
 
+enum FloatColor {
+    COLOR_NONE = 0,
+    COLOR_OBJECT = 0x44ffffff,
+    COLOR_PLAYER_FOE = 0x44ff3300,
+    COLOR_PLAYER_ALLY = 0x4455FFFF,
+    COLOR_NPC_FOE = 0x44e76d00,
+    COLOR_NPC_ALLY = 0x4433ff00,
+    COLOR_NPC_INDIFF = 0x44dddd00,
+    COLOR_NPC_NEUTRAL = 0x44dddddd
+};
+
 bool mouse_down = false;
 int mouse_delta = 0, mouse_btn = 0, mouse_x = 0, mouse_y = 0, mouse_keys = 0;
 string chat;
@@ -125,8 +138,6 @@ class CompassOverlay;
 Character me;
 Agent meAg = me.GetAgent();
 CompassOverlay *compOverlay = nullptr;
-
-
 
 
 // THREADS //
@@ -245,6 +256,8 @@ boost::circular_buffer<float> bufferSelfDps(20); // 5s of 250ms samples
 boost::circular_buffer<int> bufferHits(50);
 boost::circular_buffer<double> bufferAttackRate(50); // seconds
 boost::circular_buffer<int> bufferSpeedometer(30); // inches/sec, 100ms sampleRate,3s worth
+std::unordered_map<int, circular_buffer<Vector3>> agPaths;
+
 float speedometer = 0;
 
 struct Dmg {
@@ -311,6 +324,10 @@ public:
     bool FilterDot(GW2LIB::Agent ag);
     int CalcFade(GW2LIB::Vector3 self, GW2LIB::Vector3 ag);
     int GetColor(GW2LIB::Character curChar, int initialColor);
+};
+
+class Grapher {
+
 };
 
 struct baseHpReturn {

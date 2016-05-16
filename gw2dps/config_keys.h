@@ -40,5 +40,6 @@ std::list<string> get_help_config_keys()
     config_keys.push_back("Hotkeys.COMP_OVERLAY");
     config_keys.push_back("Hotkeys.COMP_OVERLAY_ZFADE");
     config_keys.push_back("Hotkeys.SHOW_PING");
+    config_keys.push_back("Hotkeys.AGENT_LINES");
     return config_keys;
 }
