@@ -48,15 +48,41 @@ FloatColor GetFloatColor(const Agent &ag) {
 }
 
 void DrawAgentPath(const Agent &ag) {
+    if (!floatCircles) return;
+
     GW2::AgentCategory agcat = ag.GetCategory();
     if (agcat != GW2::AGENT_CATEGORY_CHAR) return;
 
     Character ch = ag.GetCharacter();
     if (!ch.IsValid() || !ch.IsAlive()) return;
 
+    GW2::Attitude att = ch.GetAttitude();
+
+    switch (att) {
+    case GW2::ATTITUDE_FRIENDLY:
+        if (ch.IsControlled()) {
+            if (!selfFloat) return;
+        } else {
+            if (ch.IsPlayer() && !floatAllyPlayer) return;
+            if (!ch.IsPlayer() && !floatAllyNpc) return;
+        }
+        break;
+    case GW2::ATTITUDE_HOSTILE:
+        if (ch.IsPlayer() && !floatEnemyPlayer) return;
+        if (!ch.IsPlayer() && !floatEnemyNpc) return;
+        break;
+    case GW2::ATTITUDE_NEUTRAL:
+        if (!ch.IsPlayer() && !floatAllyNpc) return;
+        break;
+    case GW2::ATTITUDE_INDIFFERENT:
+        if (!ch.IsPlayer() && !floatEnemyNpc) return;
+        break;
+    default: return;
+    }
+
     int agid = ag.GetAgentId();
     if (agPaths.find(agid) == agPaths.end()) {
-        agPaths[agid] = circular_buffer<Vector3>(150);
+        agPaths[agid] = circular_buffer<Vector3>(200);
     }
 
     size_t pathSize = agPaths[agid].size();
