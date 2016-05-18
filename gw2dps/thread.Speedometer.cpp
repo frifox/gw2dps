@@ -19,6 +19,7 @@ void threadSpeedometer() {
                 if (locked.valid)
                 {
                     speedometer = locked.speed;
+                    speedometerMax = locked.maxSpeed;
                     cId = locked.id;
                     cPos = locked.pos;
                 }
@@ -26,6 +27,7 @@ void threadSpeedometer() {
             else
             {
                 speedometer = self.speed;
+                speedometerMax = self.maxSpeed;
                 cId = self.id;
                 cPos = self.pos;
             }

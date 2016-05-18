@@ -145,9 +145,11 @@ void ESP()
     // Targets & Agents //
     me = GetOwnCharacter();
     if (me.IsValid()){
-        self.id = GetOwnAgent().GetAgentId();
-        self.pos = GetOwnAgent().GetPos();
-        self.speed = GetOwnAgent().GetSpeed();
+        Agent ag = GetOwnAgent();
+        self.id = ag.GetAgentId();
+        self.pos = ag.GetPos();
+        self.speed = ag.GetSpeed();
+        self.maxSpeed = ag.GetMaxSpeed();
 
         self.cHealth = me.GetCurrentHealth();
         self.mHealth = me.GetMaxHealth();
@@ -171,7 +173,7 @@ void ESP()
             self.pos.z
         };
 
-        DWORD color = 0x4455FFFF;
+        DWORD color = COLOR_PLAYER_ALLY;
         float w = Char.GetCurrentHealth() / Char.GetMaxHealth() * 20;
         DrawRectProjected(rotArrow, 20, 5, rot, color);
         DrawRectFilledProjected(rotArrow, w, 5, rot, color);
@@ -311,7 +313,7 @@ void ESP()
                 locked.id = ag.GetAgentId();
                 locked.type = agType;
                 locked.speed = ag.GetSpeed();
-
+                locked.maxSpeed = ag.GetMaxSpeed();
                 locked.pos = ag.GetPos();
 
                 Character ch = ag.GetCharacter();
@@ -1289,7 +1291,7 @@ void ESP()
                 ss << format("0 in/s, 0 in/s");
             }*/
 
-            ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometer * 32) % (((speedometer / 9.1875) - 1) * 100);
+            ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometer * 32) % (((speedometerMax / 9.1875) - 1) * 100);
 
             strInfo = font.TextInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
