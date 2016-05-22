@@ -144,7 +144,7 @@ CompassOverlay *compOverlay = nullptr;
 int targetLockID;
 struct Target {
     Target() : valid(false), alive(true), id(0), type(0), cHealth(0), mHealth(0), pHealth(0),
-        lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(0), rot(0), speed(0), maxSpeed(0) {}
+        lvl(0), lvlActual(0), pos(Vector3(0,0,0)), breakbar(0), rot(0), speed(0), maxSpeed(0), realSpeed(0) {}
 
     bool valid;
     bool alive;
@@ -158,6 +158,7 @@ struct Target {
     float breakbar;
     float speed;
     float maxSpeed;
+    float realSpeed;
 
     Vector3 pos;
     float rot;
@@ -262,6 +263,7 @@ std::unordered_map<int, circular_buffer<Vector3>> agPaths;
 
 float speedometer = 0;
 float speedometerMax = 0;
+float speedometerReal = 0;
 
 struct Dmg {
     Dmg() : total(0), snapshot(0) {}
@@ -432,7 +434,7 @@ baseHpReturn baseHp(int lvl, int profession)
     return out;
 }
 
-string dpsBufferToString(boost::circular_buffer<float> buffer, size_t samples) {
+string dpsBufferToString(boost::circular_buffer<float> &buffer, size_t samples) {
     if (samples > buffer.size())
         samples = buffer.size();
     

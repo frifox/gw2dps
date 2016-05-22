@@ -20,6 +20,7 @@ void threadSpeedometer() {
                 {
                     speedometer = locked.speed;
                     speedometerMax = locked.maxSpeed;
+                    speedometerReal = locked.realSpeed;
                     cId = locked.id;
                     cPos = locked.pos;
                 }
@@ -28,6 +29,7 @@ void threadSpeedometer() {
             {
                 speedometer = self.speed;
                 speedometerMax = self.maxSpeed;
+                speedometerReal = self.realSpeed;
                 cId = self.id;
                 cPos = self.pos;
             }

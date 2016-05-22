@@ -48,7 +48,7 @@ FloatColor GetFloatColor(const Agent &ag) {
 }
 
 void DrawAgentPath(const Agent &ag) {
-    if (!floatCircles) return;
+    if (!floatCircles && ag.GetAgentId() != me.GetAgent().GetAgentId()) return;
 
     GW2::AgentCategory agcat = ag.GetCategory();
     if (agcat != GW2::AGENT_CATEGORY_CHAR) return;
@@ -176,6 +176,7 @@ void ESP()
         self.pos = ag.GetPos();
         self.speed = ag.GetSpeed();
         self.maxSpeed = ag.GetMaxSpeed();
+        self.realSpeed = ag.GetRealSpeed();
 
         self.cHealth = me.GetCurrentHealth();
         self.mHealth = me.GetMaxHealth();
@@ -340,6 +341,7 @@ void ESP()
                 locked.type = agType;
                 locked.speed = ag.GetSpeed();
                 locked.maxSpeed = ag.GetMaxSpeed();
+                locked.realSpeed = ag.GetRealSpeed();
                 locked.pos = ag.GetPos();
 
                 Character ch = ag.GetCharacter();
@@ -1317,7 +1319,7 @@ void ESP()
                 ss << format("0 in/s, 0 in/s");
             }*/
 
-            ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometer * 32) % (((speedometerMax / 9.1875) - 1) * 100);
+            ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometerReal * 32) % (((speedometerMax / 9.1875) - 1) * 100);
 
             strInfo = font.TextInfo(ss.str());
             float x = round(aTop.x - strInfo.x / 2);
