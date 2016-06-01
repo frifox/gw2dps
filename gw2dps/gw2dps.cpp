@@ -105,9 +105,58 @@ void DrawAgentPath(const Agent &ag) {
     }
 }
 
+void DrawFloater(const Float &floater, DWORD color = 0xffffffff, 
+bool drawArrow = true, bool drawText = true, bool drawName = false, bool drawProfIcon = false) {
+    float x, y;
+    if (WorldToScreen(floater.pos, &x, &y))
+    {
+        if (floater.isPlayer && floatSnap) {
+            float ww = GetWindowWidth() - 25;
+            float wh = GetWindowHeight() - 10;
+            if (x < 50) x = 50;
+            if (x > ww) x = ww;
+            if (y < 33) y = 33;
+            if (y > wh) y = wh;
+        }
+
+        if (drawArrow) {
+            Vector3 rotArrow = {
+                floater.pos.x + cos(floater.rot) * 50.0f,
+                floater.pos.y + sin(floater.rot) * 50.0f,
+                floater.pos.z
+            };
+
+            float w = floater.cHealth / floater.mHealth * 20;
+            DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
+            DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
+        }
+
+        DrawCircleProjected(floater.pos, 20.0f, color);
+        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
+
+        if (drawText) {
+            stringstream fs;
+            if (floatType)
+                fs << format("%i") % int(Dist(self.pos, floater.pos));
+            else
+                fs << format("%i") % floater.mHealth;
+
+            Vector2 fsInfo = font.TextInfo(fs.str());
+            if (floater.isPlayer && drawProfIcon) profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
+            font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
+
+            if (drawName) {
+                Vector2 fsInfo2 = font2.TextInfo(floater.name);
+                if (floater.name.size()) font2.Draw(x - fsInfo2.x / 2, y - 30, fontColor, "%s", floater.name.c_str());
+            }
+        }
+    }
+}
+
 void ESP()
 {
     if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene()) return;
+    bool floatersOn = floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject;
 
     // Element Anchors
     Anchor aLeft, aTopLeft, aTop, aTopRight, aRight, aCenter, aBottom;
@@ -127,11 +176,11 @@ void ESP()
     aRight.x = GetWindowWidth() - 10;
     aRight.y = 8;
 
-    aCenter.x = round(GetWindowWidth() * float(0.5));
-    aCenter.y = round(GetWindowHeight() * float(0.5));
+    aCenter.x = round(GetWindowWidth() / 2);
+    aCenter.y = round(GetWindowHeight() / 2);
 
-    aBottom.x = round(GetWindowWidth() * float(0.5));
-    aBottom.y = round(GetWindowHeight() - float(85));
+    aBottom.x = round(GetWindowWidth() / 2);
+    aBottom.y = round(GetWindowHeight() - 85);
 
     // JP Skills
     if (expMode)
@@ -149,34 +198,15 @@ void ESP()
         DrawRect(x - box, y - box, box * 2, box * 2, borderColor);
     }
 
-    // Font Draw Debug
-    if (0) {
-        stringstream ss;
-        ss << format("Selected: 18,140 / 18,140 [100%%]");
-        ss << format("Locked: 18,140 / 18,140 [100%%]");
-
-        Vector2 strInfo;
-        strInfo = font.TextInfo(ss.str());
-        float x = 0;
-        float y = float(strInfo.y + 1);
-        padX = 0;
-        padY = 0;
-
-        DrawRectFilled(x - padX, y - padY, strInfo.x + padX * 2, strInfo.y + padY * 2, 0xffffffff);
-        font.Draw(x, y, 0xff000000, "%s", ss.str().c_str());
-
-        return;
-    }
-
     // Targets & Agents //
+    meAg = GetOwnAgent();
     me = GetOwnCharacter();
-    if (me.IsValid()){
-        Agent ag = GetOwnAgent();
-        self.id = ag.GetAgentId();
-        self.pos = ag.GetPos();
-        self.speed = ag.GetSpeed();
-        self.maxSpeed = ag.GetMaxSpeed();
-        self.realSpeed = ag.GetRealSpeed();
+    if (me.IsValid()) {
+        self.id = meAg.GetAgentId();
+        self.pos = meAg.GetPos();
+        self.speed = meAg.GetSpeed();
+        self.maxSpeed = meAg.GetMaxSpeed();
+        self.realSpeed = meAg.GetRealSpeed();
 
         self.cHealth = me.GetCurrentHealth();
         self.mHealth = me.GetMaxHealth();
@@ -190,22 +220,19 @@ void ESP()
         self.alive = me.IsAlive();
     }
 
-    if (selfFloat && GetOwnAgent().IsValid())
+    if (selfFloat && meAg.IsValid())
     {
-        float rot = GetOwnAgent().GetRot();
-        auto Char = GetOwnCharacter();
-        Vector3 rotArrow = {
-            self.pos.x + cos(rot) * 50.0f,
-            self.pos.y + sin(rot) * 50.0f,
-            self.pos.z
-        };
+        Float f;
+        f.isPlayer = true;
+        f.pos = self.pos;
+        f.rot = meAg.GetRot();
+        f.cHealth = me.GetCurrentHealth();
+        f.mHealth = me.GetMaxHealth();
+        f.name = me.GetName();
+        f.att = GW2::ATTITUDE_FRIENDLY;
+        f.prof = me.GetProfession();
 
-        DWORD color = COLOR_PLAYER_ALLY;
-        float w = Char.GetCurrentHealth() / Char.GetMaxHealth() * 20;
-        DrawRectProjected(rotArrow, 20, 5, rot, color);
-        DrawRectFilledProjected(rotArrow, w, 5, rot, color);
-        DrawCircleProjected(self.pos, 20.0f, color);
-        DrawCircleFilledProjected(self.pos, 20.0f, color - floatMask);
+        DrawFloater(f, COLOR_PLAYER_ALLY, true, false);
     }
 
     Agent agLocked = GetLockedSelection();
@@ -215,67 +242,44 @@ void ESP()
             selected = {};
 
         int agType = agLocked.GetType();
+
+        selected.valid = true;
+        selected.id = agLocked.GetAgentId();
+        selected.type = agType;
+        selected.pos = agLocked.GetPos();
+
         if (agType == GW2::AGENT_CATEGORY_CHAR) // char
         {
-            selected.valid = true;
-            selected.id = agLocked.GetAgentId();
-            selected.type = agType;
-
-            selected.pos = agLocked.GetPos();
-
             Character chLocked = agLocked.GetCharacter();
             selected.cHealth = chLocked.GetCurrentHealth();
             selected.mHealth = chLocked.GetMaxHealth();
-            if (selected.mHealth > 0)
-                selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
-            else
-                selected.pHealth = 0;
+
             selected.lvl = chLocked.GetScaledLevel();
             selected.lvlActual = chLocked.GetLevel();
             selected.breakbar = chLocked.GetBreakbarPercent() * 100;
         }
         else if (agType == GW2::AGENT_TYPE_GADGET) // structure
         {
-            selected.valid = true;
-            selected.id = agLocked.GetAgentId();
-            selected.type = agType;
-
-            selected.pos = agLocked.GetPos();
-
             Gadget gd = agLocked.GetGadget();
             selected.cHealth = gd.GetCurrentHealth();
             selected.mHealth = gd.GetMaxHealth();
-            if (selected.mHealth > 0)
-                selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
-            else
-                selected.pHealth = 0;
-            //selected.lvl = chLocked.GetScaledLevel();
-            //selected.lvlActual = chLocked.GetLevel();
         }
         else if (agType == GW2::AGENT_TYPE_GADGET_ATTACK_TARGET) // world boss
         {
-            selected.valid = true;
-            selected.id = agLocked.GetAgentId();
-            selected.type = agType;
-
-            selected.pos = agLocked.GetPos();
-
             AttackTarget tgt = agLocked.GetAttackTarget();
             selected.cHealth = tgt.GetCurrentHealth();
             selected.mHealth = tgt.GetMaxHealth();
-            if (selected.mHealth > 0)
-                selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
-            else
-                selected.pHealth = 0;
-
-            //selected.lvl = chLocked.GetScaledLevel();
-            //selected.lvlActual = chLocked.GetLevel();
         }
         else
             selected = {};
 
         if (selected.mHealth == 0)
             selected = {};
+
+        if (selected.mHealth > 0)
+            selected.pHealth = 100.f * (selected.cHealth / selected.mHealth);
+        else
+            selected.pHealth = 0;
     }
     else
         selected = {};
@@ -333,65 +337,43 @@ void ESP()
         // Locked Target (Data)
         if (targetLockID == ag.GetAgentId())
         {
-            int agType = ag.GetType();
+            GW2::AgentType agType = ag.GetType();
+
+            locked.valid = true;
+            locked.id = ag.GetAgentId();
+            locked.type = agType;
+            locked.pos = ag.GetPos();
+
             if (agType == GW2::AGENT_CATEGORY_CHAR) // char
             {
-                locked.valid = true;
-                locked.id = ag.GetAgentId();
-                locked.type = agType;
                 locked.speed = ag.GetSpeed();
                 locked.maxSpeed = ag.GetMaxSpeed();
                 locked.realSpeed = ag.GetRealSpeed();
-                locked.pos = ag.GetPos();
 
                 Character ch = ag.GetCharacter();
                 locked.cHealth = ch.GetCurrentHealth();
                 locked.mHealth = ch.GetMaxHealth();
-                if (locked.mHealth > 0)
-                    locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
-                else
-                    locked.pHealth = 0;
+
                 locked.lvl = ch.GetScaledLevel();
                 locked.lvlActual = ch.GetLevel();
             }
             else if (agType == GW2::AGENT_TYPE_GADGET) // structure
             {
-                locked.valid = true;
-                locked.id = ag.GetAgentId();
-                locked.type = agType;
-
-                locked.pos = ag.GetPos();
-
                 Gadget gd = ag.GetGadget();
                 locked.cHealth = gd.GetCurrentHealth();
                 locked.mHealth = gd.GetMaxHealth();
-
-                if (locked.mHealth > 0)
-                    locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
-                else
-                    locked.pHealth = 0;
-                //locked.lvl = ch.GetScaledLevel();
-                //locked.lvlActual = ch.GetLevel();
             }
             else if (agType == GW2::AGENT_TYPE_GADGET_ATTACK_TARGET) // world boss
             {
-                locked.valid = true;
-                locked.id = ag.GetAgentId();
-                locked.type = agType;
-
-                locked.pos = ag.GetPos();
-
                 AttackTarget tgt = ag.GetAttackTarget();
                 locked.cHealth = tgt.GetCurrentHealth();
                 locked.mHealth = tgt.GetMaxHealth();
-
-                if (locked.mHealth > 0)
-                    locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
-                else
-                    locked.pHealth = 0;
-                //locked.lvl = ch.GetScaledLevel();
-                //locked.lvlActual = ch.GetLevel();
             }
+
+            if (locked.mHealth > 0)
+                locked.pHealth = 100.f * (locked.cHealth / locked.mHealth);
+            else
+                locked.pHealth = 0;
 
             if (locked.cHealth == 0 && locked.mHealth != 78870) // don't clear if 78870 (indestructible golem) or targetLocked
             {
@@ -422,9 +404,9 @@ void ESP()
         }
 
         // Floaters
-        if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject)
+        if (floatersOn)
         {
-            int agType = ag.GetType();
+            GW2::AgentType agType = ag.GetType();
 
             // object floaters
             if (agType == GW2::AGENT_TYPE_GADGET) {
@@ -438,7 +420,7 @@ void ESP()
                 // Filter those out of range
                 if (Dist(self.pos, pos) <= floatRadius)
                 {
-                    Object floater;
+                    Float floater;
                     floater.pos = pos;
                     floater.rot = rot;
                     floater.mHealth = mHealth;
@@ -458,7 +440,6 @@ void ESP()
                 float rot = ag.GetRot();
                 float cHealth = ch.GetCurrentHealth();
                 float mHealth = ch.GetMaxHealth();
-                int attitude = ch.GetAttitude();
                 int prof = ch.GetProfession();
                 string name = ch.GetName();
                 GW2::Attitude att = ch.GetAttitude();
@@ -481,22 +462,23 @@ void ESP()
                         // player vs npc
                         if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
                         {
+                            floater.isPlayer = true;
                             // allyPlayer
-                            if (floatAllyPlayer && attitude == GW2::ATTITUDE_FRIENDLY)
+                            if (floatAllyPlayer && att == GW2::ATTITUDE_FRIENDLY)
                                 floaters.allyPlayer.push_back(floater);
 
                             // enemyPlayer
-                            if (floatEnemyPlayer && attitude == GW2::ATTITUDE_HOSTILE)
+                            if (floatEnemyPlayer && att == GW2::ATTITUDE_HOSTILE)
                                 floaters.enemyPlayer.push_back(floater);
                         }
 
                         if (!ch.IsPlayer()){
                             // allyNpc
-                            if (floatAllyNpc && (attitude == GW2::ATTITUDE_FRIENDLY || attitude == GW2::ATTITUDE_NEUTRAL))
+                            if (floatAllyNpc && (att == GW2::ATTITUDE_FRIENDLY || att == GW2::ATTITUDE_NEUTRAL))
                                 floaters.allyNpc.push_back(floater);
 
                             // enemyNpc
-                            if (floatEnemyNpc && (attitude == GW2::ATTITUDE_HOSTILE || attitude == GW2::ATTITUDE_INDIFFERENT))
+                            if (floatEnemyNpc && (att == GW2::ATTITUDE_HOSTILE || att == GW2::ATTITUDE_INDIFFERENT))
                                 floaters.enemyNpc.push_back(floater);
                         }
                     }
@@ -515,25 +497,16 @@ void ESP()
             if (!ch.IsValid())
                 chValid = false;
 
-            //if (ch.IsControlled())
-            //chValid = false;
-
             if (!ch.IsPlayer() || ch.GetAttitude() != GW2::ATTITUDE_FRIENDLY)
                 chValid = false;
 
             // gather char data
-            if (chValid){
+            if (chValid) {
                 Ally ally;
                 ally.id = ag.GetAgentId();
                 ally.pos = ag.GetPos();
-
                 ally.profession = ch.GetProfession();
                 ally.mHealth = round(ch.GetMaxHealth() / (100 + wvwBonus) * 100);
-                //ally.cHealth = int(ch.GetCurrentHealth());
-                //if (ally.mHealth > 0)
-                //ally.pHealth = 100.f * (ally.cHealth / ally.mHealth);
-                //else
-                //ally.pHealth = 0;
                 ally.lvl = ch.GetScaledLevel();
                 ally.lvlActual = ch.GetLevel();
                 ally.name = player.GetName();
@@ -621,158 +594,38 @@ void ESP()
 
     // floaters //
 
-    if (floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject)
+    if (floatersOn)
     {
         stringstream ss;
         Vector2 strInfo;
 
         if (floatCircles)
         {
-            float x, y;
             if (floatAllyNpc && floaters.allyNpc.size() > 0)
             {
                 for (auto & floater : floaters.allyNpc) {
-                    if (WorldToScreen(floater.pos, &x, &y))
-                    {
-                        stringstream fs;
-                        //fs << floater.name << "\n";
-                        if (floatType)
-                            fs << format("%i") % int(Dist(self.pos, floater.pos));
-                        else
-                            fs << format("%i") % floater.mHealth;
-
-                        Vector2 fsInfo = font.TextInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-                        Vector3 rotArrow = {
-                            floater.pos.x + cos(floater.rot) * 50.0f,
-                            floater.pos.y + sin(floater.rot) * 50.0f,
-                            floater.pos.z
-                        };
-
-                        DWORD color = floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY;
-                        float w = floater.cHealth / floater.mHealth * 20;
-                        DrawCircleProjected(floater.pos, 20.0f, color);
-                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-                    }
+                    DrawFloater(floater, floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY);
                 }
             }
 
             if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
             {
                 for (auto & floater : floaters.enemyNpc) {
-                    if (WorldToScreen(floater.pos, &x, &y))
-                    {
-                        stringstream fs;
-                        //fs << floater.name << "\n";
-                        if (floatType)
-                            fs << format("%i") % int(Dist(self.pos, floater.pos));
-                        else
-                            fs << format("%i") % floater.mHealth;
-
-                        Vector2 fsInfo = font.TextInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-                        Vector3 rotArrow = {
-                            floater.pos.x + cos(floater.rot) * 50.0f,
-                            floater.pos.y + sin(floater.rot) * 50.0f,
-                            floater.pos.z
-                        };
-
-                        DWORD color = floater.att == GW2::ATTITUDE_INDIFFERENT ? COLOR_NPC_INDIFF : COLOR_NPC_FOE;
-                        float w = floater.cHealth / floater.mHealth * 20;
-                        DrawCircleProjected(floater.pos, 20.0f, color);
-                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-                    }
+                    DrawFloater(floater, floater.att == GW2::ATTITUDE_INDIFFERENT ? COLOR_NPC_INDIFF : COLOR_NPC_FOE);
                 }
             }
 
             if (floatAllyPlayer && floaters.allyPlayer.size() > 0)
             {
                 for (auto & floater : floaters.allyPlayer) {
-                    if (WorldToScreen(floater.pos, &x, &y))
-                    {
-                        if (floatSnap) {
-                            float ww = GetWindowWidth() - 25;
-                            float wh = GetWindowHeight() - 10;
-                            if (x < 50) x = 50;
-                            if (x > ww) x = ww;
-                            if (y < 20) y = 20;
-                            if (y > wh) y = wh;
-                        }
-
-                        stringstream fs;
-                        //fs << floater.name << "\n";
-                        if (floatType)
-                            fs << format("%i") % int(Dist(self.pos, floater.pos));
-                        else
-                            fs << format("%i") % floater.mHealth;
-
-                        Vector2 fsInfo = font.TextInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-                        Vector2 fsInfo2 = font2.TextInfo(floater.name);
-                        font2.Draw(x - fsInfo2.x / 2, y - 30, fontColor, "%s", floater.name.c_str());
-
-                        Vector3 rotArrow = {
-                            floater.pos.x + cos(floater.rot) * 50.0f,
-                            floater.pos.y + sin(floater.rot) * 50.0f,
-                            floater.pos.z
-                        };
-
-                        DWORD color = COLOR_PLAYER_ALLY;
-                        float w = floater.cHealth / floater.mHealth * 20;
-                        DrawCircleProjected(floater.pos, 20.0f, color);
-                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-                        profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - lineHeight-1, icon_w, icon_h);
-                    }
+                    DrawFloater(floater, COLOR_PLAYER_ALLY, true, true, true, true);
                 }
             }
 
             if (floatEnemyPlayer && floaters.enemyPlayer.size() > 0)
             {
                 for (auto & floater : floaters.enemyPlayer) {
-                    if (WorldToScreen(floater.pos, &x, &y))
-                    {
-                        if (floatSnap) {
-                            float ww = GetWindowWidth() - 25;
-                            float wh = GetWindowHeight() - 10;
-                            if (x < 50) x = 50;
-                            if (x > ww) x = ww;
-                            if (y < 20) y = 20;
-                            if (y > wh) y = wh;
-                        }
-
-                        stringstream fs;
-                        //fs << floater.name << "\n";
-                        if (floatType)
-                            fs << format("%i") % int(Dist(self.pos, floater.pos));
-                        else
-                            fs << format("%i") % floater.mHealth;
-
-                        Vector2 fsInfo = font.TextInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-                        Vector3 rotArrow = {
-                            floater.pos.x + cos(floater.rot) * 50.0f,
-                            floater.pos.y + sin(floater.rot) * 50.0f,
-                            floater.pos.z
-                        };
-
-                        DWORD color = COLOR_PLAYER_FOE;
-                        float w = floater.cHealth / floater.mHealth * 20;
-                        DrawCircleProjected(floater.pos, 20.0f, color);
-                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-                        profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - 17, icon_w, icon_h);
-                    }
+                    DrawFloater(floater, COLOR_PLAYER_FOE, true, true, false, true);
                 }
             }
 
@@ -788,31 +641,7 @@ void ESP()
             if (floatObject && floaters.object.size() > 0)
             {
                 for (auto & floater : floaters.object) {
-                    if (WorldToScreen(floater.pos, &x, &y))
-                    {
-
-                        stringstream fs;
-                        if (floatType)
-                            fs << format("%i") % int(Dist(self.pos, floater.pos));
-                        else
-                            fs << format("%i") % floater.mHealth;
-
-                        Vector2 fsInfo = font.TextInfo(fs.str());
-                        font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-                        Vector3 rotArrow = {
-                            floater.pos.x + cos(floater.rot) * 50.0f,
-                            floater.pos.y + sin(floater.rot) * 50.0f,
-                            floater.pos.z
-                        };
-
-                        DWORD color = COLOR_OBJECT;
-                        float w = floater.cHealth / floater.mHealth * 20;
-                        DrawCircleProjected(floater.pos, 20.0f, color);
-                        DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-                        DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-                        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-                    }
+                    DrawFloater(floater, COLOR_OBJECT);
                 }
             }
         }
@@ -1285,39 +1114,6 @@ void ESP()
         if (logSpeedometer) {
             stringstream ss;
             Vector2 strInfo;
-
-            /*ss << format("Speed: ");
-
-            if (!bufferSpeedometer.empty())
-            {
-                double average[2] {};
-                size_t samples = 0;
-
-                // Speed ~ .5s
-                samples = 5;
-                if (samples > bufferSpeedometer.size())
-                    samples = bufferSpeedometer.size();
-                average[0] = 0;
-                for (size_t i = 0; i < samples; i++)
-                    average[0] += bufferSpeedometer[i];
-                average[0] = average[0] / samples * (1000 / 100);
-
-                // Speed ~ 3s
-                samples = 30;
-                if (samples > bufferSpeedometer.size())
-                    samples = bufferSpeedometer.size();
-                average[1] = 0;
-                for (size_t i = 0; i < samples; i++)
-                    average[1] += bufferSpeedometer[i];
-                average[1] = average[1] / samples * (1000 / 100);
-
-                // Prepare String
-                ss << format("%i in/s, %i in/s") % int(average[0]) % int(average[1]);
-            }
-            else
-            {
-                ss << format("0 in/s, 0 in/s");
-            }*/
 
             ss << format("Speed: %0.0f in/s - Boost: %0.0f%%") % (speedometerReal * 32) % (((speedometerMax / 9.1875) - 1) * 100);
 
@@ -1957,8 +1753,6 @@ bool CompassOverlay::FilterDot(GW2LIB::Agent ag) {
     return false;
 }
 
-
-
 int CompassOverlay::CalcFade(GW2LIB::Vector3 self, GW2LIB::Vector3 ag) {
     int alpha = alphaMask;
     if (compDotsFade) {
@@ -1992,41 +1786,6 @@ int CompassOverlay::GetColor(GW2LIB::Character curChar, int initialColor = 0xFF0
 }
 
 
-void chat_log(wchar_t *wtxt) {
-    size_t len = wcslen(wtxt) + 1;
-    char *txt = new char[len];
-    memset(txt, 0, len);
-    wcstombs(txt, wtxt, len);
-    chat = txt;
-    delete txt;
-}
-
-
-bool mouse_move(int x, int y, int modkeys) {
-    mouse_x = x;
-    mouse_y = y;
-    mouse_keys = modkeys;
-    return true;
-}
-
-bool mouse_click(bool down, int button, int x, int y, int modkeys) {
-    mouse_down = down;
-    mouse_btn = button;
-    mouse_x = x;
-    mouse_y = y;
-    mouse_keys = modkeys;
-    return true;
-}
-
-bool mouse_wheel(int delta, int modkeys) {
-    mouse_delta = delta;
-    mouse_keys = modkeys;
-    return true;
-}
-
-void dmg_log(Agent src, Agent tgt, int hit) {
-    //HL_LOG_DBG("hit: %i\n", hit);
-}
 
 void combat_log(CombatLogType type, int hit, Agent tgt) {
     //HL_LOG_DBG("agent: %i - type: %i - hit: %i\n", tgt.GetAgentId(), type, hit);
@@ -2036,18 +1795,18 @@ void combat_log(CombatLogType type, int hit, Agent tgt) {
     case CL_GLANCE_DMG_OUT:
     case CL_PHYS_DMG_OUT:
         if (locked.valid && locked.id != tgt.GetAgentId()) {
-            totaldmg = 0;
             selfDmg.total = 0;
             selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
         }
 
         if (locked.valid && locked.id == tgt.GetAgentId()) {
             selfDmg.total += float(hit);
-            totaldmg += hit;
         }
         break;
     }
 }
+
+
 
 void GW2LIB::gw2lib_main()
 {
@@ -2060,26 +1819,18 @@ void GW2LIB::gw2lib_main()
     compOverlay = new CompassOverlay();
 
     EnableEsp(ESP);
-    SetGameHook(HOOK_CHAT, chat_log);
-    SetGameHook(HOOK_MOUSE_MOVE, mouse_move);
-    SetGameHook(HOOK_MOUSE_BUTTON, mouse_click);
-    SetGameHook(HOOK_MOUSE_WHEEL, mouse_wheel);
-    SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
 
-    thread t1(&threadHotKeys);
-    thread t2(&threadDps);
-    thread t3(&threadKillTimer);
-    thread t4(&threadHits);
-    thread t5(&threadAttackRate);
-    thread t6(&threadCrits);
-    thread t7(&threadSpeedometer);
+    thread t1(threadHotKeys);
+    thread t2(threadDps);
+    thread t3(threadKillTimer);
+    thread t4(threadHits);
+    thread t5(threadAttackRate);
+    thread t6(threadCrits);
+    thread t7(threadSpeedometer);
 
     if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
-    {
-        //DbgOut("could not create font");n
         return;
-    }
 
     HMODULE dll = hl::GetCurrentModule();
 
@@ -2094,7 +1845,7 @@ void GW2LIB::gw2lib_main()
 
     // wait for exit hotkey
     while (GetAsyncKeyState(VK_F12) >= 0)
-        Sleep(25);
+        this_thread::sleep_for(chrono::milliseconds(25));
 
     close_config();
 
@@ -2105,14 +1856,14 @@ void GW2LIB::gw2lib_main()
     compOverlay = nullptr;
 
     // self destruct sequence
-    t1.interrupt(); //t1.join();
-    t2.interrupt(); //t2.join();
-    t3.interrupt(); //t3.join();
-    t4.interrupt(); //t4.join();
-    t5.interrupt(); //t5.join();
-    t6.interrupt(); //t6.join();
-    t7.interrupt(); //t7.join();
+    t1.interrupt();
+    t2.interrupt();
+    t3.interrupt();
+    t4.interrupt();
+    t5.interrupt();
+    t6.interrupt();
+    t7.interrupt();
 
-    Sleep(1000);
+    this_thread::sleep_for(chrono::milliseconds(1000));
     return;
 }

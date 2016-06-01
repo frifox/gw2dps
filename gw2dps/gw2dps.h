@@ -126,17 +126,11 @@ enum FloatColor {
     COLOR_NPC_NEUTRAL = 0x44dddddd
 };
 
-bool mouse_down = false;
-int mouse_delta = 0, mouse_btn = 0, mouse_x = 0, mouse_y = 0, mouse_keys = 0;
-string chat;
-uint64_t totaldmg = 0;
-uint64_t avgdmg = 0;
-
 DWORD thread_id_hotkey = 0;
 
 class CompassOverlay;
 Character me;
-Agent meAg = me.GetAgent();
+Agent meAg;
 CompassOverlay *compOverlay = nullptr;
 
 
@@ -202,6 +196,7 @@ struct Float {
     float cHealth;
     float mHealth;
     int prof;
+    bool isPlayer = false;
     string name;
     GW2::Attitude att;
 };
@@ -211,20 +206,13 @@ struct Siege {
     float mHealth;
     float cHealth;
 };
-struct Object {
-    Vector3 pos;
-    float rot = 0;
-    float cHealth;
-    float mHealth;
-    string name;
-};
 struct Floaters {
     vector<Float> allyNpc;
     vector<Float> enemyNpc;
     vector<Float> allyPlayer;
     vector<Float> enemyPlayer;
     vector<Siege> siege;
-    vector<Object> object;
+    vector<Float> object;
 };
 struct WBoss {
     int id;
