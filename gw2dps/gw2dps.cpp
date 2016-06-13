@@ -1740,7 +1740,7 @@ void CompassOverlay::RenderOverlay() {
 
 }
 
-bool CompassOverlay::FilterDot(GW2LIB::Agent ag) {
+bool CompassOverlay::FilterDot(GW2LIB::Agent &ag) {
     GW2LIB::Character ch = ag.GetCharacter();
     GW2::Attitude att = ch.GetAttitude();
     bool isPlayer = ch.IsPlayer();

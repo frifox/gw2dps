@@ -314,7 +314,7 @@ class CompassOverlay {
 
 public:
     void RenderOverlay();
-    bool FilterDot(GW2LIB::Agent ag);
+    bool FilterDot(GW2LIB::Agent &ag);
     int CalcFade(GW2LIB::Vector3 self, GW2LIB::Vector3 ag);
     int GetColor(GW2LIB::Character curChar, int initialColor);
 };

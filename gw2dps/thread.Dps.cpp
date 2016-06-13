@@ -60,19 +60,18 @@ void threadDps() {
 
             if (!bufferDps.empty())
                 bufferDps.clear();
-            if (!bufferSelfDps.empty()) {
+            if (!bufferSelfDps.empty())
                 bufferSelfDps.clear();
-            }
 
             if (locked.valid && locked.id != pAgentId)
                 pAgentId = locked.id;
 
             if (!logDps)
-                Sleep(100); // Thread not needed, sleep
+                this_thread::sleep_for(chrono::milliseconds(100)); // Thread not needed, sleep
         }
 
         // go easy on the cpu
         if (loopLimiter)
-            Sleep(1);
+            this_thread::sleep_for(chrono::milliseconds(25));
     }
 }
