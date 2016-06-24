@@ -133,6 +133,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Adjust WvW HP Bonus +(%s) and -(%s)\n") % get_key_description("Hotkeys.WVW_BONUS_MORE") % get_key_description("Hotkeys.WVW_BONUS_LESS");
     ss << format("Count Ally NPCs (%s)\n") % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
     ss << format("Count Enemy NPCs (%s)\n") % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");
+    ss << format("Count Neutral Enemy NPCs (%s)\n") % get_key_description("Hotkeys.FLOAT_NEUT_ENEMY_NPC");
     ss << format("Count Ally Players (%s)\n") % get_key_description("Hotkeys.FLOAT_ALLY_PLAYER");
     ss << format("Count Enemy Players (%s)\n") % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
     //ss << format("Count Siege (Alt 5)\n") % floatSiege;

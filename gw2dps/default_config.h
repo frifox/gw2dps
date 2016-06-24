@@ -43,6 +43,7 @@
                             "FLOAT_RADIUS_LESS=ALT 0x6D\n" \
                             "FLOAT_ALLY_NPC=ALT 0x31\n" \
                             "FLOAT_ENEMY_NPC=ALT 0x32\n" \
+                            "FLOAT_NEUT_ENEMY_NPC=ALT SHIFT 0x4E\n" \
                             "FLOAT_ALLY_PLAYER=ALT 0x33\n" \
                             "FLOAT_ALLY_PLAYER_PROF=ALT SHIFT 0x33\n" \
                             "FLOAT_ENEMY_PLAYER=ALT 0x34\n" \

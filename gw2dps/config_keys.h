@@ -25,6 +25,7 @@ std::list<string> get_help_config_keys()
     config_keys.push_back("Hotkeys.WVW_BONUS_LESS");
     config_keys.push_back("Hotkeys.FLOAT_ALLY_NPC");
     config_keys.push_back("Hotkeys.FLOAT_ENEMY_NPC");
+    config_keys.push_back("Hotkeys.FLOAT_NEUT_ENEMY_NPC");
     config_keys.push_back("Hotkeys.FLOAT_ALLY_PLAYER");
     config_keys.push_back("Hotkeys.FLOAT_ENEMY_PLAYER");
     //ss << format("Count Siege (Alt 5)\n") % floatSiege;

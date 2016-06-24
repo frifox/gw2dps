@@ -97,6 +97,7 @@ int wvwBonus = 0;
 
 bool floatAllyNpc = false;
 bool floatEnemyNpc = false;
+bool floatNeutEnemyNpc = false;
 bool floatAllyPlayer = false;
 bool floatAllyPlayerProf = false;
 bool floatEnemyPlayer = false;
@@ -209,6 +210,7 @@ struct Siege {
 struct Floaters {
     vector<Float> allyNpc;
     vector<Float> enemyNpc;
+    vector<Float> neutEnemyNpc;
     vector<Float> allyPlayer;
     vector<Float> enemyPlayer;
     vector<Siege> siege;

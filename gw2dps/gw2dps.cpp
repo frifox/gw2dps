@@ -156,7 +156,7 @@ bool drawArrow = true, bool drawText = true, bool drawName = false, bool drawPro
 void ESP()
 {
     if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene()) return;
-    bool floatersOn = floatAllyNpc || floatEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject;
+    bool floatersOn = floatAllyNpc || floatEnemyNpc || floatNeutEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject;
 
     // Element Anchors
     Anchor aLeft, aTopLeft, aTop, aTopRight, aRight, aCenter, aBottom;
@@ -478,8 +478,10 @@ void ESP()
                                 floaters.allyNpc.push_back(floater);
 
                             // enemyNpc
-                            if (floatEnemyNpc && (att == GW2::ATTITUDE_HOSTILE || att == GW2::ATTITUDE_INDIFFERENT))
+                            if (floatEnemyNpc && att == GW2::ATTITUDE_HOSTILE)
                                 floaters.enemyNpc.push_back(floater);
+                            if (floatNeutEnemyNpc && att == GW2::ATTITUDE_INDIFFERENT)
+                                floaters.neutEnemyNpc.push_back(floater);
                         }
                     }
                 }
@@ -611,7 +613,13 @@ void ESP()
             if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
             {
                 for (auto & floater : floaters.enemyNpc) {
-                    DrawFloater(floater, floater.att == GW2::ATTITUDE_INDIFFERENT ? COLOR_NPC_INDIFF : COLOR_NPC_FOE);
+                    DrawFloater(floater, COLOR_NPC_FOE);
+                }
+            }
+
+            if (floatNeutEnemyNpc && floaters.neutEnemyNpc.size() > 0) {
+                for (auto & floater : floaters.neutEnemyNpc) {
+                    DrawFloater(floater, COLOR_NPC_INDIFF);
                 }
             }
 
@@ -653,6 +661,9 @@ void ESP()
 
         if (floatEnemyNpc)
             ss << format(" | FoeNPCs: %i") % floaters.enemyNpc.size();
+
+        if (floatNeutEnemyNpc)
+            ss << format(" | NeutFoeNPCs: %i") % floaters.neutEnemyNpc.size();
 
         if (floatAllyPlayer)
             ss << format(" | Allies: %i") % floaters.allyPlayer.size();
@@ -1505,6 +1516,7 @@ void ESP()
         ss << format("\n");
         ss << format("\n[%i] Count Ally NPCs (%s)") % floatAllyNpc % get_key_description("Hotkeys.FLOAT_ALLY_NPC");
         ss << format("\n[%i] Count Enemy NPCs (%s)") % floatEnemyNpc % get_key_description("Hotkeys.FLOAT_ENEMY_NPC");
+        ss << format("\n[%i] Count Neutral Enemy NPCs (%s)") % floatEnemyNpc % get_key_description("Hotkeys.FLOAT_NEUT_ENEMY_NPC");
         ss << format("\n[%i] Count Ally Players (%s)") % floatAllyPlayer % get_key_description("Hotkeys.FLOAT_ALLY_PLAYER");
         ss << format("\n[%i] Count Enemy Players (%s)") % floatEnemyPlayer % get_key_description("Hotkeys.FLOAT_ENEMY_PLAYER");
         //ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
@@ -1557,6 +1569,7 @@ void load_preferences() {
     floatType = Str2Bool(read_config_value("Preferences.FLOAT_TYPE"), true);
     floatAllyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_NPC"));
     floatEnemyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_NPC"));
+    floatNeutEnemyNpc = Str2Bool(read_config_value("Preferences.FLOAT_NEUT_ENEMY_NPC"));
     floatAllyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER"));
     floatAllyPlayerProf = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF"));
     floatEnemyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_PLAYER"));
@@ -1607,6 +1620,7 @@ void save_preferences() {
     write_config_value("Preferences.FLOAT_TYPE", Bool2Str(floatType));
     write_config_value("Preferences.FLOAT_ALLY_NPC", Bool2Str(floatAllyNpc));
     write_config_value("Preferences.FLOAT_ENEMY_NPC", Bool2Str(floatEnemyNpc));
+    write_config_value("Preferences.FLOAT_NEUT_ENEMY_NPC", Bool2Str(floatNeutEnemyNpc));
     write_config_value("Preferences.FLOAT_ALLY_PLAYER", Bool2Str(floatAllyPlayer));
     write_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF", Bool2Str(floatAllyPlayerProf));
     write_config_value("Preferences.FLOAT_ENEMY_PLAYER", Bool2Str(floatEnemyPlayer));
@@ -1749,7 +1763,7 @@ bool CompassOverlay::FilterDot(GW2LIB::Agent &ag) {
     if (!isPlayer && (!floatAllyNpc && att == GW2::ATTITUDE_NEUTRAL)) return true;
     if (!isPlayer && (!floatAllyNpc && att == GW2::ATTITUDE_FRIENDLY)) return true;
     if (!isPlayer && (!floatEnemyNpc && att == GW2::ATTITUDE_HOSTILE)) return true;
-    if (!isPlayer && (!floatEnemyNpc && att == GW2::ATTITUDE_INDIFFERENT)) return true;
+    if (!isPlayer && (!floatNeutEnemyNpc && att == GW2::ATTITUDE_INDIFFERENT)) return true;
     return false;
 }
 

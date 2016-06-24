@@ -49,6 +49,7 @@
 #define FLOAT_RADIUS_LESS 83
 #define FLOAT_ALLY_NPC 84
 #define FLOAT_ENEMY_NPC 85
+#define FLOAT_NEUT_ENEMY_NPC 850
 #define FLOAT_ALLY_PLAYER 86
 #define FLOAT_ALLY_PLAYER_PROF 87
 #define FLOAT_ENEMY_PLAYER 88
@@ -119,6 +120,7 @@ void threadHotKeys()
     registerHotKeyWrapper(FLOAT_RADIUS_LESS, read_config_value("Hotkeys.FLOAT_RADIUS_LESS"), true); // floatRadius -
     registerHotKeyWrapper(FLOAT_ALLY_NPC, read_config_value("Hotkeys.FLOAT_ALLY_NPC")); // floatAllyNpc
     registerHotKeyWrapper(FLOAT_ENEMY_NPC, read_config_value("Hotkeys.FLOAT_ENEMY_NPC")); // floatEnemyNpc
+    registerHotKeyWrapper(FLOAT_NEUT_ENEMY_NPC, read_config_value("Hotkeys.FLOAT_NEUT_ENEMY_NPC")); // floatNeutEnemyNpc
     registerHotKeyWrapper(FLOAT_ALLY_PLAYER, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER")); // floatAllyPlayer
     registerHotKeyWrapper(FLOAT_ALLY_PLAYER_PROF, read_config_value("Hotkeys.FLOAT_ALLY_PLAYER_PROF")); // floatAllyPlayerProf
     registerHotKeyWrapper(FLOAT_ENEMY_PLAYER, read_config_value("Hotkeys.FLOAT_ENEMY_PLAYER")); // floatEnemyPlayer
@@ -199,6 +201,7 @@ void threadHotKeys()
             if (msg.wParam == FLOAT_RADIUS_LESS) if (floatRadius > 1000) floatRadius -= 1000;
             if (msg.wParam == FLOAT_ALLY_NPC) floatAllyNpc = !floatAllyNpc;
             if (msg.wParam == FLOAT_ENEMY_NPC) floatEnemyNpc = !floatEnemyNpc;
+            if (msg.wParam == FLOAT_NEUT_ENEMY_NPC) floatNeutEnemyNpc = !floatNeutEnemyNpc;
             if (msg.wParam == FLOAT_ALLY_PLAYER) floatAllyPlayer = !floatAllyPlayer;
             if (msg.wParam == FLOAT_ALLY_PLAYER_PROF) floatAllyPlayerProf = !floatAllyPlayerProf;
             if (msg.wParam == FLOAT_ENEMY_PLAYER) floatEnemyPlayer = !floatEnemyPlayer;
@@ -265,6 +268,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, FLOAT_RADIUS_LESS);
     UnregisterHotKey(NULL, FLOAT_ALLY_NPC);
     UnregisterHotKey(NULL, FLOAT_ENEMY_NPC);
+    UnregisterHotKey(NULL, FLOAT_NEUT_ENEMY_NPC);
     UnregisterHotKey(NULL, FLOAT_ALLY_PLAYER);
     UnregisterHotKey(NULL, FLOAT_ALLY_PLAYER_PROF);
     UnregisterHotKey(NULL, FLOAT_ENEMY_PLAYER);
