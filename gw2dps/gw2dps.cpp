@@ -75,7 +75,7 @@ void DrawAgentPath(const Agent &ag) {
         if (!ch.IsPlayer() && !floatAllyNpc) return;
         break;
     case GW2::ATTITUDE_INDIFFERENT:
-        if (!ch.IsPlayer() && !floatEnemyNpc) return;
+        if (!ch.IsPlayer() && !floatNeutEnemyNpc) return;
         break;
     default: return;
     }
