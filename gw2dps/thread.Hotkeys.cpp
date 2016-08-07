@@ -218,7 +218,7 @@ void threadHotKeys()
             if (msg.wParam == COMP_OVERLAY_ZFADE) compDotsFade = !compDotsFade;
             if (msg.wParam == SHOW_PING) showPing = !showPing;
             if (msg.wParam == FLOAT_SNAP) floatSnap = !floatSnap;
-            if (msg.wParam == PLAYER_LIST_FILTER && alliesList) {
+            if (msg.wParam == PLAYER_LIST_FILTER) {
                 playerListFilter = (playerListFilter >= GW2::PROFESSION_END - 1) ? 0 : playerListFilter + 1;
             }
 

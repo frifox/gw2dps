@@ -626,14 +626,16 @@ void ESP()
             if (floatAllyPlayer && floaters.allyPlayer.size() > 0)
             {
                 for (auto & floater : floaters.allyPlayer) {
-                    DrawFloater(floater, COLOR_PLAYER_ALLY, true, true, true, true);
+                    if (!playerListFilter || playerListFilter == floater.prof)
+                        DrawFloater(floater, COLOR_PLAYER_ALLY, true, true, true, true);
                 }
             }
 
             if (floatEnemyPlayer && floaters.enemyPlayer.size() > 0)
             {
                 for (auto & floater : floaters.enemyPlayer) {
-                    DrawFloater(floater, COLOR_PLAYER_FOE, true, true, false, true);
+                    if (!playerListFilter || playerListFilter == floater.prof)
+                        DrawFloater(floater, COLOR_PLAYER_FOE, true, true, false, true);
                 }
             }
 
@@ -1758,6 +1760,7 @@ bool CompassOverlay::FilterDot(GW2LIB::Agent &ag) {
     GW2LIB::Character ch = ag.GetCharacter();
     GW2::Attitude att = ch.GetAttitude();
     bool isPlayer = ch.IsPlayer();
+    if (isPlayer && !(!playerListFilter || playerListFilter == ch.GetProfession())) return true;
     if (isPlayer && (!floatAllyPlayer && att == GW2::ATTITUDE_FRIENDLY)) return true;
     if (isPlayer && (!floatEnemyPlayer && att == GW2::ATTITUDE_HOSTILE)) return true;
     if (!isPlayer && (!floatAllyNpc && att == GW2::ATTITUDE_NEUTRAL)) return true;
@@ -1801,8 +1804,8 @@ int CompassOverlay::GetColor(GW2LIB::Character curChar, int initialColor = 0xFF0
 
 
 
-void combat_log(CombatLogType type, int hit, Agent tgt) {
-    //HL_LOG_DBG("agent: %i - type: %i - hit: %i\n", tgt.GetAgentId(), type, hit);
+void combat_log(CombatLogType type, int hit, Agent tgt, GW2::EffectType ef) {
+    //HL_LOG_DBG("ag: %4i, type: %2i, ef: %5i, hit: %i\n", tgt.GetAgentId(), type, ef, hit);
     switch (type) {
     case CL_CONDI_DMG_OUT:
     case CL_CRIT_DMG_OUT:
