@@ -1,15 +1,6 @@
 
 #include "globals.h"
 
-// Threads //
-/*#include "thread.Hotkeys.cpp"
-#include "thread.Dps.cpp"
-#include "thread.KillTimer.cpp"
-#include "thread.Hits.cpp"
-#include "thread.AttackRate.cpp"
-#include "thread.Crits.cpp"
-#include "thread.Speedometer.cpp"*/
-
 
 void ESP()
 {
@@ -1362,6 +1353,7 @@ void ESP()
     }
 
     dpsGraph.Draw(1, 1, 50);
+    hitGraph.Draw(1, 53, 50);
 
     if (help)
     {
@@ -1433,10 +1425,12 @@ void combat_log(Agent src, Agent tgt, int hit, CombatLogType type, GW2::EffectTy
         if (locked.valid && locked.id != tgt.GetAgentId()) {
             selfDmg.total = 0;
             selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
+            hitGraph.Clear();
         }
 
         if (locked.valid && locked.id == tgt.GetAgentId()) {
             selfDmg.total += float(hit);
+            hitGraph.Push((float)hit);
         }
         
         break;

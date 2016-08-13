@@ -19,6 +19,7 @@ const DWORD floatMask = 0x30000000;
 const DWORD bgColorMask = 0x33000000;
 
 Grapher dpsGraph = Grapher(100, 2);
+Grapher hitGraph = Grapher(100, 2);
 
 
 // Settings //
