@@ -1,157 +1,15 @@
-#include "gw2lib.h"
-#include "gw2dps.h"
-#include "config.h"
-#include "keymap.h"
-#include "hotkey.h"
-#include "preferences.h"
 
-#include "hacklib/Main.h"
+#include "globals.h"
 
 // Threads //
-#include "thread.Hotkeys.cpp"
+/*#include "thread.Hotkeys.cpp"
 #include "thread.Dps.cpp"
 #include "thread.KillTimer.cpp"
 #include "thread.Hits.cpp"
 #include "thread.AttackRate.cpp"
 #include "thread.Crits.cpp"
-#include "thread.Speedometer.cpp"
+#include "thread.Speedometer.cpp"*/
 
-
-FloatColor GetFloatColor(const Agent &ag) {
-    FloatColor ret = COLOR_NONE;
-    if (!ag.IsValid()) return ret;
-
-    if (ag.GetCategory() == GW2::AGENT_CATEGORY_KEYFRAMED) {
-        ret = COLOR_OBJECT;
-    } else {
-        Character ch = ag.GetCharacter();
-        if (!ch.IsValid()) return ret;
-
-        GW2::Attitude att = ch.GetAttitude();
-
-        if (ch.IsPlayer()) {
-            switch (att) {
-            case GW2::ATTITUDE_FRIENDLY: ret = COLOR_PLAYER_ALLY; break;
-            case GW2::ATTITUDE_HOSTILE:  ret = COLOR_PLAYER_FOE; break;
-            }
-        } else {
-            switch (att) {
-            case GW2::ATTITUDE_FRIENDLY:    ret = COLOR_NPC_ALLY; break;
-            case GW2::ATTITUDE_HOSTILE:     ret = COLOR_NPC_FOE; break;
-            case GW2::ATTITUDE_INDIFFERENT: ret = COLOR_NPC_INDIFF; break;
-            case GW2::ATTITUDE_NEUTRAL:     ret = COLOR_NPC_NEUTRAL; break;
-            }
-        }
-    }
-
-    return ret;
-}
-
-void DrawAgentPath(const Agent &ag) {
-    if (!floatCircles && ag.GetAgentId() != me.GetAgent().GetAgentId()) return;
-
-    GW2::AgentCategory agcat = ag.GetCategory();
-    if (agcat != GW2::AGENT_CATEGORY_CHAR) return;
-
-    Character ch = ag.GetCharacter();
-    if (!ch.IsValid() || !ch.IsAlive()) return;
-
-    GW2::Attitude att = ch.GetAttitude();
-
-    switch (att) {
-    case GW2::ATTITUDE_FRIENDLY:
-        if (ch.IsControlled()) {
-            if (!selfFloat) return;
-        } else {
-            if (ch.IsPlayer() && !floatAllyPlayer) return;
-            if (!ch.IsPlayer() && !floatAllyNpc) return;
-        }
-        break;
-    case GW2::ATTITUDE_HOSTILE:
-        if (ch.IsPlayer() && !floatEnemyPlayer) return;
-        if (!ch.IsPlayer() && !floatEnemyNpc) return;
-        break;
-    case GW2::ATTITUDE_NEUTRAL:
-        if (!ch.IsPlayer() && !floatAllyNpc) return;
-        break;
-    case GW2::ATTITUDE_INDIFFERENT:
-        if (!ch.IsPlayer() && !floatNeutEnemyNpc) return;
-        break;
-    default: return;
-    }
-
-    int agid = ag.GetAgentId();
-    if (agPaths.find(agid) == agPaths.end()) {
-        agPaths[agid] = circular_buffer<Vector3>(200);
-    }
-
-    size_t pathSize = agPaths[agid].size();
-    Vector3 agpos = ag.GetPos();
-
-    if (pathSize >= 2) {
-        Vector3 prev = agPaths[agid][pathSize - 1];
-        if (prev != agpos) {
-            agPaths[agid].push_back(agpos);
-        }
-
-        for (size_t i = 0; i < pathSize - 1; i++) {
-            Vector3 pos1 = agPaths[agid][i];
-            Vector3 pos2 = agPaths[agid][i + 1];
-            FloatColor color = GetFloatColor(ag);
-            DrawLineProjected(pos1, pos2, color | 0xff000000);
-        }
-    } else {
-        agPaths[agid].push_front(agpos);
-    }
-}
-
-void DrawFloater(const Float &floater, DWORD color = 0xffffffff, 
-bool drawArrow = true, bool drawText = true, bool drawName = false, bool drawProfIcon = false) {
-    float x, y;
-    if (WorldToScreen(floater.pos, &x, &y))
-    {
-        if (floater.isPlayer && floatSnap) {
-            float ww = GetWindowWidth() - 25;
-            float wh = GetWindowHeight() - 10;
-            if (x < 50) x = 50;
-            if (x > ww) x = ww;
-            if (y < 33) y = 33;
-            if (y > wh) y = wh;
-        }
-
-        if (drawArrow) {
-            Vector3 rotArrow = {
-                floater.pos.x + cos(floater.rot) * 50.0f,
-                floater.pos.y + sin(floater.rot) * 50.0f,
-                floater.pos.z
-            };
-
-            float w = floater.cHealth / floater.mHealth * 20;
-            DrawRectProjected(rotArrow, 20, 5, floater.rot, color);
-            DrawRectFilledProjected(rotArrow, w, 5, floater.rot, color);
-        }
-
-        DrawCircleProjected(floater.pos, 20.0f, color);
-        DrawCircleFilledProjected(floater.pos, 20.0f, color - floatMask);
-
-        if (drawText) {
-            stringstream fs;
-            if (floatType)
-                fs << format("%i") % int(Dist(self.pos, floater.pos));
-            else
-                fs << format("%i") % floater.mHealth;
-
-            Vector2 fsInfo = font.TextInfo(fs.str());
-            if (floater.isPlayer && drawProfIcon) profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
-            font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
-
-            if (drawName) {
-                Vector2 fsInfo2 = font2.TextInfo(floater.name);
-                if (floater.name.size()) font2.Draw(x - fsInfo2.x / 2, y - 30, fontColor, "%s", floater.name.c_str());
-            }
-        }
-    }
-}
 
 void ESP()
 {
@@ -223,6 +81,7 @@ void ESP()
     if (selfFloat && meAg.IsValid())
     {
         Float f;
+        f.id = meAg.GetAgentId();
         f.isPlayer = true;
         f.pos = self.pos;
         f.rot = meAg.GetRot();
@@ -421,6 +280,7 @@ void ESP()
                 if (Dist(self.pos, pos) <= floatRadius)
                 {
                     Float floater;
+                    floater.id = ag.GetAgentId();
                     floater.pos = pos;
                     floater.rot = rot;
                     floater.mHealth = mHealth;
@@ -451,6 +311,7 @@ void ESP()
                     if (Dist(self.pos, pos) <= floatRadius)
                     {
                         Float floater;
+                        floater.id = ag.GetAgentId();
                         floater.pos = pos;
                         floater.rot = rot;
                         floater.mHealth = mHealth;
@@ -511,6 +372,7 @@ void ESP()
                 ally.mHealth = round(ch.GetMaxHealth() / (100 + wvwBonus) * 100);
                 ally.lvl = ch.GetScaledLevel();
                 ally.lvlActual = ch.GetLevel();
+                ally.mLvl = player.GetMasteryLevel();
                 ally.name = player.GetName();
 
                 baseHpReturn base = baseHp(ally.lvl, ally.profession);
@@ -771,6 +633,7 @@ void ESP()
             stringstream sh;
             stringstream sv;
             stringstream sl;
+            stringstream sm;
             stringstream sd;
 
             const char *prof = profFilterName[playerListFilter];
@@ -781,6 +644,7 @@ void ESP()
             sh << format("Health");
             sv << format("Vitality");
             sl << format("Level");
+            sm << format("MLvl");
             sd << format("Distance");
 
             bool listEmpty = true;
@@ -793,6 +657,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -807,6 +672,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -821,6 +687,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -835,6 +702,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -849,6 +717,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -863,6 +732,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -877,6 +747,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -891,6 +762,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -905,6 +777,7 @@ void ESP()
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
                     sl << format("\n%i") % ally.lvlActual;
+                    sm << format("\n%i") % ally.mLvl;
                     sd << format("\n%i") % dist;
                 }
                 listEmpty = false;
@@ -917,6 +790,7 @@ void ESP()
                 sh << format("\n...");
                 sv << format("\n...");
                 sl << format("\n...");
+                sm << format("\n...");
                 sd << format("\n...");
             }
 
@@ -932,7 +806,8 @@ void ESP()
             float shOffset = snOffset + strInfo.x;
             float svOffset = shOffset + 85;
             float slOffset = svOffset + 70;
-            float sdOffset = slOffset + 60;
+            float smOffset = slOffset + 60;
+            float sdOffset = smOffset + 60;
             float sxOffset = sdOffset + 70;
 
             float x = round(aLeft.x);
@@ -955,6 +830,7 @@ void ESP()
             font.Draw(x + shOffset, y, fontColor, "%s", sh.str().c_str());
             font.Draw(x + svOffset, y, fontColor, "%s", sv.str().c_str());
             font.Draw(x + slOffset, y, fontColor, "%s", sl.str().c_str());
+            font.Draw(x + smOffset, y, fontColor, "%s", sm.str().c_str());
             font.Draw(x + sdOffset, y, fontColor, "%s", sd.str().c_str());
         }
     }
@@ -1036,7 +912,8 @@ void ESP()
                     {
                         GW2::CharacterStats stats = agLocked.GetCharacter().GetStats();
 
-                        ss << format("Power - %i") % stats.power;
+                        ss << format("AgentID - %i") % agLocked.GetAgentId();
+                        ss << format("\nPower - %i") % stats.power;
                         ss << format("\nPrecision - %i") % stats.precision;
                         ss << format("\nToughness - %i") % stats.toughness;
                         ss << format("\nVitality - %i") % stats.vitality;
@@ -1045,7 +922,7 @@ void ESP()
                         ss << format("\nCondition - %i") % stats.condition;
 
                         ss << format("\n");
-                        ss << format("\n(Agent: %p)") % (void**)agLocked.m_ptr;
+                        ss << format("\n(Agent: %p)") % agLocked.m_ptr->pAgent.data();
                     }
                 }
                 else
@@ -1484,6 +1361,8 @@ void ESP()
         }
     }
 
+    dpsGraph.Draw(1, 1, 50);
+
     if (help)
     {
         stringstream ss;
@@ -1543,269 +1422,9 @@ void ESP()
 }
 
 
-void load_preferences() {
-    expMode = Str2Bool(read_config_value("Preferences.EXP_MODE"));
-    selfFloat = Str2Bool(read_config_value("Preferences.SELF_FLOAT"));
-    loopLimiter = Str2Bool(read_config_value("Preferences.LOOP_LIMITER"), true);
-    selfHealthPercent = Str2Bool(read_config_value("Preferences.SELF_HEALTH_PERCENT"), true);
-    woldBosses = Str2Bool(read_config_value("Preferences.WORLD_BOSSES"));
-    targetSelected = Str2Bool(read_config_value("Preferences.TARGET_SELECTED"), true);
-    targetInfo = Str2Bool(read_config_value("Preferences.TARGET_INFO"));
-    targetInfoAlt = Str2Bool(read_config_value("Preferences.TARGET_INFO_ALT"));
-    targetLock = Str2Bool(read_config_value("Preferences.TARGET_LOCK"));
-    dpsAllowNegative = Str2Bool(read_config_value("Preferences.DPS_ALLOW_NEGATIVE"));
-    logDps = Str2Bool(read_config_value("Preferences.LOG_DPS"), true);
-    logDpsDetails = Str2Bool(read_config_value("Preferences.LOG_DPS_DETAILS"));
-    logKillTimer = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER"));
-    logKillTimerDetails = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_DETAILS"));
-    logKillTimerToFile = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_TO_FILE"));
-    logHits = Str2Bool(read_config_value("Preferences.LOG_HITS"));
-    logHitsDetails = Str2Bool(read_config_value("Preferences.LOG_HITS_DETAILS"));
-    logHitsToFile = Str2Bool(read_config_value("Preferences.LOG_HITS_TO_FILE"));
-    logAttackRate = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE"));
-    logAttackRateDetails = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE_DETAILS"));
-    logAttackRateToFile = Str2Bool(read_config_value("Preferences.LOG_ATTACK_RATE_TO_FILE"));
-    logCrits = Str2Bool(read_config_value("Preferences.LOG_CRITS"));
-    alliesList = Str2Bool(read_config_value("Preferences.ALLIES_LIST"));
-    floatCircles = Str2Bool(read_config_value("Preferences.FLOAT_CIRCLES"));
-    floatType = Str2Bool(read_config_value("Preferences.FLOAT_TYPE"), true);
-    floatAllyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_NPC"));
-    floatEnemyNpc = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_NPC"));
-    floatNeutEnemyNpc = Str2Bool(read_config_value("Preferences.FLOAT_NEUT_ENEMY_NPC"));
-    floatAllyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER"));
-    floatAllyPlayerProf = Str2Bool(read_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF"));
-    floatEnemyPlayer = Str2Bool(read_config_value("Preferences.FLOAT_ENEMY_PLAYER"));
-    floatSiege = Str2Bool(read_config_value("Preferences.FLOAT_SIEGE"));
-    floatObject = Str2Bool(read_config_value("Preferences.FLOAT_OBJECT"));
-    floatMouse = Str2Bool(read_config_value("Preferences.FLOAT_MOUSE_MEASURE"));
-    logSpeedometer = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER"));
-    logSpeedometerEnemy = Str2Bool(read_config_value("Preferences.LOG_SPEEDOMETER_ENEMY"));
-    logDisplacement = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT"));
-    logDisplacementEnemy = Str2Bool(read_config_value("Preferences.LOG_DISPLACEMENT_ENEMY"));
-    floatRadius = Str2Int(read_config_value("Preferences.FLOAT_RADIUS"), floatRadiusMax);
-    wvwBonus = Str2Int(read_config_value("Preferences.WVW_BONUS"));
-    AttackRateChainHits = Str2Int(read_config_value("Preferences.ATTACKRATE_CHAIN_HITS"), 1);
-    logCritsSample = Str2Int(read_config_value("Preferences.LOG_CRITS_SAMPLE"));
-    compDotsFade = Str2Bool(read_config_value("Preferences.COMP_OVERLAY_ZFADE"));
-    compDots = Str2Bool(read_config_value("Preferences.COMP_OVERLAY"));
-    showPing = Str2Bool(read_config_value("Preferences.SHOW_PING"));
-    floatSnap = Str2Bool(read_config_value("Preferences.FLOAT_SNAP"));
-    playerListFilter = Str2Int(read_config_value("Preferences.PLAYER_LIST_FILTER"));
-    agentLines = Str2Bool(read_config_value("Preferences.AGENT_LINES"));
-}
 
-void save_preferences() {
-    write_config_value("Preferences.EXP_MODE", Bool2Str(expMode));
-    write_config_value("Preferences.SELF_FLOAT", Bool2Str(selfFloat));
-    write_config_value("Preferences.LOOP_LIMITER", Bool2Str(loopLimiter));
-    write_config_value("Preferences.SELF_HEALTH_PERCENT", Bool2Str(selfHealthPercent));
-    write_config_value("Preferences.WORLD_BOSSES", Bool2Str(woldBosses));
-    write_config_value("Preferences.TARGET_SELECTED", Bool2Str(targetSelected));
-    write_config_value("Preferences.TARGET_INFO", Bool2Str(targetInfo));
-    write_config_value("Preferences.TARGET_INFO_ALT", Bool2Str(targetInfoAlt));
-    write_config_value("Preferences.TARGET_LOCK", Bool2Str(targetLock));
-    write_config_value("Preferences.DPS_ALLOW_NEGATIVE", Bool2Str(dpsAllowNegative));
-    write_config_value("Preferences.LOG_DPS", Bool2Str(logDps));
-    write_config_value("Preferences.LOG_DPS_DETAILS", Bool2Str(logDpsDetails));
-    write_config_value("Preferences.LOG_KILL_TIMER", Bool2Str(logKillTimer));
-    write_config_value("Preferences.LOG_KILL_TIMER_DETAILS", Bool2Str(logKillTimerDetails));
-    write_config_value("Preferences.LOG_KILL_TIMER_TO_FILE", Bool2Str(logKillTimerToFile));
-    write_config_value("Preferences.LOG_HITS", Bool2Str(logHits));
-    write_config_value("Preferences.LOG_HITS_DETAILS", Bool2Str(logHitsDetails));
-    write_config_value("Preferences.LOG_HITS_TO_FILE", Bool2Str(logHitsToFile));
-    write_config_value("Preferences.LOG_ATTACK_RATE", Bool2Str(logAttackRate));
-    write_config_value("Preferences.LOG_ATTACK_RATE_DETAILS", Bool2Str(logAttackRateDetails));
-    write_config_value("Preferences.LOG_ATTACK_RATE_TO_FILE", Bool2Str(logAttackRateToFile));
-    write_config_value("Preferences.LOG_CRITS", Bool2Str(logCrits));
-    write_config_value("Preferences.ALLIES_LIST", Bool2Str(alliesList));
-    write_config_value("Preferences.FLOAT_CIRCLES", Bool2Str(floatCircles));
-    write_config_value("Preferences.FLOAT_TYPE", Bool2Str(floatType));
-    write_config_value("Preferences.FLOAT_ALLY_NPC", Bool2Str(floatAllyNpc));
-    write_config_value("Preferences.FLOAT_ENEMY_NPC", Bool2Str(floatEnemyNpc));
-    write_config_value("Preferences.FLOAT_NEUT_ENEMY_NPC", Bool2Str(floatNeutEnemyNpc));
-    write_config_value("Preferences.FLOAT_ALLY_PLAYER", Bool2Str(floatAllyPlayer));
-    write_config_value("Preferences.FLOAT_ALLY_PLAYER_PROF", Bool2Str(floatAllyPlayerProf));
-    write_config_value("Preferences.FLOAT_ENEMY_PLAYER", Bool2Str(floatEnemyPlayer));
-    write_config_value("Preferences.FLOAT_SIEGE", Bool2Str(floatSiege));
-    write_config_value("Preferences.FLOAT_OBJECT", Bool2Str(floatObject));
-    write_config_value("Preferences.FLOAT_MOUSE_MEASURE", Bool2Str(floatMouse));
-    write_config_value("Preferences.LOG_SPEEDOMETER", Bool2Str(logSpeedometer));
-    write_config_value("Preferences.LOG_SPEEDOMETER_ENEMY", Bool2Str(logSpeedometerEnemy));
-    write_config_value("Preferences.LOG_DISPLACEMENT", Bool2Str(logDisplacement));
-    write_config_value("Preferences.LOG_DISPLACEMENT_ENEMY", Bool2Str(logDisplacementEnemy));
-    write_config_value("Preferences.FLOAT_RADIUS", Int2Str(floatRadius));
-    write_config_value("Preferences.WVW_BONUS", Int2Str(wvwBonus));
-    write_config_value("Preferences.ATTACKRATE_CHAIN_HITS", Int2Str(AttackRateChainHits));
-    write_config_value("Preferences.LOG_CRITS_SAMPLE", Int2Str(logCritsSample));
-    write_config_value("Preferences.COMP_OVERLAY_ZFADE", Bool2Str(compDotsFade));
-    write_config_value("Preferences.COMP_OVERLAY", Bool2Str(compDots));
-    write_config_value("Preferences.SHOW_PING", Bool2Str(showPing));
-    write_config_value("Preferences.FLOAT_SNAP", Bool2Str(floatSnap));
-    write_config_value("Preferences.PLAYER_LIST_FILTER", Int2Str(playerListFilter));
-    write_config_value("Preferences.AGENT_LINES", Bool2Str(agentLines));
-    save_config();
-}
-
-
-void CompassOverlay::RenderOverlay() {
-    using namespace GW2LIB;
-    GW2LIB::Agent curAg, agSelf;
-    GW2LIB::Character curChar;
-    GW2LIB::Vector3 camVec, agPos, agSelfPos;
-    GW2LIB::Compass comp;
-
-    GW2LIB::GetLockedSelection();
-
-    float curDist, Rotation, CoordX, CoordY;
-    float CenterX, CenterY;
-
-    camVec = GetViewVector();
-    agSelf = GetOwnAgent();
-    agSelfPos = agSelf.GetPos();
-    comp = GetCompass();
-
-    float map_width = 0.0f;
-    float map_height = 0.0f;
-    float map_zoom = 0.0f;
-    float wComp = 1.0f;
-    float hComp = 1.0f;
-    float zoomDiff = 0.0f;
-    float zoomComp = 0.0f;
-    float map_right = 0.0f;
-    float map_bottom = 0.0f;
-    float map_top = GetWindowHeight();
-    int ifSize = GetUiInterfaceSize();
-
-    switch (ifSize) {
-    case GW2::UI_IF_SMALL:
-        map_bottom = 33.0f;
-        map_right = 0.0f;
-        wComp = 0.898f;
-        hComp = 0.898f;
-        zoomComp = 26.7f;
-        zoomDiff = 19.9f;
-        break;
-    case GW2::UI_IF_NORMAL:
-        map_bottom = 37.0f;
-        map_right = 0.0f;
-        wComp = 1.0f;
-        hComp = 1.0f;
-        zoomComp = 23.9f;
-        zoomDiff = 18.0f;
-        break;
-    case GW2::UI_IF_LARGE:
-        map_bottom = 40.0f;
-        map_right = -2.0f;
-        wComp = 1.117647058823529f;
-        hComp = 1.117647058823529f;
-        zoomComp = 21.5f;
-        zoomDiff = 16.2f;
-        break;
-    case GW2::UI_IF_LARGER:
-        map_bottom = 44.0f;
-        map_right = -2.0f;
-        wComp = 1.229411764705882f;
-        hComp = 1.229411764705882f;
-        zoomComp = 19.5f;
-        zoomDiff = 14.7f;
-        break;
-    }
-
-    map_width = (comp.GetWidth() / 2) * wComp;
-    map_height = (comp.GetHeight() / 2) * hComp;
-    map_zoom = (comp.GetZoom() * zoomDiff) + zoomComp;
-    if (comp.GetPosition()) map_top = (map_height * 2) + 35.5f;
-
-    CenterX = GetWindowWidth() - (map_width + map_right);
-    CenterY = GetWindowHeight() - (map_height + map_bottom);
-    DrawCircleFilled(CenterX, CenterY, 2, SelfDotColor);
-
-    while (curAg.BeNext()){
-        GW2::AgentType type = curAg.GetType();
-        if (type != GW2::AGENT_TYPE_CHAR && type != GW2::AGENT_TYPE_GADGET) continue;
-        if (curAg.GetAgentId() == GetOwnAgent().GetAgentId()) continue;
-        if (!curAg.IsValid()) continue;
-
-        curChar = curAg.GetCharacter();
-        if (type == GW2::AGENT_TYPE_CHAR && !curChar.IsAlive() && !curChar.IsDowned()) continue;
-        if (type == GW2::AGENT_TYPE_GADGET && !floatObject) continue;
-        if (type == GW2::AGENT_TYPE_CHAR && FilterDot(curAg)) continue;
-        agPos = curAg.GetPos();
-        curDist = dist2D(agSelfPos, agPos);
-        if (curDist > (float)floatRadius) continue;
-
-        Rotation = !comp.GetRotation() ?
-            ((atan2(agPos.y - agSelfPos.y, agPos.x - agSelfPos.x)) + 2 * PI) :
-            (atan2(agPos.y - agSelfPos.y, agPos.x - agSelfPos.x) - atan2(camVec.y, camVec.x)) + (PI / 2);
-
-        CoordX = CenterX + (curDist * cos(Rotation)) / map_zoom;
-        CoordY = CenterY - (curDist * sin(Rotation)) / map_zoom;
-
-        if (CoordX > CenterX + map_width) CoordX = CenterX + map_width;
-        if (CoordX < CenterX - map_width) CoordX = CenterX - map_width;
-        if (CoordX > CenterX + map_width) CoordX = CenterX + map_width;
-        if (CoordY > CenterY + map_height) CoordY = CenterY + map_height;
-        if (CoordY < CenterY - map_height) CoordY = CenterY - map_height;
-
-        DWORD alpha = CalcFade(agSelfPos, agPos);
-        DWORD color = type == GW2::AGENT_TYPE_GADGET ? (alpha | Color_OBJECT) : GetColor(curChar, alpha);
-
-        DrawCircleFilled(CoordX, CoordY, 4.0f, alpha);
-        DrawCircleFilled(CoordX, CoordY, 3.0f, color);
-    }
-
-}
-
-bool CompassOverlay::FilterDot(GW2LIB::Agent &ag) {
-    GW2LIB::Character ch = ag.GetCharacter();
-    GW2::Attitude att = ch.GetAttitude();
-    bool isPlayer = ch.IsPlayer();
-    if (isPlayer && !(!playerListFilter || playerListFilter == ch.GetProfession())) return true;
-    if (isPlayer && (!floatAllyPlayer && att == GW2::ATTITUDE_FRIENDLY)) return true;
-    if (isPlayer && (!floatEnemyPlayer && att == GW2::ATTITUDE_HOSTILE)) return true;
-    if (!isPlayer && (!floatAllyNpc && att == GW2::ATTITUDE_NEUTRAL)) return true;
-    if (!isPlayer && (!floatAllyNpc && att == GW2::ATTITUDE_FRIENDLY)) return true;
-    if (!isPlayer && (!floatEnemyNpc && att == GW2::ATTITUDE_HOSTILE)) return true;
-    if (!isPlayer && (!floatNeutEnemyNpc && att == GW2::ATTITUDE_INDIFFERENT)) return true;
-    return false;
-}
-
-int CompassOverlay::CalcFade(GW2LIB::Vector3 self, GW2LIB::Vector3 ag) {
-    int alpha = alphaMask;
-    if (compDotsFade) {
-        float fr = fadeMark;
-        float tmp = abs(self.z - ag.z);
-        if (tmp > fr) tmp = fr;
-        tmp /= fr;
-        alpha = int(roundf(255.0f - tmp * 255.0f)) << 24;
-    }
-    return alpha;
-}
-
-int CompassOverlay::GetColor(GW2LIB::Character curChar, int initialColor = 0xFF000000) {
-    int color = initialColor;
-    switch (curChar.GetAttitude()){
-    case GW2::ATTITUDE_FRIENDLY:
-        color |= curChar.IsPlayer() ? Color_PLAYER : Color_FRIENDLY;
-        break;
-    case GW2::ATTITUDE_HOSTILE:
-        color |= curChar.IsPlayer() ? Color_HOSTILE : Color_NPC_FOE;
-        break;
-    case GW2::ATTITUDE_INDIFFERENT:
-        color |= Color_INDIFFERENT;
-        break;
-    case GW2::ATTITUDE_NEUTRAL:
-        color |= Color_NEUTRAL;
-        break;
-    }
-
-    return color;
-}
-
-
-
-void combat_log(CombatLogType type, int hit, Agent tgt, GW2::EffectType ef) {
-    //HL_LOG_DBG("ag: %4i, type: %2i, ef: %5i, hit: %i\n", tgt.GetAgentId(), type, ef, hit);
+void combat_log(Agent src, Agent tgt, int hit, CombatLogType type, GW2::EffectType ef) {
+    //HL_LOG_DBG("src: %4i, tgt: %4i, type: %2i, ef: %5i, hit: %i\n", src.GetAgentId(), tgt.GetAgentId(), type, ef, hit);
     switch (type) {
     case CL_CONDI_DMG_OUT:
     case CL_CRIT_DMG_OUT:
@@ -1819,8 +1438,13 @@ void combat_log(CombatLogType type, int hit, Agent tgt, GW2::EffectType ef) {
         if (locked.valid && locked.id == tgt.GetAgentId()) {
             selfDmg.total += float(hit);
         }
+        
         break;
     }
+}
+
+void dmg_log(Agent src, Agent tgt, int hit) {
+    //HL_LOG_DBG("src: %4i, tgt: %4i, hit: %i\n", src.GetAgentId(), tgt.GetAgentId(), hit);
 }
 
 
@@ -1837,6 +1461,7 @@ void GW2LIB::gw2lib_main()
 
     EnableEsp(ESP);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
+    SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
 
     thread t1(threadHotKeys);
     thread t2(threadDps);

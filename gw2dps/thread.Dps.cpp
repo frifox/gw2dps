@@ -1,3 +1,5 @@
+#include "globals.h"
+
 void threadDps() {
     int pAgentId = 0;
     float pHealth = 0;
@@ -19,6 +21,7 @@ void threadDps() {
 
                 // reset self dps
                 bufferSelfDps.push_front(0);
+                dpsGraph.Push(0);
                 selfDmg = Dmg();
 
                 continue;
@@ -48,6 +51,7 @@ void threadDps() {
                 // push dps values to the buffer
                 bufferDps.push_front(partyDps);
                 bufferSelfDps.push_front(selfDps);
+                dpsGraph.Push(selfDps);
             }
         }
         else
@@ -58,10 +62,14 @@ void threadDps() {
                 pHealth = 0;
             }
 
-            if (!bufferDps.empty())
+            if (!bufferDps.empty()) {
                 bufferDps.clear();
-            if (!bufferSelfDps.empty())
+            }
+
+            if (!bufferSelfDps.empty()) {
                 bufferSelfDps.clear();
+                dpsGraph.Clear();
+            }
 
             if (locked.valid && locked.id != pAgentId)
                 pAgentId = locked.id;

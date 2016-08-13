@@ -1,3 +1,5 @@
+#include "globals.h"
+
 void threadKillTimer()
 {
     int pAgentId = 0;

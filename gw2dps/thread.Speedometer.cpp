@@ -1,3 +1,5 @@
+#include "globals.h"
+
 void threadSpeedometer() {
     double pollingRate = 100; // ms
     int pId = 0;

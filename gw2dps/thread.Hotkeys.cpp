@@ -1,6 +1,4 @@
-#include "config.h"
-#include "hotkey.h"
-#include "preferences.h"
+#include "globals.h"
 
 #define KILL_APP 999
 

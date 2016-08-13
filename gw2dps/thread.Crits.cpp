@@ -1,3 +1,5 @@
+#include "globals.h"
+
 void threadCrits() {
     int pAgentId = 0;
     float pHealth = 0;

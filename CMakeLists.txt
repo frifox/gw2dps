@@ -37,7 +37,20 @@ ADD_LIBRARY(${PROJ_NAME}_dll SHARED
 	gw2dps/hotkey.cpp
 	gw2dps/preferences.h
 	gw2dps/preferences.cpp
+	gw2dps/grapher.h
 	gw2dps/grapher.cpp
+	gw2dps/compass.h
+	gw2dps/compass.cpp
+	gw2dps/globals.h
+	gw2dps/globals.cpp
+	gw2dps/helpers.cpp
+	gw2dps/thread.AttackRate.cpp
+	gw2dps/thread.Crits.cpp
+	gw2dps/thread.Dps.cpp
+	gw2dps/thread.Hits.cpp
+	gw2dps/thread.Hotkeys.cpp
+	gw2dps/thread.KillTimer.cpp
+	gw2dps/thread.Speedometer.cpp
 	gw2dps/gw2dps.h
 	gw2dps/gw2dps.cpp
 	gw2dps/gw2dps_dll.rc)
