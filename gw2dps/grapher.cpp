@@ -5,8 +5,8 @@ Grapher::Grapher(int size, string n, int pad) :
     buff(size), name(n), pad(pad) {
 }
 
-Grapher::Grapher(int size, int pad) {
-    Grapher(size, "", pad);
+Grapher::Grapher(int size, int pad) :
+    buff(size), name(""), pad(pad) {
 }
 
 bool Grapher::Init() {
@@ -40,7 +40,7 @@ void Grapher::Draw(float x, float y, float h) {
     // draw boxes and name
     DrawRectFilled(x, y, bw, bh, backColor - bgColorMask);
     DrawRect(x, y, bw-1, bh-1, 0xff0060ff);
-    fName.Draw(cx-nInfo.x/2, cy-nInfo.y/2, 0xcc999999, "%s", name.c_str());
+    if(name.size()) fName.Draw(cx-nInfo.x/2, cy-nInfo.y/2, 0xcc999999, "%s", name.c_str());
 
     if (!size || !max) return;
 
