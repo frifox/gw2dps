@@ -1,12 +1,12 @@
 
 #include "globals.h"
 
-Grapher::Grapher(int size, string n, int pad, bool ltr) :
-    buff(size), name(n), pad(pad), ltr(ltr) {
+Grapher::Grapher(int size, string n, int pad, bool ltr, bool show_avg) :
+    buff(size), name(n), pad(pad), ltr(ltr), show_avg(show_avg) {
 }
 
-Grapher::Grapher(int size, int pad, bool ltr) :
-    buff(size), name(""), pad(pad), ltr(ltr) {
+Grapher::Grapher(int size, int pad, bool ltr, bool show_avg) :
+    buff(size), name(""), pad(pad), ltr(ltr), show_avg(show_avg) {
 }
 
 bool Grapher::Init() {
@@ -19,6 +19,7 @@ void Grapher::Draw(float x, float y, float h) {
     float w = (float)buff.capacity();
     float border = 1;
     float max = 0;
+    float avg = 0;
 
     float pw = w + pad * 2;
     float ph = h + pad * 2;
@@ -32,8 +33,11 @@ void Grapher::Draw(float x, float y, float h) {
 
     // get max val first
     for (float val : buff) {
+        avg += val;
         if (val > max) max = val;
     }
+
+    avg = avg / size;
 
     Vector2 nInfo = fName.TextInfo(name);
 
@@ -53,6 +57,11 @@ void Grapher::Draw(float x, float y, float h) {
         float py = b - h * pct;
 
         DrawLine(px, b, px, py, 0xffffffff);
+    }
+
+    if (show_avg) {
+        float py = b - h * (avg / max);
+        DrawLine(x + border, py, x + bw - border, py, 0xffcc0000);
     }
 
 }

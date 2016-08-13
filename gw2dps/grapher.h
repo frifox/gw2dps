@@ -4,8 +4,8 @@
 class Grapher {
 public:
     Grapher() {}
-    Grapher(int size, string n, int pad = 0, bool ltr = false);
-    Grapher(int size, int pad = 0, bool ltr = false);
+    Grapher(int size, string n, int pad = 0, bool ltr = false, bool show_avg = false);
+    Grapher(int size, int pad = 0, bool ltr = false, bool show_avg = false);
 
     bool Init();
     void Draw(float x, float y, float h);
@@ -18,6 +18,7 @@ protected:
     std::string name;
     int pad;
     bool ltr;
+    bool show_avg;
 };
 
 
