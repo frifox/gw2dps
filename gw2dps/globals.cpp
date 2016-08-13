@@ -18,8 +18,8 @@ const DWORD borderColor = 0xff444444;
 const DWORD floatMask = 0x30000000;
 const DWORD bgColorMask = 0x33000000;
 
-Grapher dpsGraph(100, "DPS", 2);
-Grapher hitGraph(100, "Hits", 2);
+Grapher dpsGraph(100, "DPS", 2, true);
+Grapher hitGraph(100, "Hits", 2, true);
 Grapher condiGraph(100, "Condi", 2);
 
 

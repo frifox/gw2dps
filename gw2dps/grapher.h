@@ -4,8 +4,8 @@
 class Grapher {
 public:
     Grapher() {}
-    Grapher(int size, string n, int pad = 0);
-    Grapher(int size, int pad = 0);
+    Grapher(int size, string n, int pad = 0, bool ltr = false);
+    Grapher(int size, int pad = 0, bool ltr = false);
 
     bool Init();
     void Draw(float x, float y, float h);
@@ -17,6 +17,7 @@ protected:
     GW2LIB::Font fName;
     std::string name;
     int pad;
+    bool ltr;
 };
 
 

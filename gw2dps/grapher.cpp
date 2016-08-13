@@ -1,12 +1,12 @@
 
 #include "globals.h"
 
-Grapher::Grapher(int size, string n, int pad) :
-    buff(size), name(n), pad(pad) {
+Grapher::Grapher(int size, string n, int pad, bool ltr) :
+    buff(size), name(n), pad(pad), ltr(ltr) {
 }
 
-Grapher::Grapher(int size, int pad) :
-    buff(size), name(""), pad(pad) {
+Grapher::Grapher(int size, int pad, bool ltr) :
+    buff(size), name(""), pad(pad), ltr(ltr) {
 }
 
 bool Grapher::Init() {
@@ -49,7 +49,7 @@ void Grapher::Draw(float x, float y, float h) {
         float val = buff[i];
         if (!val) continue;
         float pct = val / max;
-        float px = i + l;
+        float px = ltr ? l + w - i - 1 : i + l;
         float py = b - h * pct;
 
         DrawLine(px, b, px, py, 0xffffffff);
