@@ -25,6 +25,7 @@ extern const DWORD bgColorMask;
 
 extern Grapher dpsGraph;
 extern Grapher hitGraph;
+extern Grapher condiGraph;
 
 // Settings //
 extern bool killApp;

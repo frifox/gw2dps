@@ -3,15 +3,20 @@
 
 class Grapher {
 public:
-    Grapher(int size, int pad = 0) : buff(size), pad(pad) {}
+    Grapher() {}
+    Grapher(int size, string n, int pad = 0);
+    Grapher(int size, int pad = 0);
+
+    bool Init();
     void Draw(float x, float y, float h);
     void Push(float);
     void Clear();
 
-    int pad = 0;
-
 protected:
     boost::circular_buffer<float> buff;
+    GW2LIB::Font fName;
+    std::string name;
+    int pad;
 };
 
 

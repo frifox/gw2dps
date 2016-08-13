@@ -1352,8 +1352,9 @@ void ESP()
         }
     }
 
-    dpsGraph.Draw(1, 1, 50);
-    hitGraph.Draw(1, 53, 50);
+    dpsGraph.Draw(1, 58, 50);
+    hitGraph.Draw(1, 1, 50);
+    condiGraph.Draw(108, 1, 50);
 
     if (help)
     {
@@ -1426,11 +1427,14 @@ void combat_log(Agent src, Agent tgt, int hit, CombatLogType type, GW2::EffectTy
             selfDmg.total = 0;
             selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
             hitGraph.Clear();
+            condiGraph.Clear();
         }
 
         if (locked.valid && locked.id == tgt.GetAgentId()) {
             selfDmg.total += float(hit);
-            hitGraph.Push((float)hit);
+            if (type == CL_CONDI_DMG_OUT)
+                condiGraph.Push((float)hit);
+            else hitGraph.Push((float)hit);
         }
         
         break;
@@ -1445,6 +1449,11 @@ void dmg_log(Agent src, Agent tgt, int hit) {
 
 void GW2LIB::gw2lib_main()
 {
+    if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
+        return;
+
+    if (!dpsGraph.Init() || !condiGraph.Init() || !hitGraph.Init()) return;
+
     locale::global(locale("en-US"));
 
     init_keymap();
@@ -1464,9 +1473,6 @@ void GW2LIB::gw2lib_main()
     thread t5(threadAttackRate);
     thread t6(threadCrits);
     thread t7(threadSpeedometer);
-
-    if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
-        return;
 
     HMODULE dll = hl::GetCurrentModule();
 
