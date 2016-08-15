@@ -52,12 +52,12 @@ void Grapher::Draw(float x, float y, float h) {
         float px = ltr ? l + w - i - 1 : i + l;
         float py = b - h * pct;
 
-        DrawLine(px, b, px, py, 0xffffffff);
+        DrawLine(px, b, px, floor(py), 0xffffffff);
     }
 
     if (show_avg) {
         float py = b - h * (avg / max);
-        DrawLine(x + border, py, x + bw - border, py, 0xffcc0000);
+        DrawLine(x + border, py, floor(x + bw - border), py, 0xffcc0000);
     }
 
 }
