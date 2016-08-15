@@ -19,10 +19,9 @@ const DWORD borderColor = 0xff444444;
 const DWORD floatMask = 0x30000000;
 const DWORD bgColorMask = 0x33000000;
 
-Grapher dpsGraph(100, "DPS", 2, true, true);
-Grapher hitGraph(100, "Hits", 2, true, true);
-Grapher condiGraph(100, "Condis", 2, false, true);
-
+Grapher dpsGraph(100);
+Grapher hitGraph(100);
+Grapher condiGraph(100);
 
 // Settings //
 bool killApp = false;

@@ -1,16 +1,12 @@
 
 #include "globals.h"
 
-Grapher::Grapher(int size, string n, int pad, bool ltr, bool show_avg) :
-    buff(size), name(n), pad(pad), ltr(ltr), show_avg(show_avg) {
+Grapher::Grapher(int size) :
+buff(size), name(""), pad(0), ltr(false), show_avg(false) {
 }
 
-Grapher::Grapher(int size, int pad, bool ltr, bool show_avg) :
-    buff(size), name(""), pad(pad), ltr(ltr), show_avg(show_avg) {
-}
-
-bool Grapher::Init() {
-    return fName.Init(16, "Verdana");
+bool Grapher::Init(int font_size, string font_family, bool bold) {
+    return fName.Init(font_size, font_family, bold);
 }
 
 // graph width is determined by buffer capacity
@@ -21,10 +17,8 @@ void Grapher::Draw(float x, float y, float h) {
     float max = 0;
     float avg = 0;
 
-    float pw = w + pad * 2;
-    float ph = h + pad * 2;
-    float bw = pw + border * 2;
-    float bh = ph + border * 2;
+    float bw = w + pad * 2 + border * 2;
+    float bh = h + pad * 2 + border * 2;
     float cx = bw / 2 + x;
     float cy = bh / 2 + y;
 
@@ -40,11 +34,13 @@ void Grapher::Draw(float x, float y, float h) {
     avg /= size;
 
     Vector2 nInfo = fName.TextInfo(name);
+    float tx = cx - nInfo.x / 2;
+    float ty = cy - nInfo.y / 2;
 
     // draw boxes and name
-    DrawRectFilled(x, y, bw, bh, backColor - bgColorMask);
+    DrawRectFilled(x, y, bw, bh, 0xcc000000);
     DrawRect(x, y, bw-1, bh-1, 0xff0060ff);
-    if(name.size()) fName.Draw(cx-nInfo.x/2, cy-nInfo.y/2, 0xcc999999, "%s", name.c_str());
+    if(name.size()) fName.Draw(tx, ty, 0xcc999999, "%s", name.c_str());
 
     if (!size || !max) return;
 

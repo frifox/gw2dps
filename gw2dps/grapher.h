@@ -4,21 +4,21 @@
 class Grapher {
 public:
     Grapher() {}
-    Grapher(int size, string n, int pad = 0, bool ltr = false, bool show_avg = false);
-    Grapher(int size, int pad = 0, bool ltr = false, bool show_avg = false);
+    Grapher::Grapher(int size);
 
-    bool Init();
+    bool Grapher::Init(int font_size = 16, string font_family = "Verdana", bool bold = true);
     void Draw(float x, float y, float h);
     void Push(float);
     void Clear();
 
-protected:
-    boost::circular_buffer<float> buff;
-    GW2LIB::Font fName;
     std::string name;
     int pad;
     bool ltr;
     bool show_avg;
+
+protected:
+    boost::circular_buffer<float> buff;
+    GW2LIB::Font fName;
 };
 
 

@@ -1455,6 +1455,20 @@ void GW2LIB::gw2lib_main()
 
     if (!dpsGraph.Init() || !condiGraph.Init() || !hitGraph.Init()) return;
 
+    dpsGraph.name = "DPS";
+    dpsGraph.pad = 2;
+    dpsGraph.ltr = true;
+    dpsGraph.show_avg = true;
+
+    hitGraph.name = "Hits";
+    hitGraph.pad = 2;
+    hitGraph.ltr = true;
+    hitGraph.show_avg = true;
+
+    condiGraph.name = "Condi";
+    condiGraph.pad = 2;
+    condiGraph.show_avg = true;
+
     locale::global(locale("en-US"));
 
     init_keymap();
