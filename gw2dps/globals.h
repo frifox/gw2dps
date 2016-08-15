@@ -11,6 +11,7 @@ extern const char *fontFamily;
 extern int lineHeight;
 extern Font font, font2;
 extern Texture profIcon[GW2::PROFESSION_END];
+extern Texture eliteIcon[GW2::PROFESSION_END];
 extern const char *profFilterName[];
 extern float icon_w;
 extern float icon_h;

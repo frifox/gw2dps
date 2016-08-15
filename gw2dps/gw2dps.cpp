@@ -310,6 +310,7 @@ void ESP()
                         floater.prof = prof;
                         floater.name = name;
                         floater.att = att;
+                        floater.eliteSpec = ch.IsPlayer() ? ag.GetPlayer().HasEliteSpec() : false;
 
                         // player vs npc
                         if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
@@ -1352,9 +1353,9 @@ void ESP()
         }
     }
 
-    dpsGraph.Draw(1, 58, 50);
-    hitGraph.Draw(1, 1, 50);
-    condiGraph.Draw(108, 1, 50);
+    dpsGraph.Draw(1, 38, 30);
+    hitGraph.Draw(1, 1, 30);
+    condiGraph.Draw(108, 1, 30);
 
     if (help)
     {
@@ -1477,11 +1478,18 @@ void GW2LIB::gw2lib_main()
     HMODULE dll = hl::GetCurrentModule();
 
     for (int i = 1; i < GW2::PROFESSION_END; i++) {
-        stringstream res_id;
+        stringstream res_id, res_eid;
+
         res_id << "IDB_PNG" << i;
         HRSRC ires = FindResourceA(dll, res_id.str().c_str(), "PNG");
         if (ires && !profIcon[i].Init(LockResource(LoadResource(dll, ires)), SizeofResource(dll, ires))) {
             HL_LOG_ERR("Unable to load profession icon: %i\n", res_id);
+        }
+
+        res_eid << "IDB_PNG_E" << i;
+        HRSRC ires_e = FindResourceA(dll, res_eid.str().c_str(), "PNG");
+        if (ires_e && !eliteIcon[i].Init(LockResource(LoadResource(dll, ires_e)), SizeofResource(dll, ires_e))) {
+            HL_LOG_ERR("Unable to load elite spec icon: %i\n", res_eid);
         }
     }
 

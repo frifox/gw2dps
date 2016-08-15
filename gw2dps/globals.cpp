@@ -6,6 +6,7 @@ const char *fontFamily = "Verdana";
 int lineHeight = 16;
 Font font, font2;
 Texture profIcon[GW2::PROFESSION_END];
+Texture eliteIcon[GW2::PROFESSION_END];
 const char *profFilterName[] = { "ALL", "Guard", "War", "Engi", "Ranger", "Thief", "Ele", "Mes", "Necro", "Rev" };
 float icon_w = 20;
 float icon_h = 20;
@@ -20,7 +21,7 @@ const DWORD bgColorMask = 0x33000000;
 
 Grapher dpsGraph(100, "DPS", 2, true, true);
 Grapher hitGraph(100, "Hits", 2, true, true);
-Grapher condiGraph(100, "Condi", 2, false, true);
+Grapher condiGraph(100, "Condis", 2, false, true);
 
 
 // Settings //

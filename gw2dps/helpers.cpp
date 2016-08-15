@@ -255,7 +255,8 @@ void DrawFloater(const Float &floater, DWORD color, bool drawArrow, bool drawTex
                 fs << format("%i") % floater.mHealth;
 
             Vector2 fsInfo = font.TextInfo(fs.str());
-            if (floater.isPlayer && drawProfIcon) profIcon[floater.prof].Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
+            if (floater.isPlayer && drawProfIcon)
+                (floater.eliteSpec ? eliteIcon[floater.prof] : profIcon[floater.prof]).Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
             font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
 
             if (drawName) {

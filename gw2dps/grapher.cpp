@@ -37,7 +37,7 @@ void Grapher::Draw(float x, float y, float h) {
         if (val > max) max = val;
     }
 
-    avg = avg / size;
+    avg /= size;
 
     Vector2 nInfo = fName.TextInfo(name);
 
