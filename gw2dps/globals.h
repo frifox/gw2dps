@@ -48,7 +48,7 @@ extern bool targetLock;
 extern bool agentLines;
 
 extern bool dpsAllowNegative;
-
+extern bool dpsGrapher;
 extern bool logDps;
 extern bool logDpsDetails;
 extern string logDpsFile;

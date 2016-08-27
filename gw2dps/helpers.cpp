@@ -281,6 +281,7 @@ void load_preferences() {
     dpsAllowNegative = Str2Bool(read_config_value("Preferences.DPS_ALLOW_NEGATIVE"));
     logDps = Str2Bool(read_config_value("Preferences.LOG_DPS"), true);
     logDpsDetails = Str2Bool(read_config_value("Preferences.LOG_DPS_DETAILS"));
+    dpsGrapher = Str2Bool(read_config_value("Preferences.DPS_GRAPH"));
     logKillTimer = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER"));
     logKillTimerDetails = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_DETAILS"));
     logKillTimerToFile = Str2Bool(read_config_value("Preferences.LOG_KILL_TIMER_TO_FILE"));
@@ -332,6 +333,7 @@ void save_preferences() {
     write_config_value("Preferences.DPS_ALLOW_NEGATIVE", Bool2Str(dpsAllowNegative));
     write_config_value("Preferences.LOG_DPS", Bool2Str(logDps));
     write_config_value("Preferences.LOG_DPS_DETAILS", Bool2Str(logDpsDetails));
+    write_config_value("Preferences.DPS_GRAPH", Bool2Str(dpsGrapher));
     write_config_value("Preferences.LOG_KILL_TIMER", Bool2Str(logKillTimer));
     write_config_value("Preferences.LOG_KILL_TIMER_DETAILS", Bool2Str(logKillTimerDetails));
     write_config_value("Preferences.LOG_KILL_TIMER_TO_FILE", Bool2Str(logKillTimerToFile));

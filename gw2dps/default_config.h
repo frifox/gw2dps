@@ -15,6 +15,7 @@
                             \
                             "LOG_DPS=ALT 0x44\n" \
                             "LOG_DPS_DETAILS=ALT SHIFT 0x44\n" \
+                            "DPS_GRAPH=ALT 0x47\n" \
                             \
                             "LOG_KILL_TIMER=ALT 0x67\n" \
                             "LOG_KILL_TIMER_DETAILS=ALT 0x61\n" \

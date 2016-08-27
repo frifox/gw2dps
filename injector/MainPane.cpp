@@ -118,6 +118,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Allow Negative DPS (%s)\n") % get_key_description("Hotkeys.DPS_ALLOW_NEGATIVE");
     ss << format("DPS Meter (%s)\n") % get_key_description("Hotkeys.LOG_DPS");
     ss << format("DPS Meter History (%s)\n") % get_key_description("Hotkeys.LOG_DPS_DETAILS");
+    ss << format("DPS Graph (%s)\n") % get_key_description("Hotkeys.DPS_GRAPH");
     ss << format("Kill Timer (%s)\n") % get_key_description("Hotkeys.LOG_KILL_TIMER");
     ss << format("Kill Timer Details (%s)\n") % get_key_description("Hotkeys.LOG_KILL_TIMER_DETAILS");
     //ss << format("Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;

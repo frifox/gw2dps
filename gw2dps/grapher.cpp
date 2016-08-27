@@ -25,12 +25,10 @@ void Grapher::Draw(float x, float y, float h) {
     float l = x + border + pad;
     float b = y + border + pad + h - 1;
 
-    // get max val first
     for (float val : buff) {
-        avg += val;
         if (val > max) max = val;
+        avg += val;
     }
-
     avg /= size;
 
     Vector2 nInfo = fName.TextInfo(name);

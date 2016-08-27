@@ -912,6 +912,9 @@ void ESP()
                         ss << format("\nFerocity - %i") % stats.ferocity;
                         ss << format("\nHealing - %i") % stats.healing;
                         ss << format("\nCondition - %i") % stats.condition;
+                        ss << format("\nConcentration - %i") % stats.concentration;
+                        ss << format("\nExpertise - %i") % stats.expertise;
+                        ss << format("\nAgony Resist - %i") % stats.ar;
 
                         ss << format("\n");
                         ss << format("\n(Agent: %p)") % agLocked.m_ptr->pAgent.data();
@@ -1037,6 +1040,11 @@ void ESP()
 
     // TopRight Elements //
     {
+        float leftWidth = 50;  // min-width
+        float rightWidth = 50; // min-width
+        Vector2 boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
+        Vector2 boxAnchor = { aTopRight.x - leftWidth, aTopRight.y }; // left column's top/right = anchor
+
         if (logDps)
         {
             // separate ss vars
@@ -1050,7 +1058,6 @@ void ESP()
             //  4 samples = 1s / 250ms
             // 20 samples = 5s / 250ms
 
-                
             string selfHeader = "Personal";
             string self1s = dpsBufferToString(bufferSelfDps, 4);
             string self5s = dpsBufferToString(bufferSelfDps, 20);
@@ -1058,20 +1065,17 @@ void ESP()
             string partyHeader = "Combined";
             string party1s = dpsBufferToString(bufferDps, 4);
             string party5s = dpsBufferToString(bufferDps, 20);
-            
+
             Vector2 leftHeader = font.TextInfo(selfHeader);
             Vector2 rightHeader = font.TextInfo(partyHeader);
 
             Vector2 left1s = font.TextInfo(self1s);
             Vector2 right1s = font.TextInfo(party1s);
-            
+
             Vector2 left5s = font.TextInfo(self5s);
             Vector2 right5s = font.TextInfo(party5s);
-            
-            // calc column widths
-            float leftWidth = 50;  // min-width
-            float rightWidth = 50; // min-width
 
+            // calc column widths
             float leftElements[3] = { leftHeader.x, left1s.x, left5s.x };
             float rightElements[3] = { rightHeader.x, right1s.x, right5s.x };
 
@@ -1079,15 +1083,15 @@ void ESP()
                 leftWidth = *max_element(leftElements, leftElements + 3);
             if (*max_element(rightElements, rightElements + 3) > rightWidth)
                 rightWidth = *max_element(rightElements, rightElements + 3);
-            
+
             // compensate for inner gutter + line
             leftWidth += padX + 1;
             rightWidth += padX + 1;
 
             // prepare container
-            Vector2 boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
-            Vector2 boxAnchor = {aTopRight.x - leftWidth, aTopRight.y}; // left column's top/right = anchor
-            
+            boxSize = { leftWidth + rightWidth, 3 * float(lineHeight) };
+            boxAnchor = { aTopRight.x - leftWidth, aTopRight.y }; // left column's top/right = anchor
+
             DrawRectFilled(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, backColor - bgColorMask);
             DrawRect(boxAnchor.x - padX, boxAnchor.y - padY, boxSize.x + padX * 2, boxSize.y + padY * 2, borderColor);
             DrawLine(boxAnchor.x + leftWidth, boxAnchor.y, boxAnchor.x + leftWidth, boxAnchor.y + lineHeight * 3, borderColor);
@@ -1096,7 +1100,7 @@ void ESP()
             font.Draw(boxAnchor.x + leftWidth - leftHeader.x - padX, boxAnchor.y, fontColor, "%s", selfHeader.c_str());
             font.Draw(boxAnchor.x + leftWidth - left1s.x - padX, boxAnchor.y + lineHeight * 1, fontColor, "%s", self1s.c_str());
             font.Draw(boxAnchor.x + leftWidth - left5s.x - padX, boxAnchor.y + lineHeight * 2, fontColor, "%s", self5s.c_str());
-            
+
             // right party column (left aligned)
             font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y, fontColor, "%s", partyHeader.c_str());
             font.Draw(boxAnchor.x + leftWidth + padX + 1, boxAnchor.y + lineHeight * 1, fontColor, "%s", party1s.c_str());
@@ -1127,11 +1131,11 @@ void ESP()
             aTopRight.x = boxAnchor.x - padX;
         }
 
+        Vector2 strInfo;
         if (logKillTimer)
         {
             // separate ss vars
             stringstream ss;
-            Vector2 strInfo;
 
             // Prepare String
             if (bufferKillTimer.time > 0)
@@ -1165,6 +1169,13 @@ void ESP()
             //ss.str("");
             aTopRight.y += strInfo.y + padY * 2;
             //aTopRight.x -= 0;
+        }
+
+        if (dpsGrapher) {
+            float comp = logDps ? (boxSize.y + padY * 2) : (logKillTimer ? (strInfo.y + padY * 2) : 0);
+            dpsGraph.Draw(boxAnchor.x - padX, boxAnchor.y - padY + comp, 30);
+            //hitGraph.Draw(1, 1, 30);
+            //condiGraph.Draw(108, 1, 30);
         }
 
     }
@@ -1353,9 +1364,6 @@ void ESP()
         }
     }
 
-    dpsGraph.Draw(1, 38, 30);
-    hitGraph.Draw(1, 1, 30);
-    condiGraph.Draw(108, 1, 30);
 
     if (help)
     {
@@ -1417,13 +1425,13 @@ void ESP()
 
 
 
-void combat_log(Agent src, Agent tgt, int hit, CombatLogType type, GW2::EffectType ef) {
+void combat_log(Agent src, Agent tgt, int hit, GW2::CombatLogType type, GW2::EffectType ef) {
     //HL_LOG_DBG("src: %4i, tgt: %4i, type: %2i, ef: %5i, hit: %i\n", src.GetAgentId(), tgt.GetAgentId(), type, ef, hit);
     switch (type) {
-    case CL_CONDI_DMG_OUT:
-    case CL_CRIT_DMG_OUT:
-    case CL_GLANCE_DMG_OUT:
-    case CL_PHYS_DMG_OUT:
+    case GW2::CL_CONDI_DMG_OUT:
+    case GW2::CL_CRIT_DMG_OUT:
+    case GW2::CL_GLANCE_DMG_OUT:
+    case GW2::CL_PHYS_DMG_OUT:
         if (locked.valid && locked.id != tgt.GetAgentId()) {
             selfDmg.total = 0;
             selfDmg.snapshot = 0; // also set in threadDps, probably not safe...
@@ -1433,11 +1441,13 @@ void combat_log(Agent src, Agent tgt, int hit, CombatLogType type, GW2::EffectTy
 
         if (locked.valid && locked.id == tgt.GetAgentId()) {
             selfDmg.total += float(hit);
-            if (type == CL_CONDI_DMG_OUT)
+            if (type == GW2::CL_CONDI_DMG_OUT) {
                 condiGraph.Push((float)hit);
-            else hitGraph.Push((float)hit);
+            } else {
+                hitGraph.Push((float)hit);
+            }
         }
-        
+
         break;
     }
 }
@@ -1458,7 +1468,6 @@ void GW2LIB::gw2lib_main()
     dpsGraph.name = "DPS";
     dpsGraph.pad = 2;
     dpsGraph.ltr = true;
-    dpsGraph.show_avg = true;
 
     hitGraph.name = "Hits";
     hitGraph.pad = 2;
@@ -1529,5 +1538,4 @@ void GW2LIB::gw2lib_main()
     t7.interrupt();
 
     this_thread::sleep_for(chrono::milliseconds(1000));
-    return;
 }

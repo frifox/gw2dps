@@ -8,6 +8,7 @@ std::list<string> get_help_config_keys()
     config_keys.push_back("Hotkeys.DPS_ALLOW_NEGATIVE");
     config_keys.push_back("Hotkeys.LOG_DPS");
     config_keys.push_back("Hotkeys.LOG_DPS_DETAILS");
+    config_keys.push_back("Hotkeys.DPS_GRAPH");
     config_keys.push_back("Hotkeys.LOG_KILL_TIMER");
     config_keys.push_back("Hotkeys.LOG_KILL_TIMER_DETAILS");
     //ss << format("Kill Timer Writes to a File (Alt Num4)\n") % logKillTimerToFile;

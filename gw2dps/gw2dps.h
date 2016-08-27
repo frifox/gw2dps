@@ -173,7 +173,7 @@ struct Displacement {
 
 struct Dmg {
     Dmg() : total(0), snapshot(0) {}
-    
+
     float total;
     float snapshot;
 };

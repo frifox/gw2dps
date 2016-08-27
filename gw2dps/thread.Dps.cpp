@@ -10,11 +10,11 @@ void threadDps() {
     {
         this_thread::interruption_point();
 
-        if (logDps && locked.valid && locked.id == pAgentId) {
+        if ((logDps || dpsGrapher) && locked.valid && locked.id == pAgentId) {
             if (timer.is_stopped())
             {
                 timer.start();
-                
+
                 // reset party dps
                 bufferDps.push_front(0);
                 pHealth = locked.cHealth;
@@ -37,7 +37,7 @@ void threadDps() {
                 float cHealth = locked.cHealth;
                 if (pHealth == 0)
                     pHealth = cHealth;
-                
+
                 float partyDps = pHealth - cHealth;
                 if (!dpsAllowNegative && partyDps < 0)
                     partyDps = 0;
@@ -47,7 +47,7 @@ void threadDps() {
                 // self dps
                 float selfDps = selfDmg.total - selfDmg.snapshot; // probably should leave as float...
                 selfDmg.snapshot = selfDmg.total;
-                
+
                 // push dps values to the buffer
                 bufferDps.push_front(partyDps);
                 bufferSelfDps.push_front(selfDps);

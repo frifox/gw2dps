@@ -43,7 +43,7 @@ bool targetLock = false;
 bool agentLines = false;
 
 bool dpsAllowNegative = false;
-
+bool dpsGrapher = false;
 bool logDps = true;
 bool logDpsDetails = false;
 string logDpsFile = "gw2dpsLog-Dps.txt";

@@ -113,10 +113,10 @@ BOOL inject_dll(DWORD pID, const char * DLL_NAME)
 DWORD GetTargetThreadIDFromProcName(const char * ProcName)
 {
     HWND windowHandle = FindWindowA(NULL, ProcName);
-    DWORD* processID = new DWORD;
-    GetWindowThreadProcessId(windowHandle, processID);
+    DWORD processID = 0;
+    GetWindowThreadProcessId(windowHandle, &processID);
 
-    return *processID;
+    return processID;
 }
 
 #endif

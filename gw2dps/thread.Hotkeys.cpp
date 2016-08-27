@@ -17,6 +17,7 @@
 
 #define LOG_DPS 20
 #define LOG_DPS_DETAILS 21
+#define DPS_GRAPH 200
 
 #define LOG_KILL_TIMER 30
 #define LOG_KILL_TIMER_DETAILS 31
@@ -90,6 +91,7 @@ void threadHotKeys()
 
     registerHotKeyWrapper(LOG_DPS, read_config_value("Hotkeys.LOG_DPS")); // logDps
     registerHotKeyWrapper(LOG_DPS_DETAILS, read_config_value("Hotkeys.LOG_DPS_DETAILS")); // logDpsDetails
+    registerHotKeyWrapper(DPS_GRAPH, read_config_value("Hotkeys.DPS_GRAPH")); // logDps
 
     registerHotKeyWrapper(LOG_KILL_TIMER, read_config_value("Hotkeys.LOG_KILL_TIMER")); // logKillTimer
     registerHotKeyWrapper(LOG_KILL_TIMER_DETAILS, read_config_value("Hotkeys.LOG_KILL_TIMER_DETAILS")); // logKillTimerDetails
@@ -170,6 +172,7 @@ void threadHotKeys()
 
             if (msg.wParam == LOG_DPS) logDps = !logDps;
             if (msg.wParam == LOG_DPS_DETAILS) logDpsDetails = !logDpsDetails;
+            if (msg.wParam == DPS_GRAPH) dpsGrapher = !dpsGrapher;
 
             if (msg.wParam == LOG_KILL_TIMER) logKillTimer = !logKillTimer;
             if (msg.wParam == LOG_KILL_TIMER_DETAILS) logKillTimerDetails = !logKillTimerDetails;
@@ -244,6 +247,7 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, DPS_ALLOW_NEGATIVE);
     UnregisterHotKey(NULL, LOG_DPS);
     UnregisterHotKey(NULL, LOG_DPS_DETAILS);
+    UnregisterHotKey(NULL, DPS_GRAPH);
     UnregisterHotKey(NULL, LOG_KILL_TIMER);
     UnregisterHotKey(NULL, LOG_KILL_TIMER_DETAILS);
     UnregisterHotKey(NULL, LOG_KILL_TIMER_TO_FILE);
