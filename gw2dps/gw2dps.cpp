@@ -905,6 +905,8 @@ void ESP()
                         GW2::CharacterStats stats = agLocked.GetCharacter().GetStats();
 
                         ss << format("AgentID - %i") % agLocked.GetAgentId();
+                        if (agLocked.GetCharacter().IsValid())
+                            ss << format("\nCharID - %i") % agLocked.GetCharacter().GetID();
                         ss << format("\nPower - %i") % stats.power;
                         ss << format("\nPrecision - %i") % stats.precision;
                         ss << format("\nToughness - %i") % stats.toughness;
