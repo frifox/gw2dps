@@ -4,7 +4,7 @@
 
 void ESP()
 {
-    if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene()) return;
+    if (IsInterfaceHidden() || IsMapOpen() || IsInCutscene() || hideMe) return;
     bool floatersOn = floatAllyNpc || floatEnemyNpc || floatNeutEnemyNpc || floatAllyPlayer || floatEnemyPlayer || floatSiege || floatObject;
 
     // Element Anchors
@@ -346,13 +346,16 @@ void ESP()
             Character ch = ag.GetCharacter();
             Player player = ag.GetPlayer();
 
-            // collect only valid allies (and yourself)
+            // collect only valid allies
             bool chValid = true;
 
             if (!ch.IsValid())
                 chValid = false;
 
             if (!ch.IsPlayer() || ch.GetAttitude() != GW2::ATTITUDE_FRIENDLY)
+                chValid = false;
+
+            if (ag.GetAgentId() == GetOwnAgent().GetAgentId())
                 chValid = false;
 
             // gather char data
@@ -545,7 +548,7 @@ void ESP()
 
         if (floatAllyPlayerProf)
         {
-            int prof[10] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            int prof[GW2::PROFESSION_END] {0};
             for (auto & ally : floaters.allyPlayer) {
                 prof[ally.prof]++;
             }
@@ -629,22 +632,36 @@ void ESP()
             stringstream sd;
 
             const char *prof = profFilterName[playerListFilter];
+            size_t count = 0;
+            
+            switch (playerListFilter) {
+            case GW2::PROFESSION_NONE: count = floaters.allyPlayer.size(); break;
+            case GW2::PROFESSION_GUARDIAN: count = allies.guard.size(); break;
+            case GW2::PROFESSION_WARRIOR: count = allies.war.size(); break;
+            case GW2::PROFESSION_ENGINEER: count = allies.engi.size(); break;
+            case GW2::PROFESSION_RANGER: count = allies.ranger.size(); break;
+            case GW2::PROFESSION_THIEF: count = allies.thief.size(); break;
+            case GW2::PROFESSION_ELEMENTALIST: count = allies.ele.size(); break;
+            case GW2::PROFESSION_MESMER: count = allies.mes.size(); break;
+            case GW2::PROFESSION_NECROMANCER: count = allies.necro.size(); break;
+            case GW2::PROFESSION_REVENANT: count = allies.rev.size(); break;
+            }
 
-            ss << format("Nearby Players (%s) (WvW HP Bonus: %i%%)") % prof % wvwBonus;
-            sp << format("Class");
-            sn << format("Name");
-            sh << format("Health");
-            sv << format("Vitality");
-            sl << format("Level");
-            sm << format("MLvl");
-            sd << format("Distance");
+            ss << format("Nearby Players (%s: %i) (WvW HP Bonus: %i%%)") % prof % count % wvwBonus;
+            sp << "Class";
+            sn << "Name";
+            sh << "Health";
+            sv << "Vitality";
+            sl << "Level";
+            sm << "MLvl";
+            sd << "Distance";
 
             bool listEmpty = true;
             if (!allies.guard.empty() && (!playerListFilter || playerListFilter == GW2::PROFESSION_GUARDIAN))
             {
                 for (auto & ally : allies.guard) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nGuard:");
+                    sp << "\nGuard:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -659,7 +676,7 @@ void ESP()
             {
                 for (auto & ally : allies.war) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nWar:");
+                    sp << "\nWar:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -674,7 +691,7 @@ void ESP()
             {
                 for (auto & ally : allies.engi) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nEngi:");
+                    sp << "\nEngi:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -689,7 +706,7 @@ void ESP()
             {
                 for (auto & ally : allies.ranger) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nRanger:");
+                    sp << "\nRanger:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -704,7 +721,7 @@ void ESP()
             {
                 for (auto & ally : allies.thief) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nThief:");
+                    sp << "\nThief:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -719,7 +736,7 @@ void ESP()
             {
                 for (auto & ally : allies.ele) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nEle:");
+                    sp << "\nEle:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -734,7 +751,7 @@ void ESP()
             {
                 for (auto & ally : allies.mes) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nMes:");
+                    sp << "\nMes:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -749,7 +766,7 @@ void ESP()
             {
                 for (auto & ally : allies.necro) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nNecro:");
+                    sp << "\nNecro:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -764,7 +781,7 @@ void ESP()
             {
                 for (auto & ally : allies.rev) {
                     int dist = int(Dist(ally.pos, self.pos));
-                    sp << format("\nRev:");
+                    sp << "\nRev:";
                     sn << format("\n%s") % ally.name;
                     sh << format("\n%i hp") % ally.mHealth;
                     sv << format("\n%+i") % ally.vitality;
@@ -777,13 +794,13 @@ void ESP()
 
             if (listEmpty)
             {
-                sp << format("\n...");
-                sn << format("\n...");
-                sh << format("\n...");
-                sv << format("\n...");
-                sl << format("\n...");
-                sm << format("\n...");
-                sd << format("\n...");
+                sp << "\n...";
+                sn << "\n...";
+                sh << "\n...";
+                sv << "\n...";
+                sl << "\n...";
+                sm << "\n...";
+                sd << "\n...";
             }
 
 
@@ -904,22 +921,35 @@ void ESP()
                     {
                         GW2::CharacterStats stats = agLocked.GetCharacter().GetStats();
 
-                        ss << format("AgentID - %i") % agLocked.GetAgentId();
+                        ss << format("AgentID - %i", c_locale) % agLocked.GetAgentId();
                         if (agLocked.GetCharacter().IsValid())
-                            ss << format("\nCharID - %i") % agLocked.GetCharacter().GetID();
-                        ss << format("\nPower - %i") % stats.power;
-                        ss << format("\nPrecision - %i") % stats.precision;
-                        ss << format("\nToughness - %i") % stats.toughness;
-                        ss << format("\nVitality - %i") % stats.vitality;
-                        ss << format("\nFerocity - %i") % stats.ferocity;
-                        ss << format("\nHealing - %i") % stats.healing;
-                        ss << format("\nCondition - %i") % stats.condition;
-                        ss << format("\nConcentration - %i") % stats.concentration;
-                        ss << format("\nExpertise - %i") % stats.expertise;
-                        ss << format("\nAgony Resist - %i") % stats.ar;
+                            ss << format("\nCharID - %i", c_locale) % agLocked.GetCharacter().GetID();
 
-                        ss << format("\n");
-                        ss << format("\n(Agent: %p)") % agLocked.m_ptr->pAgent.data();
+                        ss << format(
+                            "\nPower - %i"
+                            "\nPrecision - %i"
+                            "\nToughness - %i"
+                            "\nVitality - %i"
+                            "\nFerocity - %i"
+                            "\nHealing - %i"
+                            "\nCondition - %i"
+                            "\nConcentration - %i"
+                            "\nExpertise - %i"
+                            "\nAgony Resist - %i"
+                            "\n")
+                            % stats.power
+                            % stats.precision
+                            % stats.toughness
+                            % stats.vitality
+                            % stats.ferocity
+                            % stats.healing
+                            % stats.condition
+                            % stats.concentration
+                            % stats.expertise
+                            % stats.ar
+                            ;
+
+                        ss << format("\n(Agent: %p)", c_locale) % agLocked.m_ptr->pAgent.data();
                     }
                 }
                 else
@@ -1261,8 +1291,7 @@ void ESP()
             else
                 ss << format(".: Monitoring :.\n");
 
-            ss << format(".: Damage Hits :.\n");
-            ss << format("\n");
+            ss << format(".: Damage Hits :.\n\n");
 
             if (!bufferHits.empty())
             {
@@ -1278,22 +1307,21 @@ void ESP()
 
                 if (logHitsDetails)
                 {
-                    ss << format("\n\n");
-                    ss << format("History");
+                    ss << format("\n\nHistory");
                     for (size_t i = 0; i < bufferHits.size(); i++)
                         ss << format("\n\u2022 %i") % bufferHits[i];
                 }
             }
             else
             {
-                ss << format("Counter: ...\n");
-                ss << format("Average: ...");
+                ss << "Counter: ...\n";
+                ss << "Average: ...";
 
                 if (logHitsDetails)
                 {
-                    ss << format("\n\n");
-                    ss << format("History\n");
-                    ss << format("\u2022 ...");
+                    ss << "\n\n";
+                    ss << "History\n";
+                    ss << "\u2022 ...";
                 }
             }
 
@@ -1319,12 +1347,11 @@ void ESP()
             Vector2 strInfo;
 
             if (logCritsToFile)
-                ss << format(".: Recording :.\n");
+                ss << ".: Recording :.\n";
             else
-                ss << format(".: Monitoring :.\n");
+                ss << ".: Monitoring :.\n";
 
-            ss << format(".: Crit Chance :.\n");
-            ss << format("\n");
+            ss << ".: Crit Chance :.\n\n";
 
             ss << format("Samples: %i\n") % (logCritsGlances + logCritsNormals + logCritsCrits);
             ss << format("Glances: %i\n") % logCritsGlances;

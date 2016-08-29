@@ -2,6 +2,7 @@
 #define DEFAULT_CONFIG_FILE "[Hotkeys]\n" \
                             "KILL_APP=ALT 0x4B\n" \
                             "HELP=ALT 0xBF\n" \
+                            "HIDE_ME=ALT 0x5A\n" \
                             "EXP_MODE=ALT 0x48\n" \
                             "SELF_FLOAT=ALT SHIFT 0x48\n" \
                             "LOOP_LIMITER=ALT 0x54\n" \

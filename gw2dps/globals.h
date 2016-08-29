@@ -32,6 +32,7 @@ extern Grapher condiGraph;
 extern bool killApp;
 
 extern bool help;
+extern bool hideMe;
 extern bool expMode;
 extern bool selfFloat;
 extern bool selfHealthPercent;
@@ -133,6 +134,8 @@ extern float speedometerMax;
 extern float speedometerReal;
 
 extern Dmg selfDmg;
+
+extern locale c_locale;
 
 #endif
 

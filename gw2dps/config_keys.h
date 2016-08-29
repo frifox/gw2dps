@@ -1,6 +1,7 @@
 std::list<string> get_help_config_keys()
 {
     std::list<string> config_keys;
+    config_keys.push_back("Hotkeys.HIDE_ME");
     config_keys.push_back("Hotkeys.SELF_HEALTH_PERCENT");
     config_keys.push_back("Hotkeys.TARGET_SELECTED");
     config_keys.push_back("Hotkeys.TARGET_INFO");

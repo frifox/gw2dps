@@ -27,6 +27,7 @@ Grapher condiGraph(100);
 bool killApp = false;
 
 bool help = false;
+bool hideMe = false;
 bool expMode = false;
 bool selfFloat = false;
 bool selfHealthPercent = true;
@@ -128,4 +129,6 @@ float speedometerMax = 0;
 float speedometerReal = 0;
 
 Dmg selfDmg;
+
+locale c_locale("C");
 

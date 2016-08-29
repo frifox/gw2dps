@@ -3,6 +3,7 @@
 #define KILL_APP 999
 
 #define HELP 0
+#define HIDE_ME 1000
 #define EXP_MODE 1
 #define SELF_FLOAT 2
 #define LOOP_LIMITER 3
@@ -79,6 +80,7 @@ void threadHotKeys()
     registerHotKeyWrapper(KILL_APP, read_config_value("Hotkeys.KILL_APP")); // killApp
 
     registerHotKeyWrapper(HELP, read_config_value("Hotkeys.HELP")); // help
+    registerHotKeyWrapper(HIDE_ME, read_config_value("Hotkeys.HIDE_ME")); // help
     registerHotKeyWrapper(EXP_MODE, read_config_value("Hotkeys.EXP_MODE")); // expMode
     registerHotKeyWrapper(SELF_FLOAT, read_config_value("Hotkeys.SELF_FLOAT")); // selfFloat
     registerHotKeyWrapper(LOOP_LIMITER, read_config_value("Hotkeys.LOOP_LIMITER")); // loopLimiter
@@ -158,6 +160,7 @@ void threadHotKeys()
             if (msg.wParam == KILL_APP) killApp = !killApp;
 
             if (msg.wParam == HELP) help = !help;
+            if (msg.wParam == HIDE_ME) hideMe = !hideMe;
             if (msg.wParam == EXP_MODE) expMode = !expMode;
             if (msg.wParam == SELF_FLOAT) selfFloat = !selfFloat;
             if (msg.wParam == LOOP_LIMITER) loopLimiter = !loopLimiter;
@@ -235,6 +238,7 @@ void unregisterHotkeys()
 {
     UnregisterHotKey(NULL, KILL_APP);
     UnregisterHotKey(NULL, HELP);
+    UnregisterHotKey(NULL, HIDE_ME);
     UnregisterHotKey(NULL, EXP_MODE);
     UnregisterHotKey(NULL, SELF_FLOAT);
     UnregisterHotKey(NULL, LOOP_LIMITER);

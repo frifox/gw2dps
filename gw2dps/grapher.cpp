@@ -25,6 +25,7 @@ void Grapher::Draw(float x, float y, float h) {
     float l = x + border + pad;
     float b = y + border + pad + h - 1;
 
+    // calc avg and get max val
     for (float val : buff) {
         if (val > max) max = val;
         avg += val;

@@ -111,6 +111,7 @@ string MainPane::getDescriptionTextBlock()
 
     //ss << format("Exp Mode Crosshair (Alt H)\n") % expMode;
     //ss << format("\n");
+    ss << format("Toggle Hide Overlay (%s)\n") % get_key_description("Hotkeys.HIDE_ME");
     ss << format("Self Health Percent (%s)\n") % get_key_description("Hotkeys.SELF_HEALTH_PERCENT");
     ss << format("Selected/Locked Target HP (%s)\n") % get_key_description("Hotkeys.TARGET_SELECTED");
     ss << format("Selected Target Details (%s)\n") % get_key_description("Hotkeys.TARGET_INFO");
