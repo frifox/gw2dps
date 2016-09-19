@@ -176,6 +176,8 @@ void ESP()
     Allies allies;
     Agent ag;
     WBosses wbosses;
+    int female_count = 0;
+    int male_count = 0;
     while (ag.BeNext())
     {
         if (agentLines) {
@@ -317,8 +319,11 @@ void ESP()
                         {
                             floater.isPlayer = true;
                             // allyPlayer
-                            if (floatAllyPlayer && att == GW2::ATTITUDE_FRIENDLY)
+                            if (floatAllyPlayer && att == GW2::ATTITUDE_FRIENDLY) {
+                                if (ch.GetGender() == GW2::CHAR_GENDER_MALE) male_count++;
+                                if (ch.GetGender() == GW2::CHAR_GENDER_FEMALE) female_count++;
                                 floaters.allyPlayer.push_back(floater);
+                            }
 
                             // enemyPlayer
                             if (floatEnemyPlayer && att == GW2::ATTITUDE_HOSTILE)
@@ -525,7 +530,7 @@ void ESP()
             ss << format(" | NeutFoeNPCs: %i") % floaters.neutEnemyNpc.size();
 
         if (floatAllyPlayer)
-            ss << format(" | Allies: %i") % floaters.allyPlayer.size();
+            ss << format(" | Allies: %i (M: %i, F: %i)") % floaters.allyPlayer.size() % male_count % female_count;
 
         if (floatEnemyPlayer)
             ss << format(" | Foes: %i") % floaters.enemyPlayer.size();
@@ -1454,7 +1459,7 @@ void ESP()
 
 
 
-void combat_log(Agent src, Agent tgt, int hit, GW2::CombatLogType type, GW2::EffectType ef) {
+void combat_log(Agent &src, Agent &tgt, int hit, GW2::CombatLogType type, GW2::EffectType ef) {
     //HL_LOG_DBG("src: %4i, tgt: %4i, type: %2i, ef: %5i, hit: %i\n", src.GetAgentId(), tgt.GetAgentId(), type, ef, hit);
     switch (type) {
     case GW2::CL_CONDI_DMG_OUT:
@@ -1481,11 +1486,19 @@ void combat_log(Agent src, Agent tgt, int hit, GW2::CombatLogType type, GW2::Eff
     }
 }
 
-void dmg_log(Agent src, Agent tgt, int hit) {
+void dmg_log(Agent &src, Agent &tgt, int hit) {
     //HL_LOG_DBG("src: %4i, tgt: %4i, hit: %i\n", src.GetAgentId(), tgt.GetAgentId(), hit);
 }
 
+bool ag_can_be_sel(bool &call_orig, Agent &ag) {
+    if (ag.GetAgentId() == GetOwnAgent().GetAgentId()) {
+        //HL_LOG_DBG("valid: %i - ag: %s\n", ag.IsValid(), ag.GetPlayer().GetName().c_str());
+        return false;
+    }
 
+    call_orig = true;
+    return true;
+}
 
 void GW2LIB::gw2lib_main()
 {
@@ -1518,6 +1531,7 @@ void GW2LIB::gw2lib_main()
     EnableEsp(ESP);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
     SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
+    SetGameHook(HOOK_AG_CAN_BE_SEL, ag_can_be_sel);
 
     thread t1(threadHotKeys);
     thread t2(threadDps);
