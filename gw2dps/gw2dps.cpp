@@ -1491,9 +1491,12 @@ void dmg_log(Agent &src, Agent &tgt, int hit) {
 }
 
 bool ag_can_be_sel(bool &call_orig, Agent &ag) {
-    if (ag.GetAgentId() == GetOwnAgent().GetAgentId()) {
-        //HL_LOG_DBG("valid: %i - ag: %s\n", ag.IsValid(), ag.GetPlayer().GetName().c_str());
-        return false;
+    //HL_LOG_DBG("valid: %i - ag: %i\n", ag.IsValid(), ag.GetAgentId());
+    if (
+        ag.GetAgentId() == GetOwnAgent().GetAgentId() || 
+        (ag.GetGadget().IsValid() && ag.GetGadget().GetType() == GW2::GADGET_TYPE_PROP)
+        ) {
+        return true;
     }
 
     call_orig = true;
@@ -1531,7 +1534,7 @@ void GW2LIB::gw2lib_main()
     EnableEsp(ESP);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
     SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
-    SetGameHook(HOOK_AG_CAN_BE_SEL, ag_can_be_sel);
+    //SetGameHook(HOOK_AG_CAN_BE_SEL, ag_can_be_sel);
 
     thread t1(threadHotKeys);
     thread t2(threadDps);
