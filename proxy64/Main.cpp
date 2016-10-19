@@ -6,13 +6,24 @@ BOOL inject_dll(DWORD pID, const char * DLL_NAME);
 DWORD GetTargetThreadIDFromProcName(const char * ProcName);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+    LPWSTR *argv;
+    int argc;
+    argv = CommandLineToArgvW(GetCommandLine(), &argc);
+
+    if (!argv) {
+        MessageBox(NULL, L"Unable to parse command line", L"Error", MB_OK);
+        return 10;
+    }
+
+    wchar_t *dll = argc > 1 ? argv[1] : L"gw2dps64.dll";
+
     // Retrieve process ID 
     DWORD pID = GetTargetThreadIDFromProcName("Guild Wars 2");
     size_t converted;
 
     // Get the dll's full path name 
     wchar_t wchar_buf[MAX_PATH] = { 0 };
-    GetFullPathName(L"gw2dps64.dll", MAX_PATH, wchar_buf, NULL);
+    GetFullPathName(dll, MAX_PATH, wchar_buf, NULL);
     char char_buf[MAX_PATH + 1] = { 0 };
     wcstombs_s(&converted, char_buf, wchar_buf, wcslen(wchar_buf));
 

@@ -10,6 +10,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MainFrame::OnQuit)
     EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
     EVT_MENU(INJECT_ID, MainFrame::OnInject)
+    EVT_MENU(INJECT_DID, MainFrame::OnInjectDebug)
 wxEND_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString& title)
@@ -17,13 +18,13 @@ MainFrame::MainFrame(const wxString& title)
 {
     // menubar
     wxMenu *fileMenu = new wxMenu;
-
     wxMenu *helpMenu = new wxMenu;
 
     helpMenu->Append(wxID_ABOUT, "&About\tF1", "Show about dialog");
 
     fileMenu->Append(wxID_EXIT, "&Exit\tAlt-X", "Quit this program");
     fileMenu->Append(INJECT_ID, "&Inject\tAlt-I", "Inject gw2dps.dll");
+    fileMenu->Append(INJECT_DID, "Inject &Debug\tAlt-D", "Inject debug.dll");
 
     wxMenuBar *menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, "&File");
@@ -69,6 +70,22 @@ void MainFrame::OnInject(wxCommandEvent& WXUNUSED(event))
         wxMessageBox(
             "dll was injected successfully.",
             "Success", 
+            wxOK | wxICON_INFORMATION,
+            this);
+    }
+}
+
+void MainFrame::OnInjectDebug(wxCommandEvent& WXUNUSED(event)) {
+    if (!inject(true)) {
+        wxMessageBox(
+            "Could not inject debug dll.",
+            "Error",
+            wxOK | wxICON_ERROR,
+            this);
+    } else {
+        wxMessageBox(
+            "debug dll was injected successfully.",
+            "Success",
             wxOK | wxICON_INFORMATION,
             this);
     }

@@ -3,6 +3,6 @@
 
 #include <wx/wxprec.h>
 
-int inject();
-bool inject64();
+int inject(bool debug = false);
+bool inject64(bool debug = false);
 #endif

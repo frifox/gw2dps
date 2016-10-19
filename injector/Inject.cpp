@@ -38,15 +38,17 @@ BOOL IsWow64(DWORD pID)
     return bIsWow64;
 }
 
-bool inject64() {
+bool inject64(bool debug) {
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi));
     si.cb = sizeof(si);
 
+    char *cmd = debug ? "proxy64.exe debug64.dll" : "proxy64.exe";
+
     // we need a 64-bit proxy process to be able to call 64-bit windows APIs and inject a 64-bit dll.
-    if (!CreateProcessA(NULL, "proxy64.exe", NULL, NULL, false, 0, NULL, NULL, &si, &pi)) {
+    if (!CreateProcessA(NULL, cmd, NULL, NULL, false, 0, NULL, NULL, &si, &pi)) {
         return false;
     }
 
@@ -55,14 +57,16 @@ bool inject64() {
     return true;
 }
 
-int inject()
+int inject(bool debug)
 {
+    wchar_t *dll = debug ? L"debug.dll" : L"gw2dps.dll";
+
     // Retrieve process ID 
     DWORD pID = GetTargetThreadIDFromProcName("Guild Wars 2");
 
     // Get the dll's full path name 
     wchar_t wchar_buf[MAX_PATH] = { 0 };
-    GetFullPathName(L"gw2dps.dll", MAX_PATH, wchar_buf, NULL);
+    GetFullPathName(dll, MAX_PATH, wchar_buf, NULL);
     char char_buf[MAX_PATH + 1] = { 0 };
     wcstombs(char_buf, wchar_buf, wcslen(wchar_buf));
 
@@ -73,7 +77,7 @@ int inject()
             return 0;
         }
     } else {
-        if (!inject64()) return 0;
+        if (!inject64(debug)) return 0;
     }
     return 1;
 }

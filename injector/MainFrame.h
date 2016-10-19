@@ -13,6 +13,7 @@ public:
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnInject(wxCommandEvent& event);
+    void OnInjectDebug(wxCommandEvent& event);
 
 private:
     MainPane* pane;
@@ -23,5 +24,6 @@ private:
 enum
 {
     INJECT_ID = 1,
+    INJECT_DID = 2,
 };
 #endif
