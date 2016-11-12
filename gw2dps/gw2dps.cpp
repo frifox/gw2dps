@@ -31,6 +31,9 @@ void ESP()
     aBottom.x = round(GetWindowWidth() / 2);
     aBottom.y = round(GetWindowHeight() - 85);
 
+    if (GetCamMinZoom() > camMinZoom)
+        SetCamMinZoom(camMinZoom);
+
     // JP Skills
     if (expMode)
     {
@@ -468,7 +471,7 @@ void ESP()
             if (floatAllyNpc && floaters.allyNpc.size() > 0)
             {
                 for (auto & floater : floaters.allyNpc) {
-                    DrawFloater(floater, floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY);
+                    DrawFloater(floater, floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY, true, true, true);
                 }
             }
 
@@ -1505,6 +1508,8 @@ bool ag_can_be_sel(bool &call_orig, Agent &ag) {
 
 void GW2LIB::gw2lib_main()
 {
+    SetCamMinZoom(camMinZoom);
+
     if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
         return;
 
@@ -1567,6 +1572,8 @@ void GW2LIB::gw2lib_main()
         this_thread::sleep_for(chrono::milliseconds(25));
 
     close_config();
+
+    SetCamMinZoom(100); // 100 = default min zoom
 
     // make threads clean-up first before interrupting
     PostThreadMessage(thread_id_hotkey, WM_USER, NULL, NULL);

@@ -1,5 +1,5 @@
 
-#include "globals.h"
+#include "grapher.h"
 
 Grapher::Grapher(int size) :
 buff(size), name(""), pad(0), ltr(false), show_avg(false) {

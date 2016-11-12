@@ -137,6 +137,7 @@ extern Dmg selfDmg;
 
 extern locale c_locale;
 
+extern float camMinZoom;
 #endif
 
 

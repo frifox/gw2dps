@@ -1,6 +1,13 @@
 #ifndef GRAPHER_H
 #define GRAPHER_H
 
+#include <string>
+#include <boost/circular_buffer.hpp>
+#include "gw2lib.h"
+
+using namespace std;
+using namespace GW2LIB;
+
 class Grapher {
 public:
     Grapher() {}
@@ -11,7 +18,7 @@ public:
     void Push(float);
     void Clear();
 
-    std::string name;
+    string name;
     int pad;
     bool ltr;
     bool show_avg;

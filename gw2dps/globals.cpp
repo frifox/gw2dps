@@ -132,3 +132,5 @@ Dmg selfDmg;
 
 locale c_locale("C");
 
+float camMinZoom = 60;
+
