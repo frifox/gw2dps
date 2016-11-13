@@ -27,6 +27,7 @@ void threadKillTimer()
                 if(!timer.is_stopped())
                     timer.stop();
 
+                Sleep(1); // calm the cpu while hp is full
                 continue;
             }
 
