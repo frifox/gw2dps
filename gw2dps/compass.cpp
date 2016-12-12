@@ -9,8 +9,6 @@ void CompassOverlay::RenderOverlay() {
     GW2LIB::Vector3 camVec, agPos, agSelfPos;
     GW2LIB::Compass comp;
 
-    GW2LIB::GetLockedSelection();
-
     float curDist, Rotation, CoordX, CoordY;
     float CenterX, CenterY;
 

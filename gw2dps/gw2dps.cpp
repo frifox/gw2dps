@@ -1,6 +1,45 @@
 
 #include "globals.h"
 
+static bool show_test_window = true;
+static bool show_another_window = false;
+static ImVec4 clear_col = ImColor(114, 144, 154);
+static bool capture_input = false;
+
+void RenderImgUI() {
+    if (!g_pd3dDevice) return;
+    ImGui_ImplDX9_NewFrame();
+    ImGuiIO& io = ImGui::GetIO();
+    capture_input = io.WantCaptureKeyboard || io.WantCaptureMouse || io.WantTextInput;
+
+    // 1. Show a simple window
+    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+    {
+        static float f = 0.0f;
+        ImGui::Text("Hello, world!");
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+        ImGui::ColorEdit3("clear color", (float*)&clear_col);
+        if (ImGui::Button("Test Window")) show_test_window ^= 1;
+        if (ImGui::Button("Another Window")) show_another_window ^= 1;
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
+
+    // 2. Show another simple window, this time using an explicit Begin/End pair
+    if (show_another_window) {
+        ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Another Window", &show_another_window);
+        ImGui::Text("Hello");
+        ImGui::End();
+    }
+
+    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+    if (show_test_window) {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&show_test_window);
+    }
+
+    ImGui::Render();
+}
 
 void ESP()
 {
@@ -1458,6 +1497,7 @@ void ESP()
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), "%s", ss.str().c_str());
     }
 
+    RenderImgUI();
 }
 
 
@@ -1506,6 +1546,37 @@ bool ag_can_be_sel(bool &call_orig, Agent &ag) {
     return true;
 }
 
+GW2::ScreenshotMode screenshot_cb(GW2::ScreenshotMode mode) {
+    return GW2::SCREENSHOT_HIGHRES_NOUI;
+}
+
+bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
+        switch (msg) {
+        case WM_KEYUP:
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONUP:
+            return true;
+        }
+        return !capture_input;
+    }
+
+    switch (msg) {
+    case WM_SIZE:
+        if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED) {
+            ImGui_ImplDX9_InvalidateDeviceObjects();
+        }
+        return true;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU)
+            return true;
+        break;
+    }
+
+    return true;
+}
+
 void GW2LIB::gw2lib_main()
 {
     SetCamMinZoom(camMinZoom);
@@ -1536,9 +1607,15 @@ void GW2LIB::gw2lib_main()
 
     compOverlay = new CompassOverlay();
 
+    HWND hwnd = FindWindowA("ArenaNet_Dx_Window_Class", NULL);
+    g_pd3dDevice = GetD3DDevice();
+    ImGui_ImplDX9_Init(hwnd, g_pd3dDevice);
+
     EnableEsp(ESP);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
     SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
+    SetGameHook(HOOK_SCREENSHOT, screenshot_cb);
+    SetGameHook(HOOK_WINDOW_PROC, wnd_proc_cb);
     //SetGameHook(HOOK_AG_CAN_BE_SEL, ag_can_be_sel);
 
     thread t1(threadHotKeys);
@@ -1571,8 +1648,9 @@ void GW2LIB::gw2lib_main()
     while (GetAsyncKeyState(VK_F12) >= 0)
         this_thread::sleep_for(chrono::milliseconds(25));
 
+    g_pd3dDevice = nullptr;
+    ImGui_ImplDX9_Shutdown();
     close_config();
-
     SetCamMinZoom(100); // 100 = default min zoom
 
     // make threads clean-up first before interrupting

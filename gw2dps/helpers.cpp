@@ -249,15 +249,20 @@ void DrawFloater(const Float &floater, DWORD color, bool drawArrow, bool drawTex
 
         if (drawText) {
             stringstream fs;
+            int dist = int(Dist(self.pos, floater.pos));
             if (floatType)
-                fs << format("%i") % int(Dist(self.pos, floater.pos));
+                fs << format("%i") % dist;
             else
                 fs << format("%i") % floater.mHealth;
+
+            DWORD color = fontColor;
+            if (dist <= 500) color = 0xffff0000;
+            else if (dist <= 1000) color = 0xfffff600;
 
             Vector2 fsInfo = font.TextInfo(fs.str());
             if (floater.isPlayer && drawProfIcon)
                 (floater.eliteSpec ? eliteIcon[floater.prof] : profIcon[floater.prof]).Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
-            font.Draw(x - fsInfo.x / 2, y - 15, fontColor, "%s", fs.str().c_str());
+            font.Draw(x - fsInfo.x / 2, y - 15, color, "%s", fs.str().c_str());
 
             if (drawName) {
                 Vector2 fsInfo2 = font2.TextInfo(floater.name);

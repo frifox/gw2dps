@@ -29,6 +29,17 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # gw2dps.dll
 ADD_LIBRARY(${PROJ_NAME}_dll SHARED
+	gw2dps/imgui/imconfig.h
+	gw2dps/imgui/imgui.cpp
+	gw2dps/imgui/imgui.h
+	gw2dps/imgui/imgui_demo.cpp
+	gw2dps/imgui/imgui_draw.cpp
+	gw2dps/imgui/imgui_internal.h
+	gw2dps/imgui/stb_rect_pack.h
+	gw2dps/imgui/stb_textedit.h
+	gw2dps/imgui/stb_truetype.h
+	gw2dps/imgui_impl_dx9.h
+	gw2dps/imgui_impl_dx9.cpp
 	gw2dps/config.h
 	gw2dps/config.cpp
 	gw2dps/keymap.h

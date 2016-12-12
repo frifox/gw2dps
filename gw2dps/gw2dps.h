@@ -27,10 +27,15 @@
 
 #include "hacklib/Main.h"
 
+#include <imgui.h>
+#include "imgui_impl_dx9.h"
 
 using namespace GW2LIB;
 using namespace boost;
 using namespace std;
+
+static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
+extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // threads
 void threadHotKeys();
