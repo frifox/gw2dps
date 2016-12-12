@@ -4,13 +4,18 @@
 static bool show_test_window = true;
 static bool show_another_window = false;
 static ImVec4 clear_col = ImColor(114, 144, 154);
-static bool capture_input = false;
+
+static bool cap_keyboard = false;
+static bool cap_mouse = false;
+static bool cap_input = false;
 
 void RenderImgUI() {
     if (!g_pd3dDevice) return;
     ImGui_ImplDX9_NewFrame();
     ImGuiIO& io = ImGui::GetIO();
-    capture_input = io.WantCaptureKeyboard || io.WantCaptureMouse || io.WantTextInput;
+    cap_keyboard = io.WantCaptureKeyboard;
+    cap_mouse = io.WantCaptureMouse;
+    cap_input = io.WantTextInput;
 
     // 1. Show a simple window
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
@@ -1552,6 +1557,8 @@ GW2::ScreenshotMode screenshot_cb(GW2::ScreenshotMode mode) {
 
 bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     if (ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
+        bool capture_input = cap_keyboard || cap_mouse || cap_input;
+
         switch (msg) {
         case WM_KEYUP:
         case WM_LBUTTONUP:
@@ -1559,6 +1566,9 @@ bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         case WM_MBUTTONUP:
             return true;
         }
+
+        if (cap_input) return false;
+        if (msg == WM_KEYDOWN) return true;
         return !capture_input;
     }
 
