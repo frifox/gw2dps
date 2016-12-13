@@ -144,6 +144,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Show/Hide Floaters below counted (%s)\n") % get_key_description("Hotkeys.FLOAT_CIRCLES");
     ss << format("Floaters show Max HP / Distance (%s)\n") % get_key_description("Hotkeys.FLOAT_TYPE");
     ss << format("Floaters snap to screen edge (%s)\n") % get_key_description("Hotkeys.FLOAT_SNAP");
+    ss << format("Floaters show text (%s)\n") % get_key_description("Hotkeys.FLOAT_TEXT");
     ss << format("Speedometer (%s)\n") % get_key_description("Hotkeys.LOG_SPEEDOMETER");
     ss << format("Speedometer for Self/Enemy (%s)\n") % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
     ss << format("Measure Distance (%s)\n") % get_key_description("Hotkeys.LOG_DISPLACEMENT");
@@ -152,6 +153,7 @@ string MainPane::getDescriptionTextBlock()
     ss << format("Toggle Compass Overlay Z Fade (%s)\n") % get_key_description("Hotkeys.COMP_OVERLAY_ZFADE");
     ss << format("Show Ping Meter (%s)\n") % get_key_description("Hotkeys.SHOW_PING");
     ss << format("Draw Agent Paths (%s)\n") % get_key_description("Hotkeys.AGENT_LINES");
+    ss << format("Show UI (%s)\n") % get_key_description("Hotkeys.SHOW_UI");
     return ss.str();
 }
 

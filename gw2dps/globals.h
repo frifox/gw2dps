@@ -96,8 +96,11 @@ extern bool floatObject;
 extern bool floatCircles;
 extern bool floatType;
 extern bool floatSnap;
+extern bool floatText;
 extern bool floatMouse;
 extern int floatRadius;
+
+extern bool showUI;
 
 extern bool logSpeedometer;
 extern bool logSpeedometerEnemy;

@@ -91,8 +91,11 @@ bool floatObject = false;
 bool floatCircles = false;
 bool floatType = true; // false = HP; true = Dist;
 bool floatSnap = false;
+bool floatText = true;
 bool floatMouse = false;
 int floatRadius = floatRadiusMax;
+
+bool showUI = false;
 
 bool logSpeedometer = false;
 bool logSpeedometerEnemy = false;

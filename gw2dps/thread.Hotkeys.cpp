@@ -64,10 +64,13 @@
 #define COMP_OVERLAY_ZFADE 95
 #define SHOW_PING 96
 #define FLOAT_SNAP 97
+#define FLOAT_TEXT 970
 #define FLOAT_OBJECT 98
 #define PLAYER_LIST_FILTER 99
 #define FLOAT_MOUSE_MEASURE 100
 #define AGENT_LINES 101
+
+#define SHOW_UI 102
 
 void registerHotKeyWrapper(int id, string key);
 void registerHotKeyWrapper(int id, string key, bool repeat);
@@ -139,8 +142,10 @@ void threadHotKeys()
     registerHotKeyWrapper(COMP_OVERLAY_ZFADE, read_config_value("Hotkeys.COMP_OVERLAY_ZFADE"));
     registerHotKeyWrapper(SHOW_PING, read_config_value("Hotkeys.SHOW_PING"));
     registerHotKeyWrapper(FLOAT_SNAP, read_config_value("Hotkeys.FLOAT_SNAP"));
+    registerHotKeyWrapper(FLOAT_TEXT, read_config_value("Hotkeys.FLOAT_TEXT"));
     registerHotKeyWrapper(PLAYER_LIST_FILTER, read_config_value("Hotkeys.PLAYER_LIST_FILTER"));
     registerHotKeyWrapper(AGENT_LINES, read_config_value("Hotkeys.AGENT_LINES"));
+    registerHotKeyWrapper(SHOW_UI, read_config_value("Hotkeys.SHOW_UI"));
 
     // special
     registerHotKeyWrapper(TARGET_INFO_ALT, read_config_value("Hotkeys.TARGET_INFO_ALT")); // targetInfoAlt
@@ -222,12 +227,13 @@ void threadHotKeys()
             if (msg.wParam == COMP_OVERLAY_ZFADE) compDotsFade = !compDotsFade;
             if (msg.wParam == SHOW_PING) showPing = !showPing;
             if (msg.wParam == FLOAT_SNAP) floatSnap = !floatSnap;
+            if (msg.wParam == FLOAT_TEXT) floatText = !floatText;
             if (msg.wParam == PLAYER_LIST_FILTER) {
                 playerListFilter = (playerListFilter >= GW2::PROFESSION_END - 1) ? 0 : playerListFilter + 1;
             }
 
             if (msg.wParam == AGENT_LINES) agentLines = !agentLines;
-
+            if (msg.wParam == SHOW_UI) showUI = !showUI;
         }
 
         save_preferences();
@@ -288,8 +294,10 @@ void unregisterHotkeys()
     UnregisterHotKey(NULL, COMP_OVERLAY_ZFADE);
     UnregisterHotKey(NULL, SHOW_PING);
     UnregisterHotKey(NULL, FLOAT_SNAP);
+    UnregisterHotKey(NULL, FLOAT_TEXT);
     UnregisterHotKey(NULL, PLAYER_LIST_FILTER);
     UnregisterHotKey(NULL, AGENT_LINES);
+    UnregisterHotKey(NULL, SHOW_UI);
 }
 
 void registerHotKeyWrapper(int id, string key)

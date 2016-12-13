@@ -515,20 +515,20 @@ void ESP()
             if (floatAllyNpc && floaters.allyNpc.size() > 0)
             {
                 for (auto & floater : floaters.allyNpc) {
-                    DrawFloater(floater, floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY, true, true, true);
+                    DrawFloater(floater, floater.att == GW2::ATTITUDE_NEUTRAL ? COLOR_NPC_NEUTRAL : COLOR_NPC_ALLY, true, floatText, true);
                 }
             }
 
             if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
             {
                 for (auto & floater : floaters.enemyNpc) {
-                    DrawFloater(floater, COLOR_NPC_FOE);
+                    DrawFloater(floater, COLOR_NPC_FOE, true, floatText);
                 }
             }
 
             if (floatNeutEnemyNpc && floaters.neutEnemyNpc.size() > 0) {
                 for (auto & floater : floaters.neutEnemyNpc) {
-                    DrawFloater(floater, COLOR_NPC_INDIFF);
+                    DrawFloater(floater, COLOR_NPC_INDIFF, true, floatText);
                 }
             }
 
@@ -536,7 +536,7 @@ void ESP()
             {
                 for (auto & floater : floaters.allyPlayer) {
                     if (!playerListFilter || playerListFilter == floater.prof)
-                        DrawFloater(floater, COLOR_PLAYER_ALLY, true, true, true, true);
+                        DrawFloater(floater, COLOR_PLAYER_ALLY, true, floatText, true, true);
                 }
             }
 
@@ -544,7 +544,7 @@ void ESP()
             {
                 for (auto & floater : floaters.enemyPlayer) {
                     if (!playerListFilter || playerListFilter == floater.prof)
-                        DrawFloater(floater, COLOR_PLAYER_FOE, true, true, false, true);
+                        DrawFloater(floater, COLOR_PLAYER_FOE, true, floatText, false, true);
                 }
             }
 
@@ -560,7 +560,7 @@ void ESP()
             if (floatObject && floaters.object.size() > 0)
             {
                 for (auto & floater : floaters.object) {
-                    DrawFloater(floater, COLOR_OBJECT);
+                    DrawFloater(floater, COLOR_OBJECT, true, floatText);
                 }
             }
         }
@@ -1486,6 +1486,7 @@ void ESP()
         //ss << format("[%i] Count Siege (Alt 5)\n") % floatSiege;
         ss << format("\n[%i] Show/Hide Floaters below counted (%s)") % floatCircles % get_key_description("Hotkeys.FLOAT_CIRCLES");
         ss << format("\n[%i] Floaters show Max HP / Distance (%s)") % floatType % get_key_description("Hotkeys.FLOAT_TYPE");
+        ss << format("\n[%i] Floaters show text (%s)") % floatType % get_key_description("Hotkeys.FLOAT_TEXT");
         ss << format("\n");
         ss << format("\n[%i] Speedometer (%s)") % logSpeedometer % get_key_description("Hotkeys.LOG_SPEEDOMETER");
         ss << format("\n[%i] Speedometer for Self/Enemy (%s)") % logSpeedometerEnemy % get_key_description("Hotkeys.LOG_SPEEDOMETER_ENEMY");
@@ -1502,7 +1503,7 @@ void ESP()
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), "%s", ss.str().c_str());
     }
 
-    RenderImgUI();
+    if(showUI) RenderImgUI();
 }
 
 
@@ -1556,7 +1557,7 @@ GW2::ScreenshotMode screenshot_cb(GW2::ScreenshotMode mode) {
 }
 
 bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
+    if (showUI && ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
         bool capture_input = cap_keyboard || cap_mouse || cap_input;
 
         switch (msg) {
@@ -1574,21 +1575,48 @@ bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     switch (msg) {
     case WM_SIZE:
-        if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED) {
+        if (showUI && g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED) {
             ImGui_ImplDX9_InvalidateDeviceObjects();
         }
         return true;
-    case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU)
-            return true;
-        break;
     }
 
     return true;
 }
 
+HHOOK m_hhkGetMessage = NULL;
+
+
+LRESULT CALLBACK hkGetMessage(int code, WPARAM wParam, LPARAM lParam) {
+    MSG* msg = (MSG*)lParam;
+
+    HL_LOG_DBG("msg: %p - %08x - %p - %p\n", msg->hwnd, msg->message, msg->wParam, msg->lParam);
+    bool pass_msg = wnd_proc_cb(msg->hwnd, msg->message, msg->wParam, msg->lParam);
+
+    if (code >= 0 && !pass_msg) {
+        msg->message = WM_NULL;
+        return 0;
+    }
+
+    return CallNextHookEx(m_hhkGetMessage, code, wParam, lParam);
+}
+
+void SetupWndProcHook() {
+    HWND hwnd = NULL;
+    if ((hwnd = FindWindowA("ArenaNet_Dx_Window_Class", NULL)) != NULL) {
+        if ((m_hhkGetMessage = SetWindowsHookEx(WH_GETMESSAGE, hkGetMessage, NULL, GetWindowThreadProcessId(hwnd, NULL))) == NULL) {
+            HL_LOG_ERR("[Hook::Init] Hooking GetMessage failed (%d)\n", GetLastError());
+        }
+    } else {
+        HL_LOG_ERR("[Hook::Init] Hooking GetMessage failed (%d)\n", GetLastError());
+    }
+
+}
+
+
 void GW2LIB::gw2lib_main()
 {
+    //SetupWndProcHook();
     SetCamMinZoom(camMinZoom);
 
     if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
@@ -1657,6 +1685,8 @@ void GW2LIB::gw2lib_main()
     // wait for exit hotkey
     while (GetAsyncKeyState(VK_F12) >= 0)
         this_thread::sleep_for(chrono::milliseconds(25));
+
+    if (m_hhkGetMessage != NULL) UnhookWindowsHookEx(m_hhkGetMessage);
 
     g_pd3dDevice = nullptr;
     ImGui_ImplDX9_Shutdown();
