@@ -4,7 +4,7 @@
 #include "Inject.h"
 
 BOOL inject_dll(DWORD pID, const char * DLL_NAME);
-DWORD GetTargetThreadIDFromProcName(const char * ProcName);
+DWORD GetTargetThreadIDFromProcName(const char *clsName, const char *winName);
 
 typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 LPFN_ISWOW64PROCESS fnIsWow64Process;
@@ -62,7 +62,7 @@ int inject(bool debug)
     wchar_t *dll = debug ? L"debug.dll" : L"gw2dps.dll";
 
     // Retrieve process ID 
-    DWORD pID = GetTargetThreadIDFromProcName("Guild Wars 2");
+    DWORD pID = GetTargetThreadIDFromProcName("ArenaNet_Dx_Window_Class", "Guild Wars 2");
 
     // Get the dll's full path name 
     wchar_t wchar_buf[MAX_PATH] = { 0 };
@@ -114,9 +114,9 @@ BOOL inject_dll(DWORD pID, const char * DLL_NAME)
     return true;
 }
 
-DWORD GetTargetThreadIDFromProcName(const char * ProcName)
+DWORD GetTargetThreadIDFromProcName(const char *clsName, const char *winName)
 {
-    HWND windowHandle = FindWindowA(NULL, ProcName);
+    HWND windowHandle = FindWindowA(clsName, winName);
     DWORD processID = 0;
     GetWindowThreadProcessId(windowHandle, &processID);
 

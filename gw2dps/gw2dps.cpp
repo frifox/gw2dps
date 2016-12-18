@@ -1557,66 +1557,53 @@ GW2::ScreenshotMode screenshot_cb(GW2::ScreenshotMode mode) {
 }
 
 bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (showUI && ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
-        bool capture_input = cap_keyboard || cap_mouse || cap_input;
+    bool process_imgui = showUI && !(IsInterfaceHidden() || IsMapOpen() || IsInCutscene() || hideMe);
+    bool capture_input = cap_keyboard || cap_mouse || cap_input;
+    bool ret = !(process_imgui && capture_input);
 
+    //HL_LOG_DBG("msg: %p - %08x - %p - %p\n", hWnd, msg, wParam, lParam);
+    if (ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
         switch (msg) {
         case WM_KEYUP:
         case WM_LBUTTONUP:
         case WM_RBUTTONUP:
         case WM_MBUTTONUP:
+        case WM_SYSKEYUP:
             return true;
         }
 
         if (cap_input) return false;
-        if (msg == WM_KEYDOWN) return true;
-        return !capture_input;
+
+        switch (msg) {
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+            return true;
+        }
+
+        return ret;
     }
 
     switch (msg) {
     case WM_SIZE:
-        if (showUI && g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED) {
+        if (g_pd3dDevice) {
             ImGui_ImplDX9_InvalidateDeviceObjects();
         }
         return true;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU)
+            return true;
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+        return ret;
     }
 
     return true;
 }
 
-HHOOK m_hhkGetMessage = NULL;
-
-
-LRESULT CALLBACK hkGetMessage(int code, WPARAM wParam, LPARAM lParam) {
-    MSG* msg = (MSG*)lParam;
-
-    HL_LOG_DBG("msg: %p - %08x - %p - %p\n", msg->hwnd, msg->message, msg->wParam, msg->lParam);
-    bool pass_msg = wnd_proc_cb(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-
-    if (code >= 0 && !pass_msg) {
-        msg->message = WM_NULL;
-        return 0;
-    }
-
-    return CallNextHookEx(m_hhkGetMessage, code, wParam, lParam);
-}
-
-void SetupWndProcHook() {
-    HWND hwnd = NULL;
-    if ((hwnd = FindWindowA("ArenaNet_Dx_Window_Class", NULL)) != NULL) {
-        if ((m_hhkGetMessage = SetWindowsHookEx(WH_GETMESSAGE, hkGetMessage, NULL, GetWindowThreadProcessId(hwnd, NULL))) == NULL) {
-            HL_LOG_ERR("[Hook::Init] Hooking GetMessage failed (%d)\n", GetLastError());
-        }
-    } else {
-        HL_LOG_ERR("[Hook::Init] Hooking GetMessage failed (%d)\n", GetLastError());
-    }
-
-}
-
 
 void GW2LIB::gw2lib_main()
 {
-    //SetupWndProcHook();
     SetCamMinZoom(camMinZoom);
 
     if (!font.Init(lineHeight, fontFamily) || !font2.Init(lineHeight, fontFamily, false))
@@ -1652,7 +1639,7 @@ void GW2LIB::gw2lib_main()
     EnableEsp(ESP);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
     SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
-    SetGameHook(HOOK_SCREENSHOT, screenshot_cb);
+    //SetGameHook(HOOK_SCREENSHOT, screenshot_cb);
     SetGameHook(HOOK_WINDOW_PROC, wnd_proc_cb);
     //SetGameHook(HOOK_AG_CAN_BE_SEL, ag_can_be_sel);
 
@@ -1686,7 +1673,6 @@ void GW2LIB::gw2lib_main()
     while (GetAsyncKeyState(VK_F12) >= 0)
         this_thread::sleep_for(chrono::milliseconds(25));
 
-    if (m_hhkGetMessage != NULL) UnhookWindowsHookEx(m_hhkGetMessage);
 
     g_pd3dDevice = nullptr;
     ImGui_ImplDX9_Shutdown();
@@ -1708,5 +1694,5 @@ void GW2LIB::gw2lib_main()
     t6.interrupt();
     t7.interrupt();
 
-    this_thread::sleep_for(chrono::milliseconds(1000));
+    this_thread::sleep_for(chrono::milliseconds(500));
 }

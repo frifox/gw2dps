@@ -32,6 +32,10 @@ struct CUSTOMVERTEX
 };
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
+#ifndef IM_ARRAYSIZE
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+#endif
+
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
 // If text or lines are blurry when integrating ImGui in your engine:
 // - in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
@@ -168,18 +172,21 @@ IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LP
     switch (msg)
     {
     case WM_LBUTTONDOWN:
+    case WM_LBUTTONDBLCLK:
         io.MouseDown[0] = true;
         return true;
     case WM_LBUTTONUP:
         io.MouseDown[0] = false;
         return true;
     case WM_RBUTTONDOWN:
+    case WM_RBUTTONDBLCLK:
         io.MouseDown[1] = true;
         return true;
     case WM_RBUTTONUP:
         io.MouseDown[1] = false;
         return true;
     case WM_MBUTTONDOWN:
+    case WM_MBUTTONDBLCLK:
         io.MouseDown[2] = true;
         return true;
     case WM_MBUTTONUP:
@@ -193,10 +200,12 @@ IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LP
         io.MousePos.y = (signed short)(lParam >> 16);
         return true;
     case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
         if (wParam < 256)
             io.KeysDown[wParam] = 1;
         return true;
     case WM_KEYUP:
+    case WM_SYSKEYUP:
         if (wParam < 256)
             io.KeysDown[wParam] = 0;
         return true;
@@ -205,11 +214,35 @@ IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LP
         if (wParam > 0 && wParam < 0x10000)
             io.AddInputCharacter((unsigned short)wParam);
         return true;
+    case WM_ACTIVATE:
+        if (wParam == WA_INACTIVE) {
+            ImGui_SetAllKeys(false);
+            ImGui_SetAllMBtns(false);
+        }
+        break;
     }
-    return 0;
+    return false;
 }
 
-bool    ImGui_ImplDX9_Init(void* hwnd, IDirect3DDevice9* device)
+void ImGui_SetAllKeys(bool state) {
+    ImGuiIO& io = ImGui::GetIO();
+    int size = IM_ARRAYSIZE(io.KeysDown);
+
+    for (int i = 0; i < size; i++) {
+        io.KeysDown[i] = state;
+    }
+}
+
+void ImGui_SetAllMBtns(bool state) {
+    ImGuiIO& io = ImGui::GetIO();
+    int size = IM_ARRAYSIZE(io.MouseDown);
+
+    for (int i = 0; i < size; i++) {
+        io.MouseDown[i] = state;
+    }
+}
+
+bool ImGui_ImplDX9_Init(void* hwnd, IDirect3DDevice9* device)
 {
     g_hWnd = (HWND)hwnd;
     g_pd3dDevice = device;
@@ -242,6 +275,8 @@ bool    ImGui_ImplDX9_Init(void* hwnd, IDirect3DDevice9* device)
 
     io.RenderDrawListsFn = ImGui_ImplDX9_RenderDrawLists;   // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
     io.ImeWindowHandle = g_hWnd;
+
+    //io.Fonts->AddFontFromFileTTF("c:\\windows\\fonts\\Verdana.ttf", 20);
 
     return true;
 }

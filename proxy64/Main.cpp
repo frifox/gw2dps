@@ -3,7 +3,7 @@
 #include <iostream>
 
 BOOL inject_dll(DWORD pID, const char * DLL_NAME);
-DWORD GetTargetThreadIDFromProcName(const char * ProcName);
+DWORD GetTargetThreadIDFromProcName(const char *clsName, const char *winName);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     LPWSTR *argv;
@@ -18,7 +18,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     wchar_t *dll = argc > 1 ? argv[1] : L"gw2dps64.dll";
 
     // Retrieve process ID 
-    DWORD pID = GetTargetThreadIDFromProcName("Guild Wars 2");
+    DWORD pID = GetTargetThreadIDFromProcName("ArenaNet_Dx_Window_Class", "Guild Wars 2");
     size_t converted;
 
     // Get the dll's full path name 
@@ -67,12 +67,12 @@ BOOL inject_dll(DWORD pID, const char * DLL_NAME)
     return true;
 }
 
-DWORD GetTargetThreadIDFromProcName(const char * ProcName)
+DWORD GetTargetThreadIDFromProcName(const char *clsName, const char *winName)
 {
-    HWND windowHandle = FindWindowA(NULL, ProcName);
-    DWORD* processID = new DWORD;
-    GetWindowThreadProcessId(windowHandle, processID);
+    HWND windowHandle = FindWindowA(clsName, winName);
+    DWORD processID = 0;
+    GetWindowThreadProcessId(windowHandle, &processID);
 
-    return *processID;
+    return processID;
 }
 
