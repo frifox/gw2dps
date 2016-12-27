@@ -8,6 +8,7 @@ static ImVec4 clear_col = ImColor(114, 144, 154);
 static bool cap_keyboard = false;
 static bool cap_mouse = false;
 static bool cap_input = false;
+static bool is_window_active = true;
 
 void RenderImgUI() {
     if (!g_pd3dDevice) return;
@@ -1503,7 +1504,7 @@ void ESP()
         font.Draw(x, y, fontColor - (!loopLimiter ? 0x00aa0000 : 0), "%s", ss.str().c_str());
     }
 
-    if(showUI) RenderImgUI();
+    if(showUI && is_window_active) RenderImgUI();
 }
 
 
@@ -1561,7 +1562,7 @@ bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     bool capture_input = cap_keyboard || cap_mouse || cap_input;
     bool ret = !(process_imgui && capture_input);
 
-    //HL_LOG_DBG("msg: %p - %08x - %p - %p\n", hWnd, msg, wParam, lParam);
+    //if(msg!=0xc074 && msg!=0x00ff) HL_LOG_DBG("msg: %p - %08x - %p - %p\n", hWnd, msg, wParam, lParam);
     if (ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam)) {
         switch (msg) {
         case WM_KEYUP:
@@ -1588,10 +1589,10 @@ bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (g_pd3dDevice) {
             ImGui_ImplDX9_InvalidateDeviceObjects();
         }
-        return true;
+        break;
     case WM_SYSCOMMAND:
         if ((wParam & 0xfff0) == SC_KEYMENU)
-            return true;
+            break;
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
@@ -1693,6 +1694,4 @@ void GW2LIB::gw2lib_main()
     t5.interrupt();
     t6.interrupt();
     t7.interrupt();
-
-    this_thread::sleep_for(chrono::milliseconds(500));
 }

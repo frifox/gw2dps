@@ -218,7 +218,13 @@ IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LP
         if (wParam == WA_INACTIVE) {
             ImGui_SetAllKeys(false);
             ImGui_SetAllMBtns(false);
+            ImGui_SetMousePos(-1, -1);
         }
+        break;
+    case WM_NCMOUSEMOVE:
+        ImGui_SetAllKeys(false);
+        ImGui_SetAllMBtns(false);
+        ImGui_SetMousePos(-1, -1);
         break;
     }
     return false;
@@ -240,6 +246,12 @@ void ImGui_SetAllMBtns(bool state) {
     for (int i = 0; i < size; i++) {
         io.MouseDown[i] = state;
     }
+}
+
+void ImGui_SetMousePos(float x, float y) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos.x = x;
+    io.MousePos.y = y;
 }
 
 bool ImGui_ImplDX9_Init(void* hwnd, IDirect3DDevice9* device)

@@ -18,6 +18,7 @@ IMGUI_API bool        ImGui_ImplDX9_CreateDeviceObjects();
 
 void ImGui_SetAllKeys(bool state);
 void ImGui_SetAllMBtns(bool state);
+void ImGui_SetMousePos(float x, float y);
 
 // Handler for Win32 messages, update mouse/keyboard data.
 // You may or not need this for your implementation, but it can serve as reference for handling inputs.
