@@ -21,9 +21,8 @@ int Str2Int(string str, int def) {
 }
 
 string strToLower(string str) {
-    string tmp = str;
-    transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-    return tmp;
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return str;
 }
 
 void load_preferences() {

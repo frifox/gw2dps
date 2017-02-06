@@ -602,8 +602,12 @@ void ESP()
         if (floatAllyPlayerProf)
         {
             int prof[GW2::PROFESSION_END] {0};
-            for (auto & ally : floaters.allyPlayer) {
-                prof[ally.prof]++;
+            for (auto& player : floaters.allyPlayer) {
+                prof[player.prof]++;
+            }
+
+            for (auto& player : floaters.enemyPlayer) {
+                prof[player.prof]++;
             }
 
             ss.str("");
@@ -629,8 +633,8 @@ void ESP()
         }
     }
 
-    if (compDots && compOverlay) {
-        compOverlay->RenderOverlay();
+    if (compDots) {
+        compOverlay.RenderOverlay();
     }
 
     if (showPing) {
@@ -1631,8 +1635,6 @@ void GW2LIB::gw2lib_main()
     init_config();
     load_preferences();
 
-    compOverlay = new CompassOverlay();
-
     HWND hwnd = FindWindowA("ArenaNet_Dx_Window_Class", NULL);
     g_pd3dDevice = GetD3DDevice();
     ImGui_ImplDX9_Init(hwnd, g_pd3dDevice);
@@ -1677,14 +1679,12 @@ void GW2LIB::gw2lib_main()
 
     g_pd3dDevice = nullptr;
     ImGui_ImplDX9_Shutdown();
+
     close_config();
     SetCamMinZoom(100); // 100 = default min zoom
 
     // make threads clean-up first before interrupting
     PostThreadMessage(thread_id_hotkey, WM_USER, NULL, NULL);
-
-    delete compOverlay;
-    compOverlay = nullptr;
 
     // self destruct sequence
     t1.interrupt();
@@ -1694,4 +1694,12 @@ void GW2LIB::gw2lib_main()
     t5.interrupt();
     t6.interrupt();
     t7.interrupt();
+
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    t5.join();
+    t6.join();
+    t7.join();
 }

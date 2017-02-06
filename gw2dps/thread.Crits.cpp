@@ -64,11 +64,11 @@ void threadCrits() {
                 logFileInit = false;
 
             if (!logCrits)
-                Sleep(100); // Thread not needed, sleep
+                this_thread::sleep_for(chrono::milliseconds(100)); // Thread not needed, sleep
         }
 
         // go easy on the cpu
         if (loopLimiter)
-            Sleep(1);
+            this_thread::sleep_for(chrono::milliseconds(1));
     }
 }

@@ -109,7 +109,7 @@ DWORD thread_id_hotkey = 0;
 
 Character me;
 Agent meAg;
-CompassOverlay *compOverlay = nullptr;
+CompassOverlay compOverlay;
 
 int targetLockID;
 

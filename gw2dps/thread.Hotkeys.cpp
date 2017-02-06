@@ -152,7 +152,7 @@ void threadHotKeys()
     RegisterHotKey(NULL, WORLD_BOSSES, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, 0x57); // worldBosses
 
     MSG msg;
-    while (GetMessage(&msg, 0, 0, 0))
+    while (GetMessage(&msg, 0, 0, 0) > 0)
     {
         if (msg.message == WM_USER) unregisterHotkeys();
 

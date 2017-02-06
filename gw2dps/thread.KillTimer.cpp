@@ -27,13 +27,13 @@ void threadKillTimer()
                 if(!timer.is_stopped())
                     timer.stop();
 
-                Sleep(1); // calm the cpu while hp is full
+                this_thread::sleep_for(chrono::milliseconds(1)); // calm the cpu while hp is full
                 continue;
             }
 
             if (locked.cHealth == locked.mHealth && bufferKillTimer.dmg == 0)
             {
-                Sleep(1); // no idea why but it only works with this being here
+                this_thread::sleep_for(chrono::milliseconds(1)); // no idea why but it only works with this being here
                 continue;
             }
 
@@ -162,11 +162,11 @@ void threadKillTimer()
                 bufferKillTimer = {};
             }
 
-            Sleep(100);
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
 
         // go easy on the cpu
         if (loopLimiter)
-            Sleep(1);
+            this_thread::sleep_for(chrono::milliseconds(1));
     }
 }

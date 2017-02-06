@@ -114,7 +114,7 @@ extern DWORD thread_id_hotkey;
 
 extern Character me;
 extern Agent meAg;
-extern CompassOverlay *compOverlay;
+extern CompassOverlay compOverlay;
 
 extern int targetLockID;
 
