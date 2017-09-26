@@ -307,23 +307,28 @@ void ESP()
         if (floatersOn)
         {
             GW2::AgentType agType = ag.GetType();
+            int id = ag.GetAgentId();
+            string name = ag.GetName();
+            Vector3 pos = ag.GetPos();
+            float rot = ag.GetRot();
+
+            Float floater;
+            floater.name = name;
+            floater.id = id;
+            floater.pos = pos;
+            floater.rot = rot;
 
             // object floaters
             if (agType == GW2::AGENT_TYPE_GADGET) {
                 // gather data
                 Gadget gd = ag.GetGadget();
-                Vector3 pos = ag.GetPos();
-                float rot = ag.GetRot();
+
                 float cHealth = gd.GetCurrentHealth();
                 float mHealth = gd.GetMaxHealth();
 
                 // Filter those out of range
                 if (Dist(self.pos, pos) <= floatRadius)
                 {
-                    Float floater;
-                    floater.id = ag.GetAgentId();
-                    floater.pos = pos;
-                    floater.rot = rot;
                     floater.mHealth = mHealth;
                     floater.cHealth = cHealth;
 
@@ -337,12 +342,9 @@ void ESP()
                 Character ch = ag.GetCharacter();
 
                 // gather data
-                Vector3 pos = ag.GetPos();
-                float rot = ag.GetRot();
                 float cHealth = ch.GetCurrentHealth();
                 float mHealth = ch.GetMaxHealth();
                 int prof = ch.GetProfession();
-                string name = ch.GetName();
                 GW2::Attitude att = ch.GetAttitude();
 
                 // Filter the dead
@@ -351,16 +353,19 @@ void ESP()
                     // Filter those out of range
                     if (Dist(self.pos, pos) <= floatRadius)
                     {
-                        Float floater;
-                        floater.id = ag.GetAgentId();
-                        floater.pos = pos;
-                        floater.rot = rot;
+                        uint8_t eliteSpec = 0;
+                        if (ch.IsPlayer()) {
+                            Player pl = ag.GetPlayer();
+                            if (pl.HasPOFEliteSpec()) eliteSpec = 2;
+                            else if (pl.HasEliteSpec()) eliteSpec = 1;
+                            else eliteSpec = 0;
+                        }
+
                         floater.mHealth = mHealth;
                         floater.cHealth = cHealth;
                         floater.prof = prof;
-                        floater.name = name;
                         floater.att = att;
-                        floater.eliteSpec = ch.IsPlayer() ? ag.GetPlayer().HasEliteSpec() : false;
+                        floater.eliteSpec = eliteSpec;
 
                         // player vs npc
                         if (ch.IsPlayer() && !ch.IsControlled()) // (ignore self)
@@ -523,13 +528,13 @@ void ESP()
             if (floatEnemyNpc && floaters.enemyNpc.size() > 0)
             {
                 for (auto & floater : floaters.enemyNpc) {
-                    DrawFloater(floater, COLOR_NPC_FOE, true, floatText);
+                    DrawFloater(floater, COLOR_NPC_FOE, true, floatText, true);
                 }
             }
 
             if (floatNeutEnemyNpc && floaters.neutEnemyNpc.size() > 0) {
                 for (auto & floater : floaters.neutEnemyNpc) {
-                    DrawFloater(floater, COLOR_NPC_INDIFF, true, floatText);
+                    DrawFloater(floater, COLOR_NPC_INDIFF, true, floatText, true);
                 }
             }
 
@@ -561,7 +566,7 @@ void ESP()
             if (floatObject && floaters.object.size() > 0)
             {
                 for (auto & floater : floaters.object) {
-                    DrawFloater(floater, COLOR_OBJECT, true, floatText);
+                    DrawFloater(floater, COLOR_OBJECT, true, floatText, true);
                 }
             }
         }
@@ -1561,6 +1566,11 @@ GW2::ScreenshotMode screenshot_cb(GW2::ScreenshotMode mode) {
     return GW2::SCREENSHOT_HIGHRES_NOUI;
 }
 
+void sample_chat_cb(wchar_t *wtxt) {
+    string chat = w_converter.to_bytes(wtxt);
+    HL_LOG_DBG("%s\n", chat.c_str());
+}
+
 bool wnd_proc_cb(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     bool process_imgui = showUI && !(IsInterfaceHidden() || IsMapOpen() || IsInCutscene() || hideMe);
     bool capture_input = cap_keyboard || cap_mouse || cap_input;
@@ -1640,6 +1650,7 @@ void GW2LIB::gw2lib_main()
     ImGui_ImplDX9_Init(hwnd, g_pd3dDevice);
 
     EnableEsp(ESP);
+    //SetGameHook(HOOK_CHAT, sample_chat_cb);
     SetGameHook(HOOK_COMBAT_LOG, combat_log);
     SetGameHook(HOOK_DAMAGE_LOG, dmg_log);
     //SetGameHook(HOOK_SCREENSHOT, screenshot_cb);
@@ -1657,7 +1668,7 @@ void GW2LIB::gw2lib_main()
     HMODULE dll = hl::GetCurrentModule();
 
     for (int i = 1; i < GW2::PROFESSION_END; i++) {
-        stringstream res_id, res_eid;
+        stringstream res_id, res_eid, res_e2id;
 
         res_id << "IDB_PNG" << i;
         HRSRC ires = FindResourceA(dll, res_id.str().c_str(), "PNG");
@@ -1669,6 +1680,12 @@ void GW2LIB::gw2lib_main()
         HRSRC ires_e = FindResourceA(dll, res_eid.str().c_str(), "PNG");
         if (ires_e && !eliteIcon[i].Init(LockResource(LoadResource(dll, ires_e)), SizeofResource(dll, ires_e))) {
             HL_LOG_ERR("Unable to load elite spec icon: %i\n", res_eid);
+        }
+
+        res_e2id << "IDB_PNG_POF" << i;
+        HRSRC ires_e2 = FindResourceA(dll, res_e2id.str().c_str(), "PNG");
+        if (ires_e2 && !POFeliteIcon[i].Init(LockResource(LoadResource(dll, ires_e2)), SizeofResource(dll, ires_e2))) {
+            HL_LOG_ERR("Unable to load POF elite spec icon: %i\n", res_e2id);
         }
     }
 

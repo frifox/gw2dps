@@ -7,6 +7,7 @@ int lineHeight = 16;
 Font font, font2;
 Texture profIcon[GW2::PROFESSION_END];
 Texture eliteIcon[GW2::PROFESSION_END];
+Texture POFeliteIcon[GW2::PROFESSION_END];
 const char *profFilterName[] = { "ALL", "Guard", "War", "Engi", "Ranger", "Thief", "Ele", "Mes", "Necro", "Rev" };
 float icon_w = 20;
 float icon_h = 20;
@@ -136,4 +137,6 @@ Dmg selfDmg;
 locale c_locale("C");
 
 float camMinZoom = 60;
+
+std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> w_converter;
 

@@ -12,6 +12,7 @@ extern int lineHeight;
 extern Font font, font2;
 extern Texture profIcon[GW2::PROFESSION_END];
 extern Texture eliteIcon[GW2::PROFESSION_END];
+extern Texture POFeliteIcon[GW2::PROFESSION_END];
 extern const char *profFilterName[];
 extern float icon_w;
 extern float icon_h;
@@ -141,6 +142,8 @@ extern Dmg selfDmg;
 extern locale c_locale;
 
 extern float camMinZoom;
+
+extern std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> w_converter;
 #endif
 
 

@@ -123,7 +123,7 @@ struct Float {
     float cHealth;
     float mHealth;
     int prof;
-    bool eliteSpec = false;
+    uint8_t eliteSpec = 0;
     bool isPlayer = false;
     string name;
     GW2::Attitude att;

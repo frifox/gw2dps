@@ -260,8 +260,16 @@ void DrawFloater(const Float &floater, DWORD color, bool drawArrow, bool drawTex
             else if (dist <= 1000) color = 0xfffff600;
 
             Vector2 fsInfo = font.TextInfo(fs.str());
-            if (floater.isPlayer && drawProfIcon)
-                (floater.eliteSpec ? eliteIcon[floater.prof] : profIcon[floater.prof]).Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
+            if (floater.isPlayer && drawProfIcon) {
+                Texture *icon = NULL;
+                switch (floater.eliteSpec) {
+                case 0: icon = &profIcon[floater.prof]; break;
+                case 1: icon = &eliteIcon[floater.prof]; break;
+                case 2: icon = &POFeliteIcon[floater.prof]; break;
+                }
+
+                if(icon) icon->Draw(x - fsInfo.x / 2 - 25, y - lineHeight - 1, icon_w, icon_h);
+            }
             font.Draw(x - fsInfo.x / 2, y - 15, color, "%s", fs.str().c_str());
 
             if (drawName) {
@@ -269,8 +277,16 @@ void DrawFloater(const Float &floater, DWORD color, bool drawArrow, bool drawTex
                 if (floater.name.size()) font2.Draw(x - fsInfo2.x / 2, y - 30, fontColor, "%s", floater.name.c_str());
             }
         } else {
-            if (floater.isPlayer && drawProfIcon)
-                (floater.eliteSpec ? eliteIcon[floater.prof] : profIcon[floater.prof]).Draw(x - icon_w / 2, y - lineHeight - 1, icon_w, icon_h);
+            if (floater.isPlayer && drawProfIcon) {
+                Texture *icon = NULL;
+                switch (floater.eliteSpec) {
+                case 0: icon = &profIcon[floater.prof]; break;
+                case 1: icon = &eliteIcon[floater.prof]; break;
+                case 2: icon = &POFeliteIcon[floater.prof]; break;
+                }
+
+                if(icon) icon->Draw(x - icon_w / 2, y - lineHeight - 1, icon_w, icon_h);
+            }
         }
     }
 }
